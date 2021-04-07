@@ -9,7 +9,7 @@
     <atom:link href="http://marinesnow34.github.io/rss2.xml" rel="self" type="application/rss+xml"/>
     
     <description>공부 기록용 블로그</description>
-    <pubDate>Wed, 07 Apr 2021 09:48:50 GMT</pubDate>
+    <pubDate>Wed, 07 Apr 2021 09:53:21 GMT</pubDate>
     <generator>http://hexo.io/</generator>
     
     <item>
@@ -18,8 +18,18 @@
       <guid>http://marinesnow34.github.io/2021/04/07/test/</guid>
       <pubDate>Wed, 07 Apr 2021 09:48:49 GMT</pubDate>
       
+        
+        
+      <description>&lt;p&gt;asdasd&lt;/p&gt;
+</description>
+        
       
       
+      
+      <content:encoded><![CDATA[<p>asdasd</p>]]></content:encoded>
+      
+      
+      <category domain="http://marinesnow34.github.io/categories/test/">test</category>
       
       
       

@@ -9,8 +9,16 @@
 
 
     <url>
+        <loc>http://marinesnow34.github.io/2021/04/07/test/</loc>
+        <lastmod>2021-04-07T09:48:50.034Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://marinesnow34.github.io/2020/12/30/2020-12-30-%ED%95%B4%EA%B5%B0-%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B3%91-%ED%95%A9%EA%B2%A9-%ED%9B%84%EA%B8%B0/</loc>
-        <lastmod>2021-01-03T13:14:25.148Z</lastmod>
+        <lastmod>2021-04-07T09:24:00.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -18,7 +26,7 @@
 
     <url>
         <loc>http://marinesnow34.github.io/2021/01/02/2021-01-02-2020-%EA%B7%B8%EB%A6%AC%EA%B3%A0-2021/</loc>
-        <lastmod>2021-01-02T14:31:06.853Z</lastmod>
+        <lastmod>2021-04-07T09:24:00.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

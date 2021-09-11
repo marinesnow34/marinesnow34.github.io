@@ -114,7 +114,7 @@
       </categories>
   </entry>
   <entry>
-    <title>ubuntu 20.04 초기 세팅.md</title>
+    <title>ubuntu 20.04 초기 세팅</title>
     <url>/2021/09/11/2021-09-11-ubuntu-20_04-initial-setting/</url>
     <content><![CDATA[<h1 id="ubuntu-20-04-SSH-포트-변경-등-초기-세팅"><a href="#ubuntu-20-04-SSH-포트-변경-등-초기-세팅" class="headerlink" title="ubuntu 20.04 SSH 포트 변경 등 초기 세팅"></a>ubuntu 20.04 SSH 포트 변경 등 초기 세팅</h1><p><strong>환경</strong><br>ubuntu 20.04<br>OCI(오라클 클라우드)</p>
 <h1 id="SSH-포트-변경"><a href="#SSH-포트-변경" class="headerlink" title="SSH 포트 변경"></a>SSH 포트 변경</h1><p><strong>주의) SSH 세팅 할 때에는 접속이 잘 되는지 확인되기 전 까지는 연결을 끊지 마세요.</strong></p>

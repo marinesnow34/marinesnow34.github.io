@@ -9,11 +9,11 @@
     <atom:link href="http://marinesnow34.github.io/rss2.xml" rel="self" type="application/rss+xml"/>
     
     <description>공부 기록용 블로그</description>
-    <pubDate>Sat, 11 Sep 2021 08:03:54 GMT</pubDate>
+    <pubDate>Sat, 11 Sep 2021 08:27:42 GMT</pubDate>
     <generator>http://hexo.io/</generator>
     
     <item>
-      <title>ubuntu 20.04 초기 세팅.md</title>
+      <title>ubuntu 20.04 초기 세팅</title>
       <link>http://marinesnow34.github.io/2021/09/11/2021-09-11-ubuntu-20_04-initial-setting/</link>
       <guid>http://marinesnow34.github.io/2021/09/11/2021-09-11-ubuntu-20_04-initial-setting/</guid>
       <pubDate>Sat, 11 Sep 2021 07:35:59 GMT</pubDate>

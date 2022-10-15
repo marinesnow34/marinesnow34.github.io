@@ -202,7 +202,21 @@
 <p>즉 <strong>데이터</strong>를 <strong>처리</strong>(DBMS)를 해서 나온 것이 <strong>정보</strong>이다.</p>
 <h1 id="데이터의-분류"><a href="#데이터의-분류" class="headerlink" title="데이터의 분류"></a>데이터의 분류</h1><p>데이터를 처리해서 정보로 만들기 위해서는 데이터를 어떻게 처리할지 고민을 하게 된다. </p>
 <h2 id="구조화된-데이터-형태에-따른-분류"><a href="#구조화된-데이터-형태에-따른-분류" class="headerlink" title="구조화된 데이터 형태에 따른 분류"></a>구조화된 데이터 형태에 따른 분류</h2><h3 id="정형-데이터"><a href="#정형-데이터" class="headerlink" title="정형 데이터"></a>정형 데이터</h3><p>미리 정해진 구조가 있다.</p>
-<p>엑셀 스프레드시트, 관계 데이터베이스의 테이블 등<br>|이름|성별|나이|<br>|-|-|-<br>라이언|남|20</p>
+<p>엑셀 스프레드시트, 관계 데이터베이스의 테이블 등</p>
+<table>
+<thead>
+<tr>
+<th>이름</th>
+<th>성별</th>
+<th>나이</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>라이언</td>
+<td>남</td>
+<td>20</td>
+</tr>
+</tbody></table>
 <h3 id="반정형-데이터"><a href="#반정형-데이터" class="headerlink" title="반정형 데이터"></a>반정형 데이터</h3><p>내용 안에 구조에 대한 설명이 있다.</p>
 <p>JSON, HTML, XML등</p>
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line">&lt;학생&gt;</span><br><span class="line">    &lt;이름&gt;라이언&lt;/이름&gt;</span><br><span class="line">    &lt;성별&gt;남&lt;/성별&gt;</span><br><span class="line">&lt;/학생&gt;</span><br></pre></td></tr></table></figure>
@@ -216,7 +230,26 @@
 <h2 id="온라인-처리"><a href="#온라인-처리" class="headerlink" title="온라인 처리"></a>온라인 처리</h2><p>실시간으로 처리 하는것을 말한다. 데이터가 즉시 컴퓨터에 전송되고, 데이터는 즉시 컴퓨터가 처리해서 보낸다.</p>
 <p>은행이나 군사시스템 등 빠른 처리가 필요한 곳에 사용된다.</p>
 <h2 id="분산-처리"><a href="#분산-처리" class="headerlink" title="분산 처리"></a>분산 처리</h2><p>물리적으로 분리된 처리기와 데이터베이스를 네트워크로 묶어서 하나의 시스템처럼 사용하는 것이다.</p>
-<h1 id="데이터베이스-구조"><a href="#데이터베이스-구조" class="headerlink" title="데이터베이스 구조"></a>데이터베이스 구조</h1><h2 id="논리적-구조"><a href="#논리적-구조" class="headerlink" title="논리적 구조"></a>논리적 구조</h2><p>사용자 관점에서 본 데이터의 개념적 구조이다.<br>|논리적 구조|<br>|-|<br>|레코드 A|<br>|레코드 B|<br>|레코드 C|<br>|레코드 D|</p>
+<h1 id="데이터베이스-구조"><a href="#데이터베이스-구조" class="headerlink" title="데이터베이스 구조"></a>데이터베이스 구조</h1><h2 id="논리적-구조"><a href="#논리적-구조" class="headerlink" title="논리적 구조"></a>논리적 구조</h2><p>사용자 관점에서 본 데이터의 개념적 구조이다.</p>
+<table>
+<thead>
+<tr>
+<th>논리적 구조</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>레코드 A</td>
+</tr>
+<tr>
+<td>레코드 B</td>
+</tr>
+<tr>
+<td>레코드 C</td>
+</tr>
+<tr>
+<td>레코드 D</td>
+</tr>
+</tbody></table>
 <h2 id="물리적-구조"><a href="#물리적-구조" class="headerlink" title="물리적 구조"></a>물리적 구조</h2><p>저장 관점에서 본 데이터의 물리적 배치이다. 저장장치에 저장된 데이터의 실제 구조이다.</p>
 <p><img src="/assets/img/db_summery/p.jpeg" alt="물리적 구조"></p>
 <h1 id="3단계-데이터베이스"><a href="#3단계-데이터베이스" class="headerlink" title="3단계 데이터베이스"></a>3단계 데이터베이스</h1><p>스키마란 데이터베이스의 구조와 제약조건에 대한것을 명세한 것이다.</p>
@@ -281,7 +314,15 @@
 <li>일관성: 만일 고객 파일의 연락처만 수정되고 주문 파일의 연락처가 수정이 되지 않는 다면 데이터의 <strong>불일치</strong>가 발생하게 된다.</li>
 <li>무결성: 고객의 아이디의 규칙이 8자리 이상이라 해보자. 하지만 파일에서는 이 규칙을 어길수도 있다.</li>
 </ul>
-<h3 id="데이터-종속성"><a href="#데이터-종속성" class="headerlink" title="데이터 종속성"></a>데이터 종속성</h3><p>프로그램과 데이터 사이의 의존적 관계가 생성된다. 파일에서 다음과 같이 데이터를 분류한다고 가정해 보자.<br>|이름|나이|<br>|-|-|</p>
+<h3 id="데이터-종속성"><a href="#데이터-종속성" class="headerlink" title="데이터 종속성"></a>데이터 종속성</h3><p>프로그램과 데이터 사이의 의존적 관계가 생성된다. 파일에서 다음과 같이 데이터를 분류한다고 가정해 보자.</p>
+<table>
+<thead>
+<tr>
+<th>이름</th>
+<th>나이</th>
+</tr>
+</thead>
+</table>
 <p>하지만 여기에 성별이라는 분류를 추가하고 싶다면 모든 파일에서 수정을 해야 한다.</p>
 <h3 id="다양한-기능-부족"><a href="#다양한-기능-부족" class="headerlink" title="다양한 기능 부족"></a>다양한 기능 부족</h3><p>파일은 위에서 말한 문제점 말고도 여러가지 기능적으로 부족한게 있다.</p>
 <ul>

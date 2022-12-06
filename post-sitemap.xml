@@ -9,6 +9,14 @@
 
 
     <url>
+        <loc>http://marinesnow34.github.io/2020/12/30/2020-12-30-%ED%95%B4%EA%B5%B0-%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B3%91-%ED%95%A9%EA%B2%A9-%ED%9B%84%EA%B8%B0/</loc>
+        <lastmod>2022-10-15T19:35:22.344Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://marinesnow34.github.io/2022/10/15/2022-10-16-db-summery2/</loc>
         <lastmod>2022-10-15T19:31:17.504Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -35,14 +43,6 @@
     <url>
         <loc>http://marinesnow34.github.io/2021/09/11/2021-09-11-ubuntu-20_04-initial-setting/</loc>
         <lastmod>2021-09-11T08:27:42.347Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://marinesnow34.github.io/2020/12/30/2020-12-30-%ED%95%B4%EA%B5%B0-%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B3%91-%ED%95%A9%EA%B2%A9-%ED%9B%84%EA%B8%B0/</loc>
-        <lastmod>2021-09-11T08:03:45.783Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

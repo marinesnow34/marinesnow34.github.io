@@ -20,19 +20,31 @@
     var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="서론 벌써 군대에 온 지 100일이 지났다. 100일까지는 시간이 별로 느리게 간다는 느낌이 없다. 그냥 진짜 빠르게 간다. 이대로 쭉 가기만 하면 전역도 금방 보일 것만 같다. 100일도 됐으니 군대에 와서 한 일과 느낀 점을 적어보려고 한다. 훈련소 아마 군대에서 제일 재밌는 시기가 아닐까 싶다. 전역한 친구들도 훈련소가 제일 재밌었다고 한다. 처음에는">
+  <meta name="description" content="Git으로 협업하기1Git 시작하기 전에프로그래밍에 관심이 있는 사람이라면 Git에 대해 많이 들어 봤을 것이다. 하지만 Git과 GitHub는 엄밀히 다르다. git은 버전 관리 시스템이다. 로컬에서 파일 관리를 도와주는 git과 협업에서 파일 관리를 도와주는 github와 구분을 주의해야 한다. Git Repository(저장소) 만들기Git Repos">
 <meta property="og:type" content="article">
-<meta property="og:title" content="군대 100일 후기">
-<meta property="og:url" content="http://marinesnow34.github.io/2021/04/13/2021-04-13-%EA%B5%B0%EB%8C%80-100%EC%9D%BC-%ED%9B%84%EA%B8%B0/index.html">
+<meta property="og:title" content="git으로 협업하기1">
+<meta property="og:url" content="http://marinesnow34.github.io/2023/01/19/git1/index.html">
 <meta property="og:site_name" content="marinesnow34">
-<meta property="og:description" content="서론 벌써 군대에 온 지 100일이 지났다. 100일까지는 시간이 별로 느리게 간다는 느낌이 없다. 그냥 진짜 빠르게 간다. 이대로 쭉 가기만 하면 전역도 금방 보일 것만 같다. 100일도 됐으니 군대에 와서 한 일과 느낀 점을 적어보려고 한다. 훈련소 아마 군대에서 제일 재밌는 시기가 아닐까 싶다. 전역한 친구들도 훈련소가 제일 재밌었다고 한다. 처음에는">
+<meta property="og:description" content="Git으로 협업하기1Git 시작하기 전에프로그래밍에 관심이 있는 사람이라면 Git에 대해 많이 들어 봤을 것이다. 하지만 Git과 GitHub는 엄밀히 다르다. git은 버전 관리 시스템이다. 로컬에서 파일 관리를 도와주는 git과 협업에서 파일 관리를 도와주는 github와 구분을 주의해야 한다. Git Repository(저장소) 만들기Git Repos">
 <meta property="og:locale" content="ko_KR">
-<meta property="article:published_time" content="2021-04-13T10:57:54.000Z">
-<meta property="article:modified_time" content="2021-04-13T11:57:42.794Z">
+<meta property="og:image" content="http://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.00.29.png">
+<meta property="og:image" content="http://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.04.01.png">
+<meta property="og:image" content="http://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.05.07.png">
+<meta property="og:image" content="http://marinesnow34.github.io/assets/img/git1/lifecycle.png">
+<meta property="og:image" content="http://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.47.01.png">
+<meta property="og:image" content="http://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.47.13.png">
+<meta property="og:image" content="http://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_23.01.30.png">
+<meta property="og:image" content="http://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_23.28.38.png">
+<meta property="og:image" content="http://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_23.31.18.png">
+<meta property="og:image" content="http://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_23.33.02.png">
+<meta property="og:image" content="http://marinesnow34.github.io/assets/img/git1/Screenshot_2023-01-02_at_13.50.26.png">
+<meta property="article:published_time" content="2023-01-19T10:23:47.000Z">
+<meta property="article:modified_time" content="2023-01-19T10:24:55.900Z">
 <meta property="article:author" content="Joowon Lim">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.00.29.png">
 
-<link rel="canonical" href="http://marinesnow34.github.io/2021/04/13/2021-04-13-%EA%B5%B0%EB%8C%80-100%EC%9D%BC-%ED%9B%84%EA%B8%B0/">
+<link rel="canonical" href="http://marinesnow34.github.io/2023/01/19/git1/">
 
 
 <script id="page-configurations">
@@ -45,7 +57,7 @@
   };
 </script>
 
-  <title>군대 100일 후기 | marinesnow34</title>
+  <title>git으로 협업하기1 | marinesnow34</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
     <script>
@@ -201,7 +213,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
-    <link itemprop="mainEntityOfPage" href="http://marinesnow34.github.io/2021/04/13/2021-04-13-%EA%B5%B0%EB%8C%80-100%EC%9D%BC-%ED%9B%84%EA%B8%B0/">
+    <link itemprop="mainEntityOfPage" href="http://marinesnow34.github.io/2023/01/19/git1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -214,7 +226,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          군대 100일 후기
+          git으로 협업하기1
         </h1>
 
         <div class="post-meta">
@@ -225,7 +237,7 @@
               <span class="post-meta-item-text">작성일</span>
               
 
-              <time title="Post created: 2021-04-13 10:57:54 / Updated at: 11:57:42" itemprop="dateCreated datePublished" datetime="2021-04-13T10:57:54+00:00">2021-04-13</time>
+              <time title="Post created: 2023-01-19 10:23:47 / Updated at: 10:24:55" itemprop="dateCreated datePublished" datetime="2023-01-19T10:23:47+00:00">2023-01-19</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -233,7 +245,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%EC%9D%BC%EC%83%81/" itemprop="url" rel="index"><span itemprop="name">일상</span></a>
+                  <a href="/categories/Git/" itemprop="url" rel="index"><span itemprop="name">Git</span></a>
                 </span>
             </span>
 
@@ -248,11 +260,47 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="서론"><a href="#서론" class="headerlink" title="서론"></a>서론</h1><p> 벌써 군대에 온 지 100일이 지났다. 100일까지는 시간이 별로 느리게 간다는 느낌이 없다. 그냥 진짜 빠르게 간다. 이대로 쭉 가기만 하면 전역도 금방 보일 것만 같다. 100일도 됐으니 군대에 와서 한 일과 느낀 점을 적어보려고 한다.</p>
-<h1 id="훈련소"><a href="#훈련소" class="headerlink" title="훈련소"></a>훈련소</h1><p> 아마 군대에서 제일 재밌는 시기가 아닐까 싶다. 전역한 친구들도 훈련소가 제일 재밌었다고 한다. 처음에는 낯선 사람들과 처음 만나 그 좁아터진 공간에서 함께 생활하고 지내며 훈련받는 생각을 하며 걱정을 많이 했다. 하지만 막상 겪어보니 그 열악함 속에 소소한 재미가 있다. 운이 좋게도 나는 마음이 잘 맞는 동기들을 만나서 되게 재밌게 지낸 거 같다. 처음 며칠 빼고는 시간이 안 간다는 생각은 못해본 거 같다. 놀고 즐기다 보니 어느새 6주라는 훈련소도 끝나고 정든 동기들을 떠나보내며 후반기로 접어들게 된다.</p>
-<h1 id="후반기"><a href="#후반기" class="headerlink" title="후반기"></a>후반기</h1><p> 훈련소가 군대에서 제일 재밌는 시기라면 후반기는 꿀이 넘치는 기간이다. 훈련소의 빡센 생활과는 대비 대는 느슨한 분위기와 훈련이 아닌 수업을 들으며 훈련소 동안 다친 몸과 마음(?)을 치료하는 곳이다. 훈련소 동안 못 썼던 폰과 티비를 보며 주말에는 심지어 배달음식까지 시켜 먹었다. 또한 생활관을 동기들과 하사랑 같이 쓰다 보니 매우 매우 편했다. 후반기는 말년병장 체험판과 같은 곳이다.</p>
-<h1 id="자대"><a href="#자대" class="headerlink" title="자대"></a>자대</h1><p> 이제 본격적으로 일을 하는 곳이다. 그동안은 못 만났던 높은 간부들이 있고 내 선임들도 있는 공간이다. 좋은 선임을 만나서 뭐라 하는 사람도 없고 일도 잘 가르쳐 줘서 잘 적응하고 있다. 일에 대해서는 자세히 서술할 수는 없지만, 타 직별과는 다른 생활 패턴이 나랑 잘 맞고 또 개인 시간도 많아서 매우 만족스럽다. 굳이 단점으로 뽑자면 의지가 없다면 엄청 나태해질 수 있는 생활이다.</p>
-<h1 id="후기"><a href="#후기" class="headerlink" title="후기"></a>후기</h1><p> 군대에 와서 항상 좋은 일만은 있지는 않았다. 불합리하게 혼나기도 하고 얼차려도 많이 받았다. 그래도 버티다 보면 다 지나간다. 다 지나고 나서 다시 생각해보면 힘들었던 것은 희미해지고 좋은 추억만 남는다. 이런 걸 깨닫고 나니 사회에 있을 때 보다 군대에 오고 나서 마인드가 긍정적으로 되었다. 내가 바꿀 수 없는 것을 자꾸 생각하고 원망하게 되면 나만 힘들게 된다. 원치 않는 군대에 와서 내 소중한 시간을 낭비한다고 생각하면 아마 버티기 힘들 것이다. 하지만 그래도 기왕 와야 한다면 와서 생활하고 남는 시간에 노력하다 보면 그사이 얻어가는 게 있지 않을까 생각한다.</p>
+        <h1 id="Git으로-협업하기1"><a href="#Git으로-협업하기1" class="headerlink" title="Git으로 협업하기1"></a>Git으로 협업하기1</h1><h2 id="Git-시작하기-전에"><a href="#Git-시작하기-전에" class="headerlink" title="Git 시작하기 전에"></a>Git 시작하기 전에</h2><p>프로그래밍에 관심이 있는 사람이라면 Git에 대해 많이 들어 봤을 것이다. 하지만 Git과 GitHub는 엄밀히 다르다. git은 버전 관리 시스템이다. 로컬에서 파일 관리를 도와주는 git과 협업에서 파일 관리를 도와주는 github와 구분을 주의해야 한다.</p>
+<h2 id="Git-Repository-저장소-만들기"><a href="#Git-Repository-저장소-만들기" class="headerlink" title="Git Repository(저장소) 만들기"></a>Git Repository(저장소) 만들기</h2><p>Git Repostiory를 만들 때는 두가지 방법이 있다. 첫 번째는 로컬에서 저장소를 만드는 것이고, 두 번째는 Git Hub에서 Repository를 만든 다음에 로컬로 가져오는 방법이다.</p>
+<h3 id="로컬에서-저장소-만들기"><a href="#로컬에서-저장소-만들기" class="headerlink" title="로컬에서 저장소 만들기"></a>로컬에서 저장소 만들기</h3><p>로컬에 임의의 파일을 만든다. <code>git init</code> 명령어를 사용하면 저장소가 만들어 진다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.00.29.png" alt="Screenshot 2022-12-30 at 22.00.29.png"></p>
+<p><code>.git</code> 이라는 하위 폴더가 생성된다. <code>.git</code> 에는 저장소에 필요한 파일이 들어가 있다.</p>
+<h3 id="기존-저장소를-Clone-하기"><a href="#기존-저장소를-Clone-하기" class="headerlink" title="기존 저장소를 Clone 하기"></a>기존 저장소를 Clone 하기</h3><p>깃헙에서 clone할 저장소에 가면 다음과 같이 보인다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.04.01.png" alt="Screenshot 2022-12-30 at 22.04.01.png"></p>
+<p>초록색으로 <code>&lt;&gt;code</code> 부분을 누르면 저장소의 주소가 나온다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.05.07.png" alt="Screenshot 2022-12-30 at 22.05.07.png"></p>
+<p><code>git clone &lt;url&gt;</code> 명령으로 저장소를 clone한다. 그러면 저장소의 데이터를 모두 가져와 가장 최신버전으로 checkout 해 놓는다.</p>
+<p><code>git clone &lt;url&gt; &lt;dir_name&gt;</code> 를 하면 다른 디렉토리 이름으로 clone 할 수 있다.</p>
+<h3 id="파일-관리-하기"><a href="#파일-관리-하기" class="headerlink" title="파일 관리 하기"></a>파일 관리 하기</h3><p>Git에는 파일을 감지하는 시스템이 있다. 이 시스템은 파일을 관리 대상이 아닌(Untracked)상태와 관리 대상(Tracked)상태로 구분한다.</p>
+<p><img src="/assets/img/git1/lifecycle.png" alt="lifecycle.png" title="파일 라이프사이클 (git 공식 홈페이지)"></p>
+<p><code>git status</code> 명령어를 통해서 파일의 감지 상태를 확인할 수 있다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.47.01.png" alt="Screenshot 2022-12-30 at 22.47.01.png"></p>
+<ul>
+<li>초기 상태</li>
+</ul>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.47.13.png" alt="Screenshot 2022-12-30 at 22.47.13.png"></p>
+<ul>
+<li>새로 만든 파일은 Untracked임을 확인할 수 있다.</li>
+</ul>
+<h3 id="Stage"><a href="#Stage" class="headerlink" title="Stage"></a>Stage</h3><p>stage 영역은 commit 하여 저장소에 기록하기 위한 중간 상태이다.</p>
+<h3 id="Add"><a href="#Add" class="headerlink" title="Add"></a>Add</h3><p><code>git add &lt;file_name&gt;</code> 를 통해서 파일을 추적 할 수 있다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_23.01.30.png" alt="Screenshot 2022-12-30 at 23.01.30.png"></p>
+<p> 만일 stage에 있는 파일을 수정하게 된다면 modified 상태가 된다. 이 상태로 <code>commit</code> 하게 된다면 staged된 상태만 저장소에 기록된다.</p>
+<p><code>git add .</code> 을 통해서 모든 파일을 stage에 올릴 수 있다.</p>
+<h3 id="Unstage"><a href="#Unstage" class="headerlink" title="Unstage"></a>Unstage</h3><p>stage영역에 들어간 것을 <code>git reset</code> 을 하면 취소할 수 있다. </p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_23.28.38.png" alt="Screenshot 2022-12-30 at 23.28.38.png"></p>
+<p>특정 파일만 취소 하려면 <code>git reset &lt;file_name&gt;</code> 을 하면 된다.</p>
+<h3 id="Commit"><a href="#Commit" class="headerlink" title="Commit"></a>Commit</h3><p><code>git commit</code> 을 통해서 commit을 할 수 있다.</p>
+<p>commit message를 남기지 않았다면 commit message를 남기라고 한다.</p>
+<p>주석을 지우고 저장(<code>:wq</code>)하면 주석 지운 부분이 message가 되고 원하는 문장을 작성해도 무방하다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_23.31.18.png" alt="Screenshot 2022-12-30 at 23.31.18.png"></p>
+<p>그냥 저장하면 commit할 수 없다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_23.33.02.png" alt="Screenshot 2022-12-30 at 23.33.02.png"></p>
+<p>commit 할 때 원하는 message를 남기고 싶다면 <code>git commit -m &quot;message&quot;</code> 를 통해서 원하는 메시지를 남길 수 있다.</p>
+<h3 id="Log"><a href="#Log" class="headerlink" title="Log"></a>Log</h3><p><code>git log</code> 를 통해서 commit 기록을 볼 수 있다.</p>
+<p><img src="/assets/img/git1/Screenshot_2023-01-02_at_13.50.26.png" alt="Screenshot 2023-01-02 at 13.50.26.png"></p>
+<hr>
+<p>여기 까지가 git 사용법의 기초이다. 다음에는 git의 코어 기능인 branch에 대해 알아보자.</p>
 
     </div>
 
@@ -268,13 +316,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/01/02/2021-01-02-2020-%EA%B7%B8%EB%A6%AC%EA%B3%A0-2021/" rel="prev" title="2020 그리고 2021">
-      <i class="fa fa-chevron-left"></i> 2020 그리고 2021
+    <a href="/2022/10/15/2022-10-16-db-summery2/" rel="prev" title="데이터베이스 개요(2)">
+      <i class="fa fa-chevron-left"></i> 데이터베이스 개요(2)
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/09/11/2021-09-11-ubuntu-20_04-initial-setting/" rel="next" title="ubuntu 20.04 초기 세팅">
-      ubuntu 20.04 초기 세팅 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -334,7 +379,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%EC%84%9C%EB%A1%A0"><span class="nav-number">1.</span> <span class="nav-text">서론</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%ED%9B%88%EB%A0%A8%EC%86%8C"><span class="nav-number">2.</span> <span class="nav-text">훈련소</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%ED%9B%84%EB%B0%98%EA%B8%B0"><span class="nav-number">3.</span> <span class="nav-text">후반기</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EC%9E%90%EB%8C%80"><span class="nav-number">4.</span> <span class="nav-text">자대</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%ED%9B%84%EA%B8%B0"><span class="nav-number">5.</span> <span class="nav-text">후기</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Git%EC%9C%BC%EB%A1%9C-%ED%98%91%EC%97%85%ED%95%98%EA%B8%B01"><span class="nav-number">1.</span> <span class="nav-text">Git으로 협업하기1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Git-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-%EC%A0%84%EC%97%90"><span class="nav-number">1.1.</span> <span class="nav-text">Git 시작하기 전에</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Git-Repository-%EC%A0%80%EC%9E%A5%EC%86%8C-%EB%A7%8C%EB%93%A4%EA%B8%B0"><span class="nav-number">1.2.</span> <span class="nav-text">Git Repository(저장소) 만들기</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EB%A1%9C%EC%BB%AC%EC%97%90%EC%84%9C-%EC%A0%80%EC%9E%A5%EC%86%8C-%EB%A7%8C%EB%93%A4%EA%B8%B0"><span class="nav-number">1.2.1.</span> <span class="nav-text">로컬에서 저장소 만들기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EA%B8%B0%EC%A1%B4-%EC%A0%80%EC%9E%A5%EC%86%8C%EB%A5%BC-Clone-%ED%95%98%EA%B8%B0"><span class="nav-number">1.2.2.</span> <span class="nav-text">기존 저장소를 Clone 하기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%ED%8C%8C%EC%9D%BC-%EA%B4%80%EB%A6%AC-%ED%95%98%EA%B8%B0"><span class="nav-number">1.2.3.</span> <span class="nav-text">파일 관리 하기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stage"><span class="nav-number">1.2.4.</span> <span class="nav-text">Stage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Add"><span class="nav-number">1.2.5.</span> <span class="nav-text">Add</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unstage"><span class="nav-number">1.2.6.</span> <span class="nav-text">Unstage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Commit"><span class="nav-number">1.2.7.</span> <span class="nav-text">Commit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Log"><span class="nav-number">1.2.8.</span> <span class="nav-text">Log</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -348,14 +393,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">포스트</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">카테고리</span></a>
       </div>
   </nav>
@@ -390,7 +435,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -465,7 +510,7 @@ NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
       repo        : 'marinesnow34.github.io',
       owner       : 'marinesnow34',
       admin       : ['marinesnow34'],
-      id          : 'cf061ce8c89e0dfe57254769f1f91da5',
+      id          : 'e9dbc4a615840ed10c0c2b67dd278366',
         language: '',
       distractionFreeMode: true
     });

@@ -223,7 +223,7 @@
               <span class="post-meta-item-text">작성일</span>
               
 
-              <time title="Post created: 2023-01-23 06:17:20 / Updated at: 06:20:07" itemprop="dateCreated datePublished" datetime="2023-01-23T06:17:20+00:00">2023-01-23</time>
+              <time title="Post created: 2023-01-23 06:17:20 / Updated at: 06:24:02" itemprop="dateCreated datePublished" datetime="2023-01-23T06:17:20+00:00">2023-01-23</time>
             </span>
 
           
@@ -238,14 +238,14 @@
 
       
           <p>Spring에서 <code>java.sql.SQLSyntaxErrorException</code>이 발생하는 오류 해결 과정이다.</p>
-<h2 id="1-JPA-→-MySQL-연결-할-때-컬럼명이-자동으로-변경-된다"><a href="#1-JPA-→-MySQL-연결-할-때-컬럼명이-자동으로-변경-된다" class="headerlink" title="1. JPA → MySQL 연결 할 때 컬럼명이 자동으로 변경 된다."></a>1. JPA → MySQL 연결 할 때 컬럼명이 자동으로 변경 된다.</h2><p><img src="/assets/img/JPA_MySQL/JPA_MySQL%20065a932fabb74ab78d705cc9c567b257/Screenshot_2023-01-19_at_7.00.21.png" alt="Screenshot 2023-01-19 at 7.00.21.png"></p>
-<p><img src="/assets/img/JPA_MySQL/JPA_MySQL%20065a932fabb74ab78d705cc9c567b257/Screenshot_2023-01-19_at_7.05.02.png" alt="Screenshot 2023-01-19 at 7.05.02.png"></p>
+<h2 id="1-JPA-→-MySQL-연결-할-때-컬럼명이-자동으로-변경-된다"><a href="#1-JPA-→-MySQL-연결-할-때-컬럼명이-자동으로-변경-된다" class="headerlink" title="1. JPA → MySQL 연결 할 때 컬럼명이 자동으로 변경 된다."></a>1. JPA → MySQL 연결 할 때 컬럼명이 자동으로 변경 된다.</h2><p><img src="/assets/img/JPA_MySQL/JPA_MySQL/Screenshot_2023-01-19_at_7.00.21.png" alt="Screenshot 2023-01-19 at 7.00.21.png"></p>
+<p><img src="/assets/img/JPA_MySQL/JPA_MySQL/Screenshot_2023-01-19_at_7.05.02.png" alt="Screenshot 2023-01-19 at 7.05.02.png"></p>
 <p>x좌표를 <code>xCoordinate</code>라고 하였다. 하지만 MySQL에서도 칼럼명을 <code>xCoordinate</code>라고 하면 연결이 되지 않는다.</p>
-<p><img src="/assets/img/JPA_MySQL/JPA_MySQL%20065a932fabb74ab78d705cc9c567b257/Screenshot_2023-01-19_at_7.03.48.png" alt="Screenshot 2023-01-19 at 7.03.48.png"></p>
+<p><img src="/assets/img/JPA_MySQL/JPA_MySQL/Screenshot_2023-01-19_at_7.03.48.png" alt="Screenshot 2023-01-19 at 7.03.48.png"></p>
 <p>→ 에러구문을 보면 <code>scooter</code>에 <code>x_coordinate</code>가 없다고 나온다.</p>
 <p>대문자 <code>C</code>를 <code>_c</code>로 바꾼것을 알 수 있다.</p>
 <p>MySQL에 <code>xCoordinate</code>를 <code>x_coordinate</code>로 바꿔보자.</p>
-<p><img src="/assets/img/JPA_MySQL/JPA_MySQL%20065a932fabb74ab78d705cc9c567b257/Screenshot_2023-01-19_at_7.07.03.png" alt="Screenshot 2023-01-19 at 7.07.03.png"></p>
+<p><img src="/assets/img/JPA_MySQL/JPA_MySQL/Screenshot_2023-01-19_at_7.07.03.png" alt="Screenshot 2023-01-19 at 7.07.03.png"></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2023/01/23/jpa-syntax-error/#more" rel="contents">

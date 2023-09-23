@@ -465,7 +465,8 @@
 </li>
 </ul>
 <h1 id="캐싱-확인"><a href="#캐싱-확인" class="headerlink" title="캐싱 확인"></a>캐싱 확인</h1><p>여담으로 CDN에 캐싱이 됐는지 확인하는 방법은 HTTP 헤더를 확인하는 것입니다.</p>
-<h3 id="cloudflare-R2"><a href="#cloudflare-R2" class="headerlink" title="cloudflare R2"></a>cloudflare R2</h3><p><img src="/assets/img/s3r2/cf.png" alt="cloudflare R2"></p>
+<h3 id="cloudflare-R2"><a href="#cloudflare-R2" class="headerlink" title="cloudflare R2"></a>cloudflare R2</h3><img src="/assets/img/s3r2/cf.png" alt="cloudflare R2" width="70%" height="70%">
+
 <p><a href="https://developers.cloudflare.com/fundamentals/reference/http-request-headers/#cf-ray">CF-RAY</a>는 방문자의 요청과 데이터 센터의 해시 값 입니다. 데이터 센터가 <code>ICN(Seoul)</code>인 것을 알 수 있습니다.</p>
 <h3 id="cloudflare-R2-CDN"><a href="#cloudflare-R2-CDN" class="headerlink" title="cloudflare R2 + CDN"></a>cloudflare R2 + CDN</h3><p><code>cf-cache-statu</code>s가 <code>HIT</code>이면 캐싱이 된 것입니다.<br><img src="/assets/img/s3r2/cf_cash.png" alt="cloudflare R2 + CDN"></p>
 <h3 id="aws-S3"><a href="#aws-S3" class="headerlink" title="aws S3"></a>aws S3</h3><p><img src="/assets/img/s3r2/s3_res.png" alt="aws S3"></p>

@@ -198,6 +198,120 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="http://marinesnow34.github.io/2023/09/23/s3r2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/09/23/s3r2/" class="post-title-link" itemprop="url">aws S3, cloudflare R2 속도 비교 (with. cloudfront)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+              
+
+              <time title="Post created: 2023-09-23 22:05:52 / Updated at: 22:07:03" itemprop="dateCreated datePublished" datetime="2023-09-23T22:05:52+00:00">2023-09-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EC%84%9C%EB%B2%84/" itemprop="url" rel="index"><span itemprop="name">서버</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="aws-VS-cloudflare"><a href="#aws-VS-cloudflare" class="headerlink" title="aws VS cloudflare"></a>aws VS cloudflare</h1><p>필자는 2022년에 cloudflare를 알고 난 후 착한 가격 정책에 매료되어 현재 까지도 사용하고 있습니다. 최근 서비스 배포를 준비하면서 aws의 <code>S3</code> + <code>cloudfront</code>와 cloudflare의 <code>R2</code>를 비교하게 되었고, cloudflare에 대한 애착(가격) 때문에 R2에 마음이 기울여졌습니다. 하지만 가격 차이 외에도 성능 차이가 궁금했기 때문에 직접 실험해 보기로 했습니다. </p>
+<p><strong><em>이 글에서는 버킷과 CDN에 대한 설명은 생략합니다.</em></strong></p>
+<h1 id="가격-비교"><a href="#가격-비교" class="headerlink" title="가격 비교"></a>가격 비교</h1><p>성능과는 별개로 가격 정책에서는 cloudflare가 매우 매력적입니다.<br><img src="/assets/img/s3r2/fee.png" alt="cloudflare 가격"><br>Free Tier에서는 cloudflare가 압도적이고, 이후 추가 요금에서도 모든 면에서 cloudflare가 더 저렴합니다. 특히 cloudflare는 데이터 전송 수수료가 <strong>무료</strong>인게 인상적입니다. </p>
+<p>또한 R2는 S3의 API를 사용할 수 있습니다. 따라서 손쉽게 마이그레이션 할 수 있습니다.</p>
+<p>하지만 cloudflare는 리전을 선택할 수 없는것은 아쉽습니다.</p>
+<h1 id="실험-환경"><a href="#실험-환경" class="headerlink" title="실험 환경"></a>실험 환경</h1><ul>
+<li><p>서버: OCI (Oracle Cloud Infrastructure)</p>
+<ul>
+<li>Region: South Korea Central (Seoul)</li>
+<li>CPU: 4 OCPU</li>
+<li>RAM: 24GB</li>
+<li>OS: Ubuntu 22.04</li>
+<li>대역폭: 4Gbps</li>
+</ul>
+</li>
+<li><p>파일: </p>
+<ul>
+<li>255MB mp4 파일 (용량이 큰 파일)</li>
+<li>113.14kB JPG 파일 (용량이 작은 파일)</li>
+</ul>
+</li>
+<li><p>실험 방법: 서버에서 파일을 다운로드 받는 시간을 측정합니다. <code>wget</code>을 사용했습니다.</p>
+</li>
+<li><p>실험 대상:</p>
+<ul>
+<li>aws S3 (region: ap-northeast-2)</li>
+<li>aws S3 + cloudfront</li>
+<li>cloudflare R2</li>
+<li>cloudflare R2 + CDN</li>
+</ul>
+</li>
+<li><p>주의 사항:</p>
+<ul>
+<li>시간대 별로 다른 결과가 나올 수 있습니다.</li>
+<li>wget을 사용하여 브라우저에서 다운로드 받는 것과는 다른 결과가 나올 수 있습니다. </li>
+<li>S3를 public으로 설정하는 것은 aws에서 권장하지 않습니다. 따라서 실험을 위해 public으로 설정했지만, 실제 서비스에서는 private으로 설정하는 것이 좋습니다.</li>
+</ul>
+</li>
+</ul>
+<h1 id="기타"><a href="#기타" class="headerlink" title="기타"></a>기타</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/09/23/s3r2/#more" rel="contents">
+                더 읽어보기 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
     <link itemprop="mainEntityOfPage" href="http://marinesnow34.github.io/2023/01/23/jpa-syntax-error/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -863,14 +977,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">포스트</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">카테고리</span></a>
       </div>
   </nav>

@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="데이터와 정보데이터베이스를 공부하기에 앞서 먼저 용어의 정의가 필요하다.  데이터와 정보는 같은가? 네이버 백과사전에 따르면 데이터의 정의는 다음과 같다  데이터: 관찰이나 실험, 조사로 얻은 사실   정보: 관찰이나 측정을 통하여 수집한 자료를 실제 문제에 도움이 될 수 있도록 정리한 지식  즉 데이터를 처리(DBMS)를 해서 나온 것이 정보이다. 데이터">
@@ -363,20 +363,7 @@
 
           </div>
           
-      <div class="tabs tabs-comment">
-        <ul class="nav-tabs">
-            <li class="tab"><a href="#comment-gisqus">gisqus</a></li>
-            <li class="tab"><a href="#comment-utterances">utterances</a></li>
-        </ul>
-        <div class="tab-content">
-            <div class="tab-pane gisqus" id="comment-gisqus">
-              <div class="comments" id="gisqus-container"></div>
-            </div>
-            <div class="tab-pane utterances" id="comment-utterances">
-              <div class="comments" id="utterances-container"></div>
-            </div>
-        </div>
-      </div>
+    <div class="comments" id="giscus-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -542,23 +529,6 @@
   
 
   
-
-<script src="https://giscus.app/client.js"
-        data-repo="marinesnow34/marinesnow34.github.io"
-        data-repo-id="MDEwOlJlcG9zaXRvcnkzMjUzNjQ4NDc="
-        data-category="Comments"
-        data-category-id="DIC_kwDOE2Ssb84CcJ-b"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="light_high_contrast"
-        data-lang="ko"
-        crossorigin="anonymous"
-        async>
-</script>
-
 
 <script src="https://giscus.app/client.js"
         data-repo="marinesnow34/marinesnow34.github.io"

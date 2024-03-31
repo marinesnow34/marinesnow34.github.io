@@ -205,6 +205,111 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/03/31/lambda-sql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/03/31/lambda-sql/" class="post-title-link" itemprop="url">AWS Lambda로 SQL 배치 작업 하기(Feat. 매출 정리)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+              
+
+              <time title="Post created: 2024-03-31 00:00:00 / Updated at: 12:29:20" itemprop="dateCreated datePublished" datetime="2024-03-31T00:00:00+00:00">2024-03-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EC%9D%B8%ED%94%84%EB%9D%BC/" itemprop="url" rel="index"><span itemprop="name">인프라</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="이-글을-읽고-나면"><a href="#이-글을-읽고-나면" class="headerlink" title="이 글을 읽고 나면"></a>이 글을 읽고 나면</h1><ul>
+<li>AWS Lambda에 라이브러리를 사용하는 방법을 알 수 있습니다.</li>
+<li>AWS Lambda로 배치 작업을 어떻게 사용하는지 알 수 있습니다.</li>
+<li>PySQL과 pandas를 사용해서 SQL을 csv로 저장하는 방법을 알 수 있습니다.</li>
+</ul>
+<h1 id="배경"><a href="#배경" class="headerlink" title="배경"></a>배경</h1><p>제가 진행하는 프로젝트에는 여러 가게들이 입점해 있습니다. 이 가게들의 매출 데이터를 정리해서 결제 금액을 정산해야 합니다. 이를 위해서 매주 월요일마다 지난 일주일 동안의 매출 데이터를 정리해서 csv 파일로 사장님에게 보내야 합니다. 매주 해야하는 작업이라 AWS Lambda를 사용해서 자동화하려고 합니다.</p>
+<h1 id="요구사항"><a href="#요구사항" class="headerlink" title="요구사항"></a>요구사항</h1><ul>
+<li>매주 월요일마다 지난 일주일 동안의 매출 데이터를 정리해서 csv 파일로 저장합니다.</li>
+<li>csv 파일은 PM의 확인 가능하게 google drive에 저장합니다.</li>
+<li>매출 데이터는 RDS에 저장되어 있습니다.</li>
+</ul>
+<h1 id="Lambda에-라이브러리-추가하기"><a href="#Lambda에-라이브러리-추가하기" class="headerlink" title="Lambda에 라이브러리 추가하기"></a>Lambda에 라이브러리 추가하기</h1><p>AWS Lambda는 외장 라이브러리를 사용할 수 없습니다. 따라서 레이어를 사용해서 라이브러리를 추가해야 합니다. 레이어를 사용하면 라이브러리를 Lambda에 추가할 수 있습니다.</p>
+<ol>
+<li><p>lambda 함수 생성<br><img src="/assets/img/lambda_sql/function.png" alt="함수 생성"><br>이름을 설정하고 함수를 생성합니다.</p>
+</li>
+<li><p>계층 생성<br><img src="/assets/img/lambda_sql/resource.png" alt="계층 생성"><br>좌측 메뉴에서 <code>추가 리소스 &gt; 계층</code>을 선택합니다.</p>
+</li>
+<li><p>로컬 폴더 생성<br><img src="/assets/img/lambda_sql/folder.png" alt="로컬 폴더 생성"><br>라이브러리를 다운로드할 로컬 폴더(python)를 생성합니다.</p>
+</li>
+<li><p>라이브러리 다운로드</p>
+<p> 필요한 라이브러리를 다운로드합니다.</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pip3 install pymysql -t .</span><br><span class="line">pip3 install google-api-python-client -t .</span><br><span class="line">pip3 install oauth2client -t .</span><br><span class="line">pip3 install httplib2 -t .</span><br><span class="line">rm -r  *.dist-info __pycache__</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>S3에 업로드<br><img src="/assets/img/lambda_sql/big.png" alt="파일 초과"><br>파일 크기가 50MB를 초과하면 S3를 통해 업로드를 합니다.<br><img src="/assets/img/lambda_sql/s3.png" alt="S3 업로드"></p>
+</li>
+<li><p>계층 생성<br><img src="/assets/img/lambda_sql/layer.png" alt="계층 생성"></p>
+</li>
+<li><p>함수에 계층 추가<br><img src="/assets/img/lambda_sql/add_a_layer.png" alt="계층 추가"><br>생성한 함수에 돌아와서 <code>Add a layer</code>를 클릭합니다.<br><img src="/assets/img/lambda_sql/add-layer.png" alt="계층 추가"></p>
+</li>
+</ol>
+<h1 id="Lambda-함수-작성"><a href="#Lambda-함수-작성" class="headerlink" title="Lambda 함수 작성"></a>Lambda 함수 작성</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/03/31/lambda-sql/#more" rel="contents">
+                더 읽어보기 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
     <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/01/07/dx-pre/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1007,88 +1112,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
-    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2021/09/11/2021-09-11-ubuntu-20_04-initial-setting/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Joowon Lim">
-      <meta itemprop="description" content="공부 기록용 블로그">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="marinesnow34">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/09/11/2021-09-11-ubuntu-20_04-initial-setting/" class="post-title-link" itemprop="url">ubuntu 20.04 초기 세팅</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">작성일</span>
-              
-
-              <time title="Post created: 2021-09-11 07:35:59 / Updated at: 08:27:42" itemprop="dateCreated datePublished" datetime="2021-09-11T07:35:59+00:00">2021-09-11</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/server/" itemprop="url" rel="index"><span itemprop="name">server</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="ubuntu-20-04-SSH-포트-변경-등-초기-세팅"><a href="#ubuntu-20-04-SSH-포트-변경-등-초기-세팅" class="headerlink" title="ubuntu 20.04 SSH 포트 변경 등 초기 세팅"></a>ubuntu 20.04 SSH 포트 변경 등 초기 세팅</h1><p><strong>환경</strong><br>ubuntu 20.04<br>OCI(오라클 클라우드)</p>
-<h1 id="SSH-포트-변경"><a href="#SSH-포트-변경" class="headerlink" title="SSH 포트 변경"></a>SSH 포트 변경</h1><p><strong>주의) SSH 세팅 할 때에는 접속이 잘 되는지 확인되기 전 까지는 연결을 끊지 마세요.</strong></p>
-<h2 id="ssh-설정"><a href="#ssh-설정" class="headerlink" title="ssh 설정"></a>ssh 설정</h2><p><code>sudo vim /etc/ssh/sshd_config</code> </p>
-<p>sshd_config 파일을 열어서 내용을 추가 해 준다.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#port22</span><br><span class="line">port[원하는 포트]</span><br></pre></td></tr></table></figure>
-
-<p>sshd  서비스를 재 시작해 준다.<br><code>service sshd restart</code></p>
-<h2 id="iptables-설정"><a href="#iptables-설정" class="headerlink" title="iptables 설정"></a>iptables 설정</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/09/11/2021-09-11-ubuntu-20_04-initial-setting/#more" rel="contents">
-                더 읽어보기 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1158,14 +1181,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">포스트</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">카테고리</span></a>
       </div>
   </nav>

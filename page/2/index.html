@@ -205,6 +205,88 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2021/09/11/2021-09-11-ubuntu-20_04-initial-setting/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/11/2021-09-11-ubuntu-20_04-initial-setting/" class="post-title-link" itemprop="url">ubuntu 20.04 초기 세팅</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+              
+
+              <time title="Post created: 2021-09-11 07:35:59 / Updated at: 08:27:42" itemprop="dateCreated datePublished" datetime="2021-09-11T07:35:59+00:00">2021-09-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/server/" itemprop="url" rel="index"><span itemprop="name">server</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="ubuntu-20-04-SSH-포트-변경-등-초기-세팅"><a href="#ubuntu-20-04-SSH-포트-변경-등-초기-세팅" class="headerlink" title="ubuntu 20.04 SSH 포트 변경 등 초기 세팅"></a>ubuntu 20.04 SSH 포트 변경 등 초기 세팅</h1><p><strong>환경</strong><br>ubuntu 20.04<br>OCI(오라클 클라우드)</p>
+<h1 id="SSH-포트-변경"><a href="#SSH-포트-변경" class="headerlink" title="SSH 포트 변경"></a>SSH 포트 변경</h1><p><strong>주의) SSH 세팅 할 때에는 접속이 잘 되는지 확인되기 전 까지는 연결을 끊지 마세요.</strong></p>
+<h2 id="ssh-설정"><a href="#ssh-설정" class="headerlink" title="ssh 설정"></a>ssh 설정</h2><p><code>sudo vim /etc/ssh/sshd_config</code> </p>
+<p>sshd_config 파일을 열어서 내용을 추가 해 준다.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#port22</span><br><span class="line">port[원하는 포트]</span><br></pre></td></tr></table></figure>
+
+<p>sshd  서비스를 재 시작해 준다.<br><code>service sshd restart</code></p>
+<h2 id="iptables-설정"><a href="#iptables-설정" class="headerlink" title="iptables 설정"></a>iptables 설정</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/09/11/2021-09-11-ubuntu-20_04-initial-setting/#more" rel="contents">
+                더 읽어보기 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
     <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2020/12/30/2020-12-30-%ED%95%B4%EA%B5%B0-%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B3%91-%ED%95%A9%EA%B2%A9-%ED%9B%84%EA%B8%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -365,14 +447,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">포스트</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">카테고리</span></a>
       </div>
   </nav>

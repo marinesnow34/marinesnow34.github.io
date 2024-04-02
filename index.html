@@ -205,6 +205,102 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/04/03/sequence2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/04/03/sequence2/" class="post-title-link" itemprop="url">Redis 동시성 해결하기 이론 with. MULIT(Transaction), pipeline, Lua</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2024-04-03 00:00:00" itemprop="dateCreated datePublished" datetime="2024-04-03T00:00:00+00:00">2024-04-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Updated at: 2024-04-02 15:58:48" itemprop="dateModified" datetime="2024-04-02T15:58:48+00:00">2024-04-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EC%84%9C%EB%B2%84/" itemprop="url" rel="index"><span itemprop="name">서버</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><img src="/assets/img/sequence2/redis.png" alt="redis"><br><a href="https://marinesnow34.github.io/2024/04/02/sequence1/">이전 글(DB에서 해결)</a>의 시리즈 입니다. 따라서 예시의 자세한 상황은 이전 글을 참고해주세요.</p>
+<h2 id="간단한-상황"><a href="#간단한-상황" class="headerlink" title="간단한 상황"></a>간단한 상황</h2><p>주문 번호의 스펙을 다시 설명하면 다음과 같습니다.</p>
+<ul>
+<li>주문 번호는 매일 초기화</li>
+<li>주문 번호는 가게별로 다름</li>
+<li>같은 날 같은 가게에는 동일한 주문 번호가 없음</li>
+<li>주문 번호는 1부터 시작해서 1씩 증가</li>
+</ul>
+<h2 id="레디스-도입-이유"><a href="#레디스-도입-이유" class="headerlink" title="레디스 도입 이유"></a>레디스 도입 이유</h2><p><code>MySQL</code>에서 <code>Redis</code>로 변경하려는 이유는 다음과 같습니다.</p>
+<ul>
+<li>빠른 속도</li>
+<li><code>DB</code>에 부하를 줄이기 위함</li>
+<li>이미 레디스를 사용 중</li>
+</ul>
+<h2 id="레디스의-동시성-문제"><a href="#레디스의-동시성-문제" class="headerlink" title="레디스의 동시성 문제"></a>레디스의 동시성 문제</h2><p>레디스는 싱글 스레드로 동작하기 때문에 <code>동시성 문제</code>가 발생하지 않습니다. 하지만 이것은 단일 레디스만 사용하는 경우입니다. 보통 레디스를 멀티 스레드 환경에서 사용하기 때문에 <code>동시성 문제</code>가 발생할 수 있습니다.</p>
+<h2 id="일반적인-상황"><a href="#일반적인-상황" class="headerlink" title="일반적인 상황"></a>일반적인 상황</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/04/03/sequence2/#more" rel="contents">
+                더 읽어보기 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
     <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/04/02/sequence1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1015,92 +1111,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
-    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2022/10/15/2022-10-16-db-summery/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Joowon Lim">
-      <meta itemprop="description" content="공부 기록용 블로그">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="marinesnow34">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/15/2022-10-16-db-summery/" class="post-title-link" itemprop="url">데이터베이스 개요(1)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">작성일</span>
-              
-
-              <time title="Post created: 2022-10-15 18:57:14 / Updated at: 19:31:10" itemprop="dateCreated datePublished" datetime="2022-10-15T18:57:14+00:00">2022-10-15</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4/" itemprop="url" rel="index"><span itemprop="name">데이터베이스</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="데이터와-정보"><a href="#데이터와-정보" class="headerlink" title="데이터와 정보"></a>데이터와 정보</h1><p>데이터베이스를 공부하기에 앞서 먼저 용어의 정의가 필요하다. </p>
-<p>데이터와 정보는 같은가?</p>
-<p>네이버 백과사전에 따르면 데이터의 정의는 다음과 같다</p>
-<blockquote>
-<p>데이터: 관찰이나 실험, 조사로 얻은 사실</p>
-</blockquote>
-<blockquote>
-<p>정보: 관찰이나 측정을 통하여 수집한 자료를 실제 문제에 도움이 될 수 있도록 정리한 지식</p>
-</blockquote>
-<p>즉 <strong>데이터</strong>를 <strong>처리</strong>(DBMS)를 해서 나온 것이 <strong>정보</strong>이다.</p>
-<h1 id="데이터의-분류"><a href="#데이터의-분류" class="headerlink" title="데이터의 분류"></a>데이터의 분류</h1><p>데이터를 처리해서 정보로 만들기 위해서는 데이터를 어떻게 처리할지 고민을 하게 된다. </p>
-<h2 id="구조화된-데이터-형태에-따른-분류"><a href="#구조화된-데이터-형태에-따른-분류" class="headerlink" title="구조화된 데이터 형태에 따른 분류"></a>구조화된 데이터 형태에 따른 분류</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/10/15/2022-10-16-db-summery/#more" rel="contents">
-                더 읽어보기 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1170,7 +1180,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">포스트</span>
         </a>
       </div>

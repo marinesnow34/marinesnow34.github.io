@@ -20,31 +20,21 @@
     var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Git 시작하기 전에프로그래밍에 관심이 있는 사람이라면 Git에 대해 많이 들어 봤을 것이다. 하지만 Git과 GitHub는 엄밀히 다르다. git은 버전 관리 시스템이다. 로컬에서 파일 관리를 도와주는 git과 협업에서 파일 관리를 도와주는 github와 구분을 주의해야 한다. Git Repository(저장소) 만들기Git Repostiory를 만들 때">
+  <meta name="description" content="의문 발생자바 기본서를 보는 도중 책의 내용을 제가 헷갈릴 뻔해서 정리하고자 합니다. 일반적인 상황에서는 발생하는 일이 아니지만 신기한 점이 있었습니다. 책의 내용맴버 변수의 초기화에는 3가지 방법이 있습니다.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="git으로 협업하기1">
-<meta property="og:url" content="https://marinesnow34.github.io/2023/01/19/git1/index.html">
+<meta property="og:title" content="자바 명시적 초기화, 초기화 블럭 고찰">
+<meta property="og:url" content="https://marinesnow34.github.io/2024/04/20/java-initial/index.html">
 <meta property="og:site_name" content="marinesnow34">
-<meta property="og:description" content="Git 시작하기 전에프로그래밍에 관심이 있는 사람이라면 Git에 대해 많이 들어 봤을 것이다. 하지만 Git과 GitHub는 엄밀히 다르다. git은 버전 관리 시스템이다. 로컬에서 파일 관리를 도와주는 git과 협업에서 파일 관리를 도와주는 github와 구분을 주의해야 한다. Git Repository(저장소) 만들기Git Repostiory를 만들 때">
+<meta property="og:description" content="의문 발생자바 기본서를 보는 도중 책의 내용을 제가 헷갈릴 뻔해서 정리하고자 합니다. 일반적인 상황에서는 발생하는 일이 아니지만 신기한 점이 있었습니다. 책의 내용맴버 변수의 초기화에는 3가지 방법이 있습니다.">
 <meta property="og:locale" content="ko_KR">
-<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.00.29.png">
-<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.04.01.png">
-<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.05.07.png">
-<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/lifecycle.png">
-<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.47.01.png">
-<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.47.13.png">
-<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_23.01.30.png">
-<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_23.28.38.png">
-<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_23.31.18.png">
-<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_23.33.02.png">
-<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2023-01-02_at_13.50.26.png">
-<meta property="article:published_time" content="2023-01-19T01:23:47.000Z">
-<meta property="article:modified_time" content="2023-09-24T11:27:15.385Z">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/java-initial/java.png">
+<meta property="article:published_time" content="2024-04-19T15:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-19T15:35:18.689Z">
 <meta property="article:author" content="Joowon Lim">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.00.29.png">
+<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/java-initial/java.png">
 
-<link rel="canonical" href="https://marinesnow34.github.io/2023/01/19/git1/">
+<link rel="canonical" href="https://marinesnow34.github.io/2024/04/20/java-initial/">
 
 
 <script id="page-configurations">
@@ -57,7 +47,7 @@
   };
 </script>
 
-  <title>git으로 협업하기1 | marinesnow34</title>
+  <title>자바 명시적 초기화, 초기화 블럭 고찰 | marinesnow34</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
     <script>
@@ -220,7 +210,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
-    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2023/01/19/git1/">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/04/20/java-initial/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -233,7 +223,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          git으로 협업하기1
+          자바 명시적 초기화, 초기화 블럭 고찰
         </h1>
 
         <div class="post-meta">
@@ -243,7 +233,7 @@
               </span>
               <span class="post-meta-item-text">작성일</span>
 
-              <time title="Post created: 2023-01-19 10:23:47" itemprop="dateCreated datePublished" datetime="2023-01-19T10:23:47+09:00">2023-01-19</time>
+              <time title="Post created: 2024-04-20 00:00:00" itemprop="dateCreated datePublished" datetime="2024-04-20T00:00:00+09:00">2024-04-20</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -251,7 +241,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Git/" itemprop="url" rel="index"><span itemprop="name">Git</span></a>
+                  <a href="/categories/JAVA/" itemprop="url" rel="index"><span itemprop="name">JAVA</span></a>
                 </span>
             </span>
 
@@ -266,47 +256,41 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="Git-시작하기-전에"><a href="#Git-시작하기-전에" class="headerlink" title="Git 시작하기 전에"></a>Git 시작하기 전에</h2><p>프로그래밍에 관심이 있는 사람이라면 Git에 대해 많이 들어 봤을 것이다. 하지만 Git과 GitHub는 엄밀히 다르다. git은 버전 관리 시스템이다. 로컬에서 파일 관리를 도와주는 git과 협업에서 파일 관리를 도와주는 github와 구분을 주의해야 한다.</p>
-<h2 id="Git-Repository-저장소-만들기"><a href="#Git-Repository-저장소-만들기" class="headerlink" title="Git Repository(저장소) 만들기"></a>Git Repository(저장소) 만들기</h2><p>Git Repostiory를 만들 때는 두가지 방법이 있다. 첫 번째는 로컬에서 저장소를 만드는 것이고, 두 번째는 Git Hub에서 Repository를 만든 다음에 로컬로 가져오는 방법이다.</p>
-<h3 id="로컬에서-저장소-만들기"><a href="#로컬에서-저장소-만들기" class="headerlink" title="로컬에서 저장소 만들기"></a>로컬에서 저장소 만들기</h3><p>로컬에 임의의 파일을 만든다. <code>git init</code> 명령어를 사용하면 저장소가 만들어 진다.</p>
-<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.00.29.png" alt="Screenshot 2022-12-30 at 22.00.29.png"></p>
-<p><code>.git</code> 이라는 하위 폴더가 생성된다. <code>.git</code> 에는 저장소에 필요한 파일이 들어가 있다.</p>
-<h3 id="기존-저장소를-Clone-하기"><a href="#기존-저장소를-Clone-하기" class="headerlink" title="기존 저장소를 Clone 하기"></a>기존 저장소를 Clone 하기</h3><p>깃헙에서 clone할 저장소에 가면 다음과 같이 보인다.</p>
-<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.04.01.png" alt="Screenshot 2022-12-30 at 22.04.01.png"></p>
-<p>초록색으로 <code>&lt;&gt;code</code> 부분을 누르면 저장소의 주소가 나온다.</p>
-<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.05.07.png" alt="Screenshot 2022-12-30 at 22.05.07.png"></p>
-<p><code>git clone &lt;url&gt;</code> 명령으로 저장소를 clone한다. 그러면 저장소의 데이터를 모두 가져와 가장 최신버전으로 checkout 해 놓는다.</p>
-<p><code>git clone &lt;url&gt; &lt;dir_name&gt;</code> 를 하면 다른 디렉토리 이름으로 clone 할 수 있다.</p>
-<h3 id="파일-관리-하기"><a href="#파일-관리-하기" class="headerlink" title="파일 관리 하기"></a>파일 관리 하기</h3><p>Git에는 파일을 감지하는 시스템이 있다. 이 시스템은 파일을 관리 대상이 아닌(Untracked)상태와 관리 대상(Tracked)상태로 구분한다.</p>
-<p><img src="/assets/img/git1/lifecycle.png" alt="lifecycle.png" title="파일 라이프사이클 (git 공식 홈페이지)"></p>
-<p><code>git status</code> 명령어를 통해서 파일의 감지 상태를 확인할 수 있다.</p>
-<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.47.01.png" alt="Screenshot 2022-12-30 at 22.47.01.png"></p>
+        <h2 id="의문-발생"><a href="#의문-발생" class="headerlink" title="의문 발생"></a>의문 발생</h2><p>자바 기본서를 보는 도중 책의 내용을 제가 헷갈릴 뻔해서 정리하고자 합니다. 일반적인 상황에서는 발생하는 일이 아니지만 신기한 점이 있었습니다.</p>
+<h2 id="책의-내용"><a href="#책의-내용" class="headerlink" title="책의 내용"></a>책의 내용</h2><p>맴버 변수의 초기화에는 3가지 방법이 있습니다.</p>
+<ol>
+<li>명시적 초기화</li>
+<li>생성자</li>
+<li>초기화 블럭</li>
+</ol>
+<h3 id="명시적-초기화"><a href="#명시적-초기화" class="headerlink" title="명시적 초기화"></a>명시적 초기화</h3><p>변수를 선언과 동시에 초기화하는 것을 명시적 초기화라고 합니다.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> speed = <span class="number">100</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="초기화-블럭"><a href="#초기화-블럭" class="headerlink" title="초기화 블럭"></a>초기화 블럭</h3><p>초기화 블럭에는 <code>클래스 초기화 블럭</code>과 <code>인스턴스 초기화 블럭</code>이 있습니다. 인스턴스 초기화 블럭을 만드는 방법은 클래스 내부에 <code>&#123;&#125;</code>를 사용하면 됩니다. 클래스 초기화 블럭은 인스턴스 초기화 블럭 앞에 <code>static</code>을 붙이면 됩니다.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Car() &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> serialNo;</span><br><span class="line">    &#123;</span><br><span class="line">        count++;</span><br><span class="line">        serialNo = count;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>이렇게 사용을 하면 여러 생성자의 중복 코드를 줄일 수 있습니다.</p>
+<h3 id="초기화-순서"><a href="#초기화-순서" class="headerlink" title="초기화 순서"></a>초기화 순서</h3><p>초기화 시점</p>
 <ul>
-<li>초기 상태</li>
+<li>클래스 변수 초기화 시점: 클래스가 처음 로딩될 때</li>
+<li>인스턴스 변수 초기화 시점: 인스턴스가 생성될 때</li>
 </ul>
-<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.47.13.png" alt="Screenshot 2022-12-30 at 22.47.13.png"></p>
+<p>초기화 순서</p>
 <ul>
-<li>새로 만든 파일은 Untracked임을 확인할 수 있다.</li>
+<li>클래스 변수 초기화 순서: 기본값 -&gt; 명시적 초기화 -&gt; 클래스 초기화 블럭</li>
+<li>인스턴스 변수 초기화 순서: 기본값 -&gt; 명시적 초기화 -&gt; 인스턴스 초기화 블럭 -&gt; 생성자</li>
 </ul>
-<h3 id="Stage"><a href="#Stage" class="headerlink" title="Stage"></a>Stage</h3><p>stage 영역은 commit 하여 저장소에 기록하기 위한 중간 상태이다.</p>
-<h3 id="Add"><a href="#Add" class="headerlink" title="Add"></a>Add</h3><p><code>git add &lt;file_name&gt;</code> 를 통해서 파일을 추적 할 수 있다.</p>
-<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_23.01.30.png" alt="Screenshot 2022-12-30 at 23.01.30.png"></p>
-<p> 만일 stage에 있는 파일을 수정하게 된다면 modified 상태가 된다. 이 상태로 <code>commit</code> 하게 된다면 staged된 상태만 저장소에 기록된다.</p>
-<p><code>git add .</code> 을 통해서 모든 파일을 stage에 올릴 수 있다.</p>
-<h3 id="Unstage"><a href="#Unstage" class="headerlink" title="Unstage"></a>Unstage</h3><p>stage영역에 들어간 것을 <code>git reset</code> 을 하면 취소할 수 있다. </p>
-<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_23.28.38.png" alt="Screenshot 2022-12-30 at 23.28.38.png"></p>
-<p>특정 파일만 취소 하려면 <code>git reset &lt;file_name&gt;</code> 을 하면 된다.</p>
-<h3 id="Commit"><a href="#Commit" class="headerlink" title="Commit"></a>Commit</h3><p><code>git commit</code> 을 통해서 commit을 할 수 있다.</p>
-<p>commit message를 남기지 않았다면 commit message를 남기라고 한다.</p>
-<p>주석을 지우고 저장(<code>:wq</code>)하면 주석 지운 부분이 message가 되고 원하는 문장을 작성해도 무방하다.</p>
-<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_23.31.18.png" alt="Screenshot 2022-12-30 at 23.31.18.png"></p>
-<p>그냥 저장하면 commit할 수 없다.</p>
-<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_23.33.02.png" alt="Screenshot 2022-12-30 at 23.33.02.png"></p>
-<p>commit 할 때 원하는 message를 남기고 싶다면 <code>git commit -m &quot;message&quot;</code> 를 통해서 원하는 메시지를 남길 수 있다.</p>
-<h3 id="Log"><a href="#Log" class="headerlink" title="Log"></a>Log</h3><p><code>git log</code> 를 통해서 commit 기록을 볼 수 있다.</p>
-<p><img src="/assets/img/git1/Screenshot_2023-01-02_at_13.50.26.png" alt="Screenshot 2023-01-02 at 13.50.26.png"></p>
-<hr>
-<p>여기 까지가 git 사용법의 기초이다. 다음에는 git의 코어 기능인 branch에 대해 알아보자.</p>
+<h2 id="나의-이해"><a href="#나의-이해" class="headerlink" title="나의 이해"></a>나의 이해</h2><p>코드 순서상 초기화 블럭이 먼저 오더라도 명시적 초기화가 항상 먼저 실행된다고 생각했습니다. 물론 틀린생각이지만 이해를 하기 위해 코드를 작성해 보았습니다.</p>
+<h2 id="실험"><a href="#실험" class="headerlink" title="실험"></a>실험</h2><h3 id="코드"><a href="#코드" class="headerlink" title="코드"></a>코드</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		B b = <span class="keyword">new</span> B();</span><br><span class="line">		b.print();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span></span>&#123;</span><br><span class="line">	String a = <span class="string">&quot;인스턴스 명시적 초기화&quot;</span>;</span><br><span class="line">	&#123;</span><br><span class="line">		a = <span class="string">&quot;인스턴스 초기화 블럭&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">static</span> &#123;</span><br><span class="line">		b = <span class="string">&quot;클래스 초기화 블럭&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">static</span> String b = <span class="string">&quot;클래스 명시적 초기화&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span></span>&#123;</span><br><span class="line">		System.out.println(a);</span><br><span class="line">		System.out.println(b);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="실행결과"><a href="#실행결과" class="headerlink" title="실행결과"></a>실행결과</h3><p><img src="/assets/img/java-initial/java.png" alt="실행결과"></p>
+<p>항상 명시적 초기화가 먼저될거라는 예상과 달리 코드 작성 순서에 따라서 초기화 순서가 달라짐을 알 수 있었습니다.</p>
+<p>특이한 점을 보면 <code>클래스 초기화 블럭</code>에 있는 <code>b</code>는 변수가 선언이 되지 않고 사용해도 오류가 나지 않는다는 점 입니다.</p>
+<p>위 코드에서 <strong><code>b 변수 선언</code> -&gt; <code>클래스 초기화 블럭</code> -&gt; <code>클래스 명시적 초기화</code></strong> 순으로 실행된다는 것을 알 수 있습니다.</p>
+<h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><ul>
+<li>생성자는 제일 마지막에 실행됩니다.</li>
+<li>당연하게도 <code>명시적 초기화</code>와 <code>초기화 블럭</code>은 코드 작성 순서에 따라 실행 순서가 달라집니다.</li>
+<li>그러나 가독성을 위해서 <code>명시적 초기화</code> -&gt; <code>초기화 코드 블럭</code> -&gt; <code>생성자</code> 순으로 작성하는 것이 좋습니다.</li>
+<li>엄밀히 말하면 <code>명시적 초기화</code>는 <code>변수 선언</code>과 <strong>동시</strong>에 <code>초기화</code>가 되지는 않습니다.</li>
+</ul>
 
     </div>
 
@@ -322,13 +306,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/10/15/2022-10-16-db-summery2/" rel="prev" title="데이터베이스 개요(2)">
-      <i class="fa fa-chevron-left"></i> 데이터베이스 개요(2)
+    <a href="/2024/04/16/adsense/" rel="prev" title="지표로 보는 애드센스(google AdSense) 통과 과정 및 팁">
+      <i class="fa fa-chevron-left"></i> 지표로 보는 애드센스(google AdSense) 통과 과정 및 팁
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2023/01/23/jpa-syntax-error/" rel="next" title="JPA SQLSyntaxErrorException 오류 해결">
-      JPA SQLSyntaxErrorException 오류 해결 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -388,7 +369,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Git-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-%EC%A0%84%EC%97%90"><span class="nav-number">1.</span> <span class="nav-text">Git 시작하기 전에</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Git-Repository-%EC%A0%80%EC%9E%A5%EC%86%8C-%EB%A7%8C%EB%93%A4%EA%B8%B0"><span class="nav-number">2.</span> <span class="nav-text">Git Repository(저장소) 만들기</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EB%A1%9C%EC%BB%AC%EC%97%90%EC%84%9C-%EC%A0%80%EC%9E%A5%EC%86%8C-%EB%A7%8C%EB%93%A4%EA%B8%B0"><span class="nav-number">2.1.</span> <span class="nav-text">로컬에서 저장소 만들기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EA%B8%B0%EC%A1%B4-%EC%A0%80%EC%9E%A5%EC%86%8C%EB%A5%BC-Clone-%ED%95%98%EA%B8%B0"><span class="nav-number">2.2.</span> <span class="nav-text">기존 저장소를 Clone 하기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%ED%8C%8C%EC%9D%BC-%EA%B4%80%EB%A6%AC-%ED%95%98%EA%B8%B0"><span class="nav-number">2.3.</span> <span class="nav-text">파일 관리 하기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stage"><span class="nav-number">2.4.</span> <span class="nav-text">Stage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Add"><span class="nav-number">2.5.</span> <span class="nav-text">Add</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unstage"><span class="nav-number">2.6.</span> <span class="nav-text">Unstage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Commit"><span class="nav-number">2.7.</span> <span class="nav-text">Commit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Log"><span class="nav-number">2.8.</span> <span class="nav-text">Log</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%9D%98%EB%AC%B8-%EB%B0%9C%EC%83%9D"><span class="nav-number">1.</span> <span class="nav-text">의문 발생</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%B1%85%EC%9D%98-%EB%82%B4%EC%9A%A9"><span class="nav-number">2.</span> <span class="nav-text">책의 내용</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EB%AA%85%EC%8B%9C%EC%A0%81-%EC%B4%88%EA%B8%B0%ED%99%94"><span class="nav-number">2.1.</span> <span class="nav-text">명시적 초기화</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%B4%88%EA%B8%B0%ED%99%94-%EB%B8%94%EB%9F%AD"><span class="nav-number">2.2.</span> <span class="nav-text">초기화 블럭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%B4%88%EA%B8%B0%ED%99%94-%EC%88%9C%EC%84%9C"><span class="nav-number">2.3.</span> <span class="nav-text">초기화 순서</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%82%98%EC%9D%98-%EC%9D%B4%ED%95%B4"><span class="nav-number">3.</span> <span class="nav-text">나의 이해</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%8B%A4%ED%97%98"><span class="nav-number">4.</span> <span class="nav-text">실험</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%BD%94%EB%93%9C"><span class="nav-number">4.1.</span> <span class="nav-text">코드</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%8B%A4%ED%96%89%EA%B2%B0%EA%B3%BC"><span class="nav-number">4.2.</span> <span class="nav-text">실행결과</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B2%B0%EB%A1%A0"><span class="nav-number">5.</span> <span class="nav-text">결론</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

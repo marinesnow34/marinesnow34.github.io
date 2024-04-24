@@ -205,6 +205,87 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/04/03/sequence2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/04/03/sequence2/" class="post-title-link" itemprop="url">Redis 동시성 해결하기 이론 with. MULIT(Transaction), pipeline, Lua</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2024-04-03 00:00:00" itemprop="dateCreated datePublished" datetime="2024-04-03T00:00:00+09:00">2024-04-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EC%84%9C%EB%B2%84/" itemprop="url" rel="index"><span itemprop="name">서버</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><img src="/assets/img/sequence2/redis.png" alt="redis"><br><a href="https://marinesnow34.github.io/2024/04/02/sequence1/">이전 글(DB에서 해결)</a>의 시리즈 입니다. 따라서 예시의 자세한 상황은 이전 글을 참고해주세요.</p>
+<h2 id="간단한-상황"><a href="#간단한-상황" class="headerlink" title="간단한 상황"></a>간단한 상황</h2><p>주문 번호의 스펙을 다시 설명하면 다음과 같습니다.</p>
+<ul>
+<li>주문 번호는 매일 초기화</li>
+<li>주문 번호는 가게별로 다름</li>
+<li>같은 날 같은 가게에는 동일한 주문 번호가 없음</li>
+<li>주문 번호는 1부터 시작해서 1씩 증가</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/04/03/sequence2/#more" rel="contents">
+                더 읽어보기 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
     <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/04/03/sequence3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -512,82 +593,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
-    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/01/06/readyvery-mvp/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Joowon Lim">
-      <meta itemprop="description" content="공부 기록용 블로그">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="marinesnow34">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/06/readyvery-mvp/" class="post-title-link" itemprop="url">무식하고 용감한 실결제 서비스 MVP 회고</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">작성일</span>
-
-              <time title="Post created: 2024-01-06 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-06T00:00:00+09:00">2024-01-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%EC%9D%BC%EC%83%81/" itemprop="url" rel="index"><span itemprop="name">일상</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="발단"><a href="#발단" class="headerlink" title="발단"></a>발단</h1><p><img src="/assets/img/readyvery/st.JPEG" alt="카톡"><br>이 카톡의 시작으로 PM분과 만나서 팀을 꾸리게 되었습니다. 이 때 상당히 흥미로운 주제를 가지고 오셔서 고민 없이 바로 둘이서 팀을 만들기 시작했습니다.</p>
-<p>개발을 시작하기 전까지 사람을 모으는 것이 가장 어려웠습니다. 구인 광고를 해도 아무것도 없는 팀에 선뜻 도전하는 사람은 없었습니다. 저 역시 개인적인 카톡이 오기 전에는 관심이 없었기 때문에 이해는 갔습니다.</p>
-<p>그래서 지인 중심으로 사람을 모으기 시작했습니다. 그러나 주변에 백엔드 개발자만 있어서 그런지 프론트엔드 개발자를 구하기가 쉽지 않았습니다. </p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/06/readyvery-mvp/#more" rel="contents">
-                더 읽어보기 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -657,7 +662,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">20</span>
           <span class="site-state-item-name">포스트</span>
         </a>
       </div>

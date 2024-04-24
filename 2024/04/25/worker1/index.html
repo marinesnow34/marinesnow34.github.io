@@ -37,7 +37,7 @@
 <meta property="og:image" content="https://marinesnow34.github.io/assets/img/worker1/hand.png">
 <meta property="og:image" content="https://marinesnow34.github.io/assets/img/worker1/edge.svg">
 <meta property="article:published_time" content="2024-04-24T15:00:00.000Z">
-<meta property="article:modified_time" content="2024-04-24T19:44:23.916Z">
+<meta property="article:modified_time" content="2024-04-24T19:50:48.941Z">
 <meta property="article:author" content="Joowon Lim">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/worker1/logo.png">
@@ -301,6 +301,7 @@
 </li>
 </ul>
 <p><code>호출 횟수</code>는 <code>워커</code>가 월로 환산하면 약 <code>3배</code>가량 많습니다. 컴퓨팅 시간을 비교하려면 단위를 정확히 알아야 하는데 그러기 위해서 구체적인 스펙을 알아야 합니다.</p>
+<p>자세히 비교를 하자면 끝도 없어서 대표적으로 이런 차이가 있습니다.</p>
 <ul>
 <li>상세 스펙<table>
 <thead>
@@ -338,12 +339,11 @@
 </tbody></table>
 </li>
 </ul>
-<p>더 자세히 비교를 하자면 끝도 없어서 대표적으로 이런 차이가 있습니다.</p>
-<p><code>Lambda</code>의 <code>Free Tier</code>로 비교 해보겠습니다.<br><img src="/assets/img/worker1/compare.png" alt="cloudflare workers pricing"><br>Lambda@Edge는 유료이므로 제외 하겠습니다. 최소 메모리인 <code>128MB</code>로 비교하면 <code>3.2초</code>가 걸리는 함수를 <code>1백만번</code> 호출할 수 있습니다. <code>호출 횟수/10회</code>로 줄이면 <code>실행시간*10초</code> 까지를 무료로 실행할 수 있습니다.</p>
+<p><code>Lambda</code>의 <code>Free Tier</code>로 비교 해보겠습니다.<br><img src="/assets/img/worker1/compare.png" alt="cloudflare workers pricing"><br><code>Lambda@Edge</code>는 유료이므로 제외 하겠습니다. 최소 메모리인 <code>128MB</code>로 비교하면 <code>3.2초</code>가 걸리는 함수를 <code>1백만번</code> 호출할 수 있습니다. <code>호출 횟수/10회</code>로 줄이면 <code>실행시간*10초</code> 까지를 무료로 실행할 수 있습니다.</p>
 <p>결론적으로 Free Tier에서는 많은 <code>메모리</code>가 필요로 하면 <code>Lambda</code>가 더 좋은 선택이 됩니다. 하지만 무료 <code>Edge server</code>배포가 필요하면 <code>Workers</code>가 더 좋은 선택이 됩니다.</p>
 <h2 id="CPU-time과-Duration"><a href="#CPU-time과-Duration" class="headerlink" title="CPU time과 Duration"></a>CPU time과 Duration</h2><p>눈여겨 볼만한 점은 실행 시간을 측정하는 방식 입니다. 클라우드플레어에서는 <code>CPU time</code>과 <code>wall-clock time</code>이라는 개념을 도입합니다. 공식 블로그인 <a target="_blank" rel="noopener" href="https://blog.cloudflare.com/workers-pricing-scale-to-zero/">New Workers pricing</a>에서 자세한 설명이 나옵니다.</p>
 <p><img src="/assets/img/worker1/price.png" alt="cloudflare workers pricing"></p>
-<p>대부분의 애플리케이션은 CPU를 사용하는것 보다 I/O를 대기하는데 더 많은 시간을 사용합니다. 그래서 <code>cloudflare</code>는 CPU time에만 비용을 부과하고, Duration(wall-clock time)에 비용을 부과하는 것을 숨은 비용이라고 칭합니다.</p>
+<p>대부분의 애플리케이션은 <code>CPU를 사용</code>하는것 보다 <code>I/O</code>를 대기하는데 더 많은 시간을 사용합니다. 그래서 <code>cloudflare</code>는 <code>CPU time</code>에만 비용을 부과하고, <code>Duration(wall-clock time)</code>에 비용을 부과하는 것을 숨은 비용이라고 칭합니다.</p>
 <p>마치 택시를 탔는데 택시에 기름을 넣고 밥을 먹기 위해서 멈췄지만 미터기는 계속 작동하는것과 같습니다. 이처럼 목표를 향해 다가가지 않는 동안에도 비용을 지불하고 있는것 입니다. 이제 운전자가 기름을 넣는 동안 미터기가 일시 중지되었다고 상상해 봅시다. 이것이 바로 <code>CPU time</code>과 <code>wall clock time</code>의 차이입니다.</p>
 <h2 id="과금-범위-비교"><a href="#과금-범위-비교" class="headerlink" title="과금 범위 비교"></a>과금 범위 비교</h2><ul>
 <li>10억 requests / 월</li>
@@ -364,12 +364,12 @@
 <p>그리고 핸드셰이크 시간동안 진행되므로 이론상 콜드 스타트가 발생하지 않습니다.<br><img src="/assets/img/worker1/hand.png" alt="hand shake"></p>
 <p>또한 CloudFlare는 <code>CDN</code>서비스를 중점으로 해서 더 많은 <code>Edge</code>서버를 가지고 있습니다. 따라서 전 세계 범위에서 빠른 응답을 기대할 수 있습니다.<br><img src="/assets/img/worker1/edge.svg" alt="cloudflare edge"></p>
 <p>참고 자료: <a target="_blank" rel="noopener" href="https://blog.cloudflare.com/eliminating-cold-starts-with-cloudflare-workers">Workers로 콜드 스타트 제거</a>, <a target="_blank" rel="noopener" href="https://www.cloudflare.com/learning/serverless/serverless-performance/">서버리스 컴퓨팅 성능을 향상 하는 방법</a></p>
-<h2 id="Workers의-단점"><a href="#Workers의-단점" class="headerlink" title="Workers의 단점"></a>Workers의 단점</h2><h4 id="V8-엔진의-제한"><a href="#V8-엔진의-제한" class="headerlink" title="V8 엔진의 제한"></a>V8 엔진의 제한</h4><p><code>V8</code>엔진이 콜드 스타트를 최소화 하지만 개발 언어가 제한됩니다. JS와 TS정도만 멀쩡히 사용 가능하고, <code>WebAssembly</code>를 지원하는 Python과 Rust는 사용은 가능하지만 번거롭습니다.</p>
-<p>외부 라이브러리를 사용하는 것도 제한적입니다. 유명한 <code>express</code>를 사용할 수 없어서 <a target="_blank" rel="noopener" href="https://github.com/honojs/hono">hono</a>나 <a target="_blank" rel="noopener" href="https://github.com/kwhitley/itty-router">itty-router</a>를 사용해야 합니다.</p>
-<h4 id="제한적인-서비스"><a href="#제한적인-서비스" class="headerlink" title="제한적인 서비스"></a>제한적인 서비스</h4><p>Workers가 사용할 수 있는 CloudFlare의 서비스도 아쉽습니다.</p>
+<h2 id="Workers의-단점"><a href="#Workers의-단점" class="headerlink" title="Workers의 단점"></a>Workers의 단점</h2><h4 id="V8-엔진의-제한"><a href="#V8-엔진의-제한" class="headerlink" title="V8 엔진의 제한"></a>V8 엔진의 제한</h4><p><code>V8</code>엔진이 콜드 스타트를 최소화 하지만 <code>개발 언어가 제한</code>됩니다. <code>JS</code>와 <code>TS</code>정도만 멀쩡히 사용 가능하고, <code>WebAssembly</code>를 지원하는 <code>Python</code>과 <code>Rust</code>는 사용은 가능하지만 번거롭습니다.</p>
+<p><code>외부 라이브러리</code>를 사용하는 것도 <code>제한적</code>입니다. 예를 들어 <code>express</code>를 사용할 수 없어서 <a target="_blank" rel="noopener" href="https://github.com/honojs/hono">hono</a>나 <a target="_blank" rel="noopener" href="https://github.com/kwhitley/itty-router">itty-router</a>를 사용해야 합니다.</p>
+<h4 id="제한적인-서비스"><a href="#제한적인-서비스" class="headerlink" title="제한적인 서비스"></a>제한적인 서비스</h4><p>Workers가 사용할 수 있는 <code>CloudFlare의 서비스</code>도 아쉽습니다.</p>
 <p> key-value 스토리지인 <code>KV</code>, SQLite를 사용하는 <code>D1</code>, 버킷 스토리지인 <code>R2</code>등 있을건 있지만 AWS의 서비스에 비하면 제한적입니다.</p>
-<h4 id="로깅과-모니터링"><a href="#로깅과-모니터링" class="headerlink" title="로깅과 모니터링"></a>로깅과 모니터링</h4><p>Workers에서 불가능한건 아니지만 추가 설정이 필요하고, AWS의 CloudWatch에 비교하면 불편합니다.</p>
-<h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><p>각 서비스의 장점을 요약하면 다음과 같습니다.</p>
+<h4 id="로깅과-모니터링"><a href="#로깅과-모니터링" class="headerlink" title="로깅과 모니터링"></a>로깅과 모니터링</h4><p><code>Workers</code>에서 불가능한건 아니지만 추가 설정이 필요하고, AWS의 <code>CloudWatch</code>에 비교하면 불편합니다.</p>
+<h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><p>각 서비스의 <code>장점</code>을 요약하면 다음과 같습니다.</p>
 <ul>
 <li>AWS Lambda<ul>
 <li>128MB를 초과하는 메모리 사용</li>
@@ -388,7 +388,7 @@
 </ul>
 </li>
 </ul>
-<p><code>Workers</code>를 추천하려고 적은 글이지만, 대부분의 상황에서 <code>Lambda</code>가 더 좋은 선택인것 같습니다.<br>하지만 <code>Cloudflare</code>를 응원하고 <code>Workers</code>의 발전이 기대가 된다면 <code>Workers</code>를 사용해보는게 어떨까요??</p>
+<p><code>Workers</code>를 추천하려고 적은 글이지만, 대부분의 상황에서 <code>Lambda</code>가 더 좋은 선택인것 같습니다.<br><strong>하지만 <code>Cloudflare</code>를 응원하고 <code>Workers</code>의 발전이 기대가 된다면 <code>Workers</code>를 사용해보는게 어떨까요??</strong></p>
 
     </div>
 

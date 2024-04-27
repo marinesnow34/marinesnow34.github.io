@@ -708,7 +708,7 @@
 </ul>
 ]]></content>
       <categories>
-        <category>인프라</category>
+        <category>클라우드</category>
       </categories>
   </entry>
   <entry>
@@ -936,7 +936,7 @@
 <p>따라서 특수한 상황을 제외하고는 aws S3 + cloudfront가 적절한 선택일것입니다. 하지만 R2를 사용하게 된다면 CDN을 사용하지 않는 선택지도 고려해야 할 것 같습니다.</p>
 ]]></content>
       <categories>
-        <category>서버</category>
+        <category>클라우드</category>
       </categories>
   </entry>
   <entry>
@@ -1208,7 +1208,73 @@
 <p><code>Workers</code>를 추천하려고 적은 글이지만, 대부분의 상황에서 <code>Lambda</code>가 더 좋은 선택인것 같습니다.<br><strong>하지만 <code>Cloudflare</code>를 응원하고 <code>Workers</code>의 발전이 기대가 된다면 <code>Workers</code>를 사용해보는게 어떨까요??</strong></p>
 ]]></content>
       <categories>
-        <category>서버</category>
+        <category>클라우드</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>클라우드플레어 워커(cloudflare workers) wrangler 사용기</title>
+    <url>/2024/04/27/worker2/</url>
+    <content><![CDATA[<p>저번편 <a href="https://marinesnow34.github.io/2024/04/25/worker1/">Workers Lambda비교</a>에서 workers에 대한 간단한 소개와 비교를 해보았습니다. 이번에는 wrangler를 이용하여 workers를 만들어보겠습니다.</p>
+<h2 id="wrangler-설치"><a href="#wrangler-설치" class="headerlink" title="wrangler 설치"></a>wrangler 설치</h2><p><code>wrangler</code>는 <code>aws cli</code>처럼 <code>workers</code>를 <code>cli</code>로 관리할 수 있게 해주는 도구입니다. 서버리스의 경우에 플랫폼에서 <code>GUI</code>를 활용해서 관리를 할 수 있지만, <code>cli</code>를 활용하면 더욱 효율적으로 관리할 수 있습니다.</p>
+<p><code>wrangler</code>는 <code>npm</code>과 <code>node.js</code>가 설치되어 있어야 합니다. 설치가 되어있지 않다면 먼저 설치해주세요.</p>
+<ul>
+<li><p>설치</p>
+  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#설치</span></span><br><span class="line">npm install wrangler --save-dev</span><br><span class="line"><span class="comment">#업데이트</span></span><br><span class="line">npm install wrangler@latest</span><br></pre></td></tr></table></figure>
+<p>  만약 설치가 제대로 안되면 <code>npx wrangler</code>로 최신버전을 설치해주세요.</p>
+</li>
+<li><p>버전 확인</p>
+  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npx wrangler -v</span><br><span class="line"><span class="comment">#Need to install the following packages:</span></span><br><span class="line"><span class="comment">#wrangler@3.52.0</span></span><br><span class="line"><span class="comment">#Ok to proceed? (y) y</span></span><br><span class="line"><span class="comment">#⛅️ wrangler 3.52.0</span></span><br><span class="line"><span class="comment">#-------------------</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="프로젝트-생성"><a href="#프로젝트-생성" class="headerlink" title="프로젝트 생성"></a>프로젝트 생성</h2><p><code>wrangler init</code>이 곧 없어지게 될 예정입니다. 그래서 <code>init</code>이나 <code>generate</code>를 사용하시는 분들은 <code>create</code>로 대체해주세요.</p>
+<ul>
+<li><p>프로젝트 생성</p>
+  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm create cloudflare@latest</span><br></pre></td></tr></table></figure></li>
+<li><p>선택</p>
+<ol>
+<li>프로젝트 이름을 입력해주세요. (미입력시 자동 생성)</li>
+<li><code>&quot;Hello World&quot;</code> Worker 선택(기본 프로젝트)</li>
+<li><code>TypeScript</code> “no” 선택 </li>
+<li><code>deploy</code> “no” 선택 (나중에 배포 예정)</li>
+</ol>
+</li>
+<li><p>완료</p>
+<p>  정상적으로 생성이 되면 아래와 같은 메시지가 나옵니다.</p>
+  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">├  APPLICATION CREATED  Deploy your application with npm run deploy</span><br><span class="line">│ </span><br><span class="line">│ Navigate to the new directory <span class="built_in">cd</span> shrill-frost-0434</span><br><span class="line">│ Run the development server npm run start</span><br><span class="line">│ Deploy your application npm run deploy</span><br><span class="line">│ Read the documentation https://developers.cloudflare.com/workers</span><br><span class="line">│ Stuck? Join us at https://discord.cloudflare.com</span><br><span class="line">│ </span><br><span class="line">╰ See you again soon! </span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="클라우드플레어-로그인"><a href="#클라우드플레어-로그인" class="headerlink" title="클라우드플레어 로그인"></a>클라우드플레어 로그인</h2><p><code>wrangler</code>를 사용하기 위해서는 클라우드플레어에 로그인을 해야합니다. </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npx wrangler login</span><br></pre></td></tr></table></figure>
+<p>위 명령어를 입력하면 브라우저가 열리면서 로그인을 하라는 메시지가 나옵니다. 로그인을 하면 아래와 같은 화면이 나옵니다.</p>
+<p><img src="/assets/img/worker2/login.png" alt="wrangler login"></p>
+<p>현재 로그인 아이디를 확인하려면 아래와 같이 입력해주세요.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npx wrangler whoami</span><br></pre></td></tr></table></figure>
+<p>로그인 계정 정보와 권한이 나옵니다.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npx wrangler whoami</span><br><span class="line"> ⛅️ wrangler 3.52.0</span><br><span class="line">-------------------</span><br><span class="line">Getting User settings...</span><br><span class="line">👋 You are logged <span class="keyword">in</span> with an OAuth Token, associated with the email m4rinesnow34@gmail.com!</span><br><span class="line">┌──────────────────────────────────┬──────────────────────────────────┐</span><br><span class="line">│ Account Name                     │ Account ID                       │</span><br><span class="line">├──────────────────────────────────┼──────────────────────────────────┤</span><br><span class="line">│ M4rinesnow34@gmail.com<span class="string">&#x27;s Account │ 69df21141caa******************** │</span></span><br><span class="line"><span class="string">└──────────────────────────────────┴──────────────────────────────────┘</span></span><br><span class="line"><span class="string">🔓 Token Permissions: If scopes are missing, you may need to logout and re-login.</span></span><br><span class="line"><span class="string">Scope (Access)</span></span><br><span class="line"><span class="string">- account (read)</span></span><br><span class="line"><span class="string">- user (read)</span></span><br><span class="line"><span class="string">- workers (write)</span></span><br><span class="line"><span class="string">- workers_kv (write)</span></span><br><span class="line"><span class="string">- workers_routes (write)</span></span><br><span class="line"><span class="string">- workers_scripts (write)</span></span><br><span class="line"><span class="string">- workers_tail (read)</span></span><br><span class="line"><span class="string">- d1 (write)</span></span><br><span class="line"><span class="string">- pages (write)</span></span><br><span class="line"><span class="string">- zone (read)</span></span><br><span class="line"><span class="string">- ssl_certs (write)</span></span><br><span class="line"><span class="string">- constellation (write)</span></span><br><span class="line"><span class="string">- ai (write)</span></span><br><span class="line"><span class="string">- queues (write)</span></span><br><span class="line"><span class="string">- offline_access </span></span><br></pre></td></tr></table></figure>
+
+<h2 id="프로젝트-실행"><a href="#프로젝트-실행" class="headerlink" title="프로젝트 실행"></a>프로젝트 실행</h2><p>코드를 로컬에서 실행해보겠습니다.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npx wrangler dev</span><br></pre></td></tr></table></figure>
+<p>실행이 되면 아래와 같은 메시지가 나옵니다.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/shrill-frost-0434$ npx wrangler dev</span><br><span class="line"> ⛅️ wrangler 3.52.0</span><br><span class="line">-------------------</span><br><span class="line">⎔ Starting <span class="built_in">local</span> server...</span><br><span class="line">[wrangler:inf] Ready on http://localhost:8787</span><br></pre></td></tr></table></figure>
+<p><code>http://localhost:8787</code>로 접속하면 <code>Hello World!</code>가 나옵니다. 위의 실행 창에는 request가 찍히게 됩니다.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ curl http://localhost:8787</span><br><span class="line">Hello World!</span><br></pre></td></tr></table></figure>
+<h2 id="코드-수정"><a href="#코드-수정" class="headerlink" title="코드 수정"></a>코드 수정</h2><p><code>src/index.js</code>파일을 수정하면 로컬에서 바로 확인이 가능합니다. <code>hot reload</code>가 되어있어서 수정하면 재시작 없이 바로 로컬 서버에 반영이 됩니다.</p>
+<p><code>cf</code>에 대한 정보를 콘솔에 찍어보겠습니다. <code>cf</code>는 클라우드플레어의 <code>request</code>에 대한 정보를 담고 있습니다.</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="title">fetch</span>(<span class="params">request, env, ctx</span>)</span> &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="built_in">JSON</span>.stringify(request.cf));</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> Response(<span class="string">&#x27;Hello World!&#x27;</span>);</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<p><img src="/assets/img/worker2/cf.png" alt="cf"><br><code>region:Seoul</code>, <code>colo: HKG</code>인걸로 보아 <code>Seoul</code>에서 발생한 <code>request</code>가 <code>HongKong</code>에 있는 <code>Edge</code>서버를 통해 처리되었음을 알 수 있습니다.</p>
+<p>늘 말씀드리지만 국내에서 <code>cloudflare</code>를 사용하면 트래픽이 돌아서 처리되기 때문에 <code>latency</code>가 발생할 수 있습니다. 속도 비교는 <a href="https://marinesnow34.github.io/2023/09/23/s3r2/">이것</a>을 참고해주세요.</p>
+<h2 id="프로젝트-배포"><a href="#프로젝트-배포" class="headerlink" title="프로젝트 배포"></a>프로젝트 배포</h2><p>프로젝트 배포는 <code>wrangler.toml</code>파일에 설정된 대로 배포가 됩니다. <code>wrangler.toml</code>파일은 아래와 같이 설정이 되어있습니다. 추후에 다른 서비스를 사용하려면 여기에 설정을 추가해주시면 됩니다.</p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#:schema node_modules/wrangler/config-schema.json</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;shrill-frost&quot;</span></span><br><span class="line"><span class="attr">main</span> = <span class="string">&quot;src/index.js&quot;</span></span><br><span class="line"><span class="attr">compatibility_date</span> = <span class="string">&quot;2024-04-27&quot;</span></span><br><span class="line"><span class="attr">compatibility_flags</span> = [<span class="string">&quot;nodejs_compat&quot;</span>]</span><br></pre></td></tr></table></figure>
+<p><code>compatibility</code> 관련 설명은 <a href="https://developers.cloudflare.com/workers/configuration/compatibility-dates/">여기</a>에서 확인할 수 있습니다.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npx wrangler deploy</span><br></pre></td></tr></table></figure>
+
+<p>배포 주소가 나오면 성공적으로 배포가 된 것입니다. 주소의 형식은 <code>https://&lt;name&gt;.&lt;계정이름&gt;.workers.dev</code>입니다.</p>
+<h2 id="마무리"><a href="#마무리" class="headerlink" title="마무리"></a>마무리</h2><p>이번에는 <code>wrangler</code>를 이용하여 <code>workers</code>를 배포하는 방법을 알아보았습니다. 다음에는 <code>cron</code>을 활용하는 <code>workers</code>를 만들어보겠습니다.</p>
+]]></content>
+      <categories>
+        <category>클라우드</category>
       </categories>
   </entry>
 </search>

@@ -1277,4 +1277,49 @@
         <category>클라우드</category>
       </categories>
   </entry>
+  <entry>
+    <title>클라우드플레어 워커(cloudflare workers) cron 스케줄러 사용하기</title>
+    <url>/2024/04/30/worker3/</url>
+    <content><![CDATA[<p><a href="https://marinesnow34.github.io/2024/04/27/worker2/">저번 글</a>에서 클라우드플레어 워커를 <code>wrangler</code>로 배포하는 방법을 알아보았습니다. 이번에는 워커에 cron 스케줄러를 사용하는 방법에 대해 알아보겠습니다.</p>
+<h2 id="프로젝트-생성"><a href="#프로젝트-생성" class="headerlink" title="프로젝트 생성"></a>프로젝트 생성</h2><p>먼저 워커 프로젝트를 생성합니다. 저번 글에서 생성한 프로젝트를 사용해도 되고 새로운 프로젝트를 생성해도 됩니다.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm create cloudflare@latest</span><br></pre></td></tr></table></figure>
+
+<h2 id="cron-스케줄러-추가"><a href="#cron-스케줄러-추가" class="headerlink" title="cron 스케줄러 추가"></a>cron 스케줄러 추가</h2><p>워커에 cron 스케줄러를 추가하려면 <code>wrangler.toml</code> 파일에 <code>triggers</code> 섹션을 추가하면 됩니다. <code>crons</code>에 <a href="https://ko.wikipedia.org/wiki/Cron">cron 표현식</a>을 배열로 추가하면 됩니다. </p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name</span> = <span class="string">&quot;cron-test&quot;</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"></span><br><span class="line"><span class="section">[triggers]</span></span><br><span class="line"><span class="attr">crons</span> = [<span class="string">&quot;0 * * * *&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<h2 id="워커-코드-수정"><a href="#워커-코드-수정" class="headerlink" title="워커 코드 수정"></a>워커 코드 수정</h2><p>워커 코드에서 cron 스케줄러를 사용하려면 <code>scheduled</code> 함수를 사용하면 됩니다.</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="keyword">async</span> <span class="function"><span class="title">scheduled</span>(<span class="params">event, env, ctx</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&quot;cron processed&quot;</span>);</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>cron 스케줄러를 테스트하려면 아래 명령어를 실행하면 됩니다.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npx wrangler dev --test-scheduled</span><br></pre></td></tr></table></figure>
+<p>테스트 환경에서는 <code>자동</code>으로 <code>cron</code>이 실행되지 않습니다. cron을 테스트하려면 아래 명령어를 실행하면 됩니다.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl <span class="string">&quot;http://localhost:8787/__scheduled?cron=0+*+*+*+*&quot;</span></span><br></pre></td></tr></table></figure>
+<p>잘 실행이 됩니다.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cron processed</span><br><span class="line">[wrangler:inf] GET /__scheduled 200 OK (12ms)</span><br></pre></td></tr></table></figure>
+
+<h2 id="멀티-cron-스케줄러-추가"><a href="#멀티-cron-스케줄러-추가" class="headerlink" title="멀티 cron 스케줄러 추가"></a>멀티 cron 스케줄러 추가</h2><p>여러 cron 스케줄러를 추가하려면 <code>crons</code>에 <code>cron 표현식</code>을 <code>배열</code>로 추가하면 됩니다. </p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name</span> = <span class="string">&quot;cron-test&quot;</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"></span><br><span class="line"><span class="section">[triggers]</span></span><br><span class="line"><span class="attr">crons</span> = [<span class="string">&quot;0 * * * *&quot;</span>, <span class="string">&quot;0 0 * * *&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>하지만 이렇게 배포하면 처음에 작성한 코드가 <code>&quot;0 * * * *&quot;</code>과 <code>&quot;0 0 * * *&quot;</code>이 실행될 때 모두 실행됩니다. 각 <code>cron 스케줄러</code>에 따라 <code>다른 로직</code>을 실행하려면 <code>event.cron</code>을 사용하면 됩니다.</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">	<span class="keyword">async</span> <span class="function"><span class="title">scheduled</span>(<span class="params">event, env, ctx</span>)</span> &#123;</span><br><span class="line">	  <span class="keyword">switch</span> (event.cron) &#123;</span><br><span class="line">		<span class="keyword">case</span> <span class="string">&#x27;0 * * * *&#x27;</span>:</span><br><span class="line">		  <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;event.cron&#125;</span> cron processed`</span>);</span><br><span class="line">		  <span class="keyword">break</span>;</span><br><span class="line">		<span class="keyword">case</span> <span class="string">&#x27;0 0 * * *&#x27;</span>:</span><br><span class="line">		  <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;event.cron&#125;</span> cron processed`</span>);</span><br><span class="line">		  <span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;,</span><br><span class="line">  &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>명령어</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl <span class="string">&quot;http://localhost:8787/__scheduled?cron=0+*+*+*+*&quot;</span></span><br><span class="line">curl <span class="string">&quot;http://localhost:8787/__scheduled?cron=0+0+*+*+*&quot;</span></span><br></pre></td></tr></table></figure>
+<p>결과</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">0 * * * * cron processed</span><br><span class="line">[wrangler:inf] GET /__scheduled 200 OK (2ms)</span><br><span class="line">0 0 * * * cron processed</span><br><span class="line">[wrangler:inf] GET /__scheduled 200 OK (2ms)</span><br></pre></td></tr></table></figure>
+
+<h2 id="배포"><a href="#배포" class="headerlink" title="배포"></a>배포</h2><p>배포하려면 아래 명령어를 실행하면 됩니다.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npx wrangler deploy</span><br></pre></td></tr></table></figure>
+
+<p><code>Workers</code> 메뉴에서 <code>cron-test</code> 워커를 선택하고 <code>Setting &gt; Triggers</code> 메뉴에서 cron 스케줄러를 확인할 수 있습니다.<br><img src="/assets/img/worker3/cron.png" alt="cron"></p>
+<h2 id="모든-cron-삭제"><a href="#모든-cron-삭제" class="headerlink" title="모든 cron 삭제"></a>모든 cron 삭제</h2><p><a href="https://developers.cloudflare.com/workers/configuration/cron-triggers/#remove-a-cron-trigger">공식 문서</a>에서는 cron 스케줄러를 삭제하려면 <code>wrangler.toml</code> 파일에서 <code>crons</code>를 빈 배열로 수정하면 된다고 합니다. 하지만 제가 테스트해본 결과 정상적으로 삭제되지 않았습니다. 모든 cron을 삭제하려면 대시보드에서 <code>직접 삭제</code>해야 합니다. (수정은 바로 반영됩니다.)</p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="section">[triggers]</span></span><br><span class="line"><span class="comment"># crons = [] -&gt; 삭제 안됨, 적용 후 대시보드에서 직접 삭제해야 함</span></span><br><span class="line"><span class="attr">crons</span> = [<span class="string">&quot;* * * * *&quot;</span>] <span class="comment"># 업데이트는 적용 됨</span></span><br></pre></td></tr></table></figure>
+<p><code>deploy</code> 후 대시보드 반영 까지 <code>최대 30분</code>이 소요될 수 있습니다.</p>
+<h2 id="Green-Compute"><a href="#Green-Compute" class="headerlink" title="Green Compute"></a>Green Compute</h2><p>여담으로 <code>Workers</code>를 100% 재생에너지로 구동하는 <code>Green Compute</code>를 사용할 수 있습니다. 단점으로는 100% 재생에너지로 구동되는 데이터센터가 한정되어 있어서 레이턴시가 발생할 수 있습니다.</p>
+<h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><p>이번 글에서는 클라우드플레어 <code>워커</code>에 <code>cron 스케줄러</code>를 사용하는 방법에 대해 알아보았습니다. 다음 글에서는 <code>워커</code>에 <code>KV</code>나 <code>R1</code>을 활용해서 복잡한 기능을 구현해 보겠습니다.</p>
+]]></content>
+      <categories>
+        <category>클라우드</category>
+      </categories>
+  </entry>
 </search>

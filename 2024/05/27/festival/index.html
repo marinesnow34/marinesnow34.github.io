@@ -38,7 +38,7 @@
 <meta property="og:image" content="https://marinesnow34.github.io/assets/img/festival/res4.png">
 <meta property="og:image" content="https://marinesnow34.github.io/assets/img/festival/every.png">
 <meta property="article:published_time" content="2024-05-26T15:00:00.000Z">
-<meta property="article:modified_time" content="2024-05-27T05:47:47.300Z">
+<meta property="article:modified_time" content="2024-05-27T05:53:21.157Z">
 <meta property="article:author" content="Joowon Lim">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/festival/error.png">
@@ -273,11 +273,12 @@
 <h4 id="네트워크-이슈"><a href="#네트워크-이슈" class="headerlink" title="네트워크 이슈"></a>네트워크 이슈</h4><p>네트워크 오류가 발생했다. 주점의 위치가 학교 운동장이다보니 안정적인 네트워크 환경을 제공하기 어려웠다. 주점에서 개인 휴대폰으로 핫스팟을 사용했다. 그러다보니 문제가 발생했다.</p>
 <p>18시에 주점이 오픈하는데, 많은 사람들이 데이터를 사용하려고 하니 네트워크가 불안정해졌다. 이 불안정한 네트워크 때문에 주문을 받을 수 없는 상황이 발생했다. 항상 안정적인 네트워크 환경에서만 서비스를 운영하다 보니 간과한 부분이었다.</p>
 <p>군대에서 태풍 피항으로 부대에 많은 배가 정박했을 때 데이터가 안터지는 경험이 있었는데, 그때의 경험을 잊고 있었다. 프론트에 네트워크가 불안정하다는 메시지를 띄워주는 기능을 추가하거나 이런 문제가 발생할 수 있다는걸 미리 가이드라인에 추가했으면 혼선이 줄었을 것 같다.</p>
-<h4 id="화면-이슈"><a href="#화면-이슈" class="headerlink" title="화면 이슈"></a>화면 이슈</h4><p><img src="/assets/img/festival/error.png" alt="에러 화면"><br>사진에 보이는 것처럼 <code>포장/매장</code>이 <code>사랑/매장</code>으로 작성하지 않은게 보이는 문제가 발생했다. 코드를 봐도, DB를 봐도 전혀 작성하지 않은 것이었다. 간혹 1~2명의 사용자가 이런 문제를 겪었다.</p>
+<h4 id="화면-이슈"><a href="#화면-이슈" class="headerlink" title="화면 이슈"></a>화면 이슈</h4><p><img src="/assets/img/festival/error.png" alt="에러 화면"><br>사진에 보이는 것처럼 <code>포장/매장</code>이 <code>사랑/매장</code>으로 작성하지 않은게 보이는 문제가 발생했다. 간혹 1~2명의 사용자가 이런 문제를 겪었다. 코드를 봐도, DB를 봐도 전혀 작성하지 않은 것이었다. </p>
 <p>당시에는 문제 원인조차 짐작하지 못했다. 우리가 만든 코드가 문제라고 생각한게 원인을 찾지 못한 이유였다. </p>
 <p>이유는 <code>자동 번역</code> 문제였다. 왠지 모르게 한글 -&gt; 한글을 자동 번역하는 경우가 있었다. 빨리 찾아서 가이드라인에 추가했으면 더 좋았을 것 같다.<br><img src="/assets/img/festival/error2.png" alt="에러 재현"><br>[에러를 재현한 화면]</p>
 <h3 id="개발적-아쉬움"><a href="#개발적-아쉬움" class="headerlink" title="개발적 아쉬움"></a>개발적 아쉬움</h3><p>시간 관계상 단순 스케일 업 방식으로 트래픽에 대비를 했다. 부하 테스트를 하거나 로드 밸런싱을 도입하지 않아 비용 최적화를 하지 못했다. 유저 쪽은 <code>t4g.small</code> -&gt; <code>m4g.xlarge</code>로 변경했고, DB는 <code>db.t4g.micro</code> -&gt; <code>db.m4g.xlarge</code>로 변경했다. 최대 cpu 사용량이 5%를 넘지 않았다. 엄청난 낭비였다.</p>
 <p>최대 TPS는 30이었고, 이 마저도 빠르게 줄어나갔다. 주점당 40개 이상의 테이블이 있었으니, <code>7주점 * 40테이블 * 4명 = 약 2,800명 + 메뉴 구경 인원</code>이 동시 접속을 할 것이라 예측했었다. 하지만 테이블의 모든 인원이 주문을 하지 않고 1~2명만 주문을 하다보니, 예상보다 트래픽이 적었다. 덕분에 TPS 100, 1000이 얼마나 큰 수인지 체감할 수 있었다.<br><img src="/assets/img/festival/log.png" alt="트래픽"></p>
+<p>에러 로그를 정교하게 수집하지 않은 것도 아쉽웠다. 만일 로그를 정교하게 수집했다면, 우리의 코드가 문제가 없다는 것을 확신할 수 있었을 것이다. 그러면 위에 발생한 화면에러의 원인을 빠르게 찾을 수 있었을 것이다.</p>
 <h3 id="성과"><a href="#성과" class="headerlink" title="성과"></a>성과</h3><p>총 가입 유저수 1,200명 2일 동안 846건의 주문 수, 11,323,400원의 결제 금액이 발생했다.</p>
 <p><img src="/assets/img/festival/money.png" alt="결제 금액"><br><img src="/assets/img/festival/user.png" alt="주문 수"></p>
 <p>사용자들의 반응도 좋았다. 특히 <code>주점</code>측의 반응이 좋았는데, 이런 기존에 겪고 있는 어려움을 해결해서 가능했던것 같다.<br><img src="/assets/img/festival/res1.png" alt="주점 반응"><br><img src="/assets/img/festival/res2.png" alt="주점 반응"></p>

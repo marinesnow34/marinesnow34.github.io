@@ -506,8 +506,6 @@
 <li><p>컨테이너를 격리 하기 때문에 안전합니다.</p>
 <img src="/assets/img/docker/docker2.png" alt="도커 이미지2" width="45%">
 <img src="/assets/img/docker/docker3.png" alt="도커 이미지3" width="45%">
-![도커 이미지2](/assets/img/docker/docker2.png) {: width="45%"}
-![도커 이미지3](/assets/img/docker/docker3.png) {: width="45%"}
 
 </li>
 </ol>

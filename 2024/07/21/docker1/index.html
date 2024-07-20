@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://marinesnow34.github.io/assets/img/docker/docker2.png">
 <meta property="og:image" content="https://marinesnow34.github.io/assets/img/docker/docker3.png">
 <meta property="article:published_time" content="2024-07-20T15:00:00.000Z">
-<meta property="article:modified_time" content="2024-07-20T16:04:43.294Z">
+<meta property="article:modified_time" content="2024-07-20T16:08:01.306Z">
 <meta property="article:author" content="Joowon Lim">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/docker/docker2.png">
@@ -265,7 +265,11 @@
 <li><p>컨테이너는 OS 시스템의 커널만 사용하기 때문에 앱마다 OS를 설치할 필요가 없습니다.</p>
 </li>
 <li><p>컨테이너를 격리 하기 때문에 안전합니다.</p>
-<p><img src="/assets/img/docker/docker2.png" alt="도커 이미지2"> {: width=”45%”}<br><img src="/assets/img/docker/docker3.png" alt="도커 이미지3"> {: width=”45%”}</p>
+<img src="/assets/img/docker/docker2.png" alt="도커 이미지2" width="45%">
+<img src="/assets/img/docker/docker3.png" alt="도커 이미지3" width="45%">
+![도커 이미지2](/assets/img/docker/docker2.png) {: width="45%"}
+![도커 이미지3](/assets/img/docker/docker3.png) {: width="45%"}
+
 </li>
 </ol>
 <h2 id="도커-설치-Ubuntu-22-04"><a href="#도커-설치-Ubuntu-22-04" class="headerlink" title="도커 설치 (Ubuntu 22.04)"></a>도커 설치 (Ubuntu 22.04)</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#저장소 업데이트</span></span><br><span class="line">sudo apt-get update</span><br><span class="line"></span><br><span class="line"><span class="comment"># 필요한 패키지 설치</span></span><br><span class="line">sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common</span><br><span class="line"></span><br><span class="line"><span class="comment"># 도커 공식 GPG 키 추가</span></span><br><span class="line">curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/docker.gpg</span><br><span class="line"></span><br><span class="line"><span class="comment"># 도커 저장소 추가</span></span><br><span class="line">sudo add-apt-repository <span class="string">&quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu <span class="subst">$(lsb_release -cs)</span> stable&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 저장소 업데이트</span></span><br><span class="line">sudo apt-get update</span><br><span class="line"></span><br><span class="line"><span class="comment"># 도커 설치</span></span><br><span class="line">sudo apt-get install docker-ce docker-ce-cli containerd.io</span><br><span class="line"></span><br><span class="line"><span class="comment"># 도커 권한 변경</span></span><br><span class="line">sudo chmod 666 /var/run/docker.sock</span><br><span class="line"></span><br><span class="line"><span class="comment"># 도커 버전 확인</span></span><br><span class="line">docker version</span><br></pre></td></tr></table></figure>

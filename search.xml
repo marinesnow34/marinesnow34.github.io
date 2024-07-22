@@ -1,46 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>ubuntu 20.04 초기 세팅</title>
-    <url>/2021/09/11/2021-09-11-ubuntu-20_04-initial-setting/</url>
-    <content><![CDATA[<h1 id="ubuntu-20-04-SSH-포트-변경-등-초기-세팅"><a href="#ubuntu-20-04-SSH-포트-변경-등-초기-세팅" class="headerlink" title="ubuntu 20.04 SSH 포트 변경 등 초기 세팅"></a>ubuntu 20.04 SSH 포트 변경 등 초기 세팅</h1><p><strong>환경</strong><br>ubuntu 20.04<br>OCI(오라클 클라우드)</p>
-<h1 id="SSH-포트-변경"><a href="#SSH-포트-변경" class="headerlink" title="SSH 포트 변경"></a>SSH 포트 변경</h1><p><strong>주의) SSH 세팅 할 때에는 접속이 잘 되는지 확인되기 전 까지는 연결을 끊지 마세요.</strong></p>
-<h2 id="ssh-설정"><a href="#ssh-설정" class="headerlink" title="ssh 설정"></a>ssh 설정</h2><p><code>sudo vim /etc/ssh/sshd_config</code> </p>
-<p>sshd_config 파일을 열어서 내용을 추가 해 준다.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#port22</span><br><span class="line">port[원하는 포트]</span><br></pre></td></tr></table></figure>
-
-<p>sshd  서비스를 재 시작해 준다.<br><code>service sshd restart</code></p>
-<h2 id="iptables-설정"><a href="#iptables-설정" class="headerlink" title="iptables 설정"></a>iptables 설정</h2><p>iptables설정은 root 권한으로 하는 것을 권장한다.</p>
-<p>iptables에 방화벽 정책을 추가해 준다.</p>
-<p><code>iptables -I INPUT 1 -p tcp --dport [원하는 포트] -j ACCEPT</code></p>
-<p>정책 추가가 잘 됐는지 확인 법<br><code>iptables --list</code></p>
-<p>다음과 같이 나오면 추가가 잘 된 거다.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Chain INPUT (policy ACCEPT)</span><br><span class="line">target     prot opt source               destination</span><br><span class="line">ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:[원하는 포트]</span><br></pre></td></tr></table></figure>
-
-
-<p>ubuntu 20.04에서는 방화벽 설정해 주고 나서 재실행이나 재부팅을 하면 정책이 적용이 안 된다.  net-tools를 통해 정책을 저장할 수 있다.</p>
-<p><code>apt-get install net-tools</code></p>
-<p>정책을 저장하고 불러온다.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">netfilter-persistent save</span><br><span class="line">netfilter-persistent start</span><br></pre></td></tr></table></figure>
-<h1 id="SSH-비밀번호-접근-및-계정-추가"><a href="#SSH-비밀번호-접근-및-계정-추가" class="headerlink" title="SSH 비밀번호 접근 및 계정 추가"></a>SSH 비밀번호 접근 및 계정 추가</h1><h2 id="SSH-계정-비밀번호로-접근"><a href="#SSH-계정-비밀번호로-접근" class="headerlink" title="SSH 계정 비밀번호로 접근"></a>SSH 계정 비밀번호로 접근</h2><p><code>sudo vim /etc/ssh/sshd_config</code> </p>
-<p>sshd_config 파일을 열어서 내용을 변경해 준다.</p>
-<p><code>PasswordAuthentication yes</code></p>
-<p>sshd  서비스를 재시작 해준다.<br><code>service sshd restart</code></p>
-<h2 id="ubuntu-계정-추가"><a href="#ubuntu-계정-추가" class="headerlink" title="ubuntu 계정 추가"></a>ubuntu 계정 추가</h2><p>계정 추가하는 법은 <code>adduser</code> ,<code>useradd</code> 두 가지가 있다.</p>
-<p><code>adduser [user]</code>을 사용하면 자동으로 설정해 쉽게 사용자를 추가할 수 있다.<br><code>useradd [user]</code>를 사용하면 홈 디렉터리도 생성되지 않고 <code>passwd [user]</code>를 통해 비밀번호도 재설정 해줘야 한다.</p>
-<h2 id="sudo-권한-설정"><a href="#sudo-권한-설정" class="headerlink" title="sudo 권한 설정"></a>sudo 권한 설정</h2><p><code>vim /etc/sudoers</code><br>sudoers 파일을 열고 내용을 추가 해 준다.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># User privilege specification</span><br><span class="line">root    ALL&#x3D;(ALL:ALL) ALL</span><br></pre></td></tr></table></figure>
-<p>위 코드 밑에 추가 해 준다.<br><code>[user] ALL=(ALL:ALL) ALL</code></p>
-<h1 id="apt-저장소-변경"><a href="#apt-저장소-변경" class="headerlink" title="apt 저장소 변경"></a>apt 저장소 변경</h1><p>기본 저장소를 <code>mirror.kakao.com</code>으로 바꾸면 apt 패키지 다운 받을 때 빨라진다.</p>
-<p><code>sudo vi /etc/apt/sources.list</code></p>
-<p>sources.list 파일을 열고 해당 명령어를 치면 변경된다.<br><code>:%s/kr.archive.ubuntu.com/mirror.kakao.com</code></p>
-<p>실행해 보면 mirror.kakao.com 으로 바뀐 걸 확인할 수 있다.<br><code>sudo apt-get update &amp;amp;&amp;amp; apt-get upgrade</code></p>
-]]></content>
-      <categories>
-        <category>서버</category>
-      </categories>
-  </entry>
-  <entry>
     <title>해군 정보보호병 합격 후기</title>
     <url>/2020/12/30/2020-12-30-%ED%95%B4%EA%B5%B0-%EC%A0%95%EB%B3%B4%EB%B3%B4%ED%98%B8%EB%B3%91-%ED%95%A9%EA%B2%A9-%ED%9B%84%EA%B8%B0/</url>
     <content><![CDATA[<p><strong>군사 보안에 어긋나거나 문제시 알려주시면 수정하거나 삭제하겠습니다.</strong></p>
@@ -120,6 +80,46 @@
 ]]></content>
       <categories>
         <category>일상</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>ubuntu 20.04 초기 세팅</title>
+    <url>/2021/09/11/2021-09-11-ubuntu-20_04-initial-setting/</url>
+    <content><![CDATA[<h1 id="ubuntu-20-04-SSH-포트-변경-등-초기-세팅"><a href="#ubuntu-20-04-SSH-포트-변경-등-초기-세팅" class="headerlink" title="ubuntu 20.04 SSH 포트 변경 등 초기 세팅"></a>ubuntu 20.04 SSH 포트 변경 등 초기 세팅</h1><p><strong>환경</strong><br>ubuntu 20.04<br>OCI(오라클 클라우드)</p>
+<h1 id="SSH-포트-변경"><a href="#SSH-포트-변경" class="headerlink" title="SSH 포트 변경"></a>SSH 포트 변경</h1><p><strong>주의) SSH 세팅 할 때에는 접속이 잘 되는지 확인되기 전 까지는 연결을 끊지 마세요.</strong></p>
+<h2 id="ssh-설정"><a href="#ssh-설정" class="headerlink" title="ssh 설정"></a>ssh 설정</h2><p><code>sudo vim /etc/ssh/sshd_config</code> </p>
+<p>sshd_config 파일을 열어서 내용을 추가 해 준다.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#port22</span><br><span class="line">port[원하는 포트]</span><br></pre></td></tr></table></figure>
+
+<p>sshd  서비스를 재 시작해 준다.<br><code>service sshd restart</code></p>
+<h2 id="iptables-설정"><a href="#iptables-설정" class="headerlink" title="iptables 설정"></a>iptables 설정</h2><p>iptables설정은 root 권한으로 하는 것을 권장한다.</p>
+<p>iptables에 방화벽 정책을 추가해 준다.</p>
+<p><code>iptables -I INPUT 1 -p tcp --dport [원하는 포트] -j ACCEPT</code></p>
+<p>정책 추가가 잘 됐는지 확인 법<br><code>iptables --list</code></p>
+<p>다음과 같이 나오면 추가가 잘 된 거다.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Chain INPUT (policy ACCEPT)</span><br><span class="line">target     prot opt source               destination</span><br><span class="line">ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:[원하는 포트]</span><br></pre></td></tr></table></figure>
+
+
+<p>ubuntu 20.04에서는 방화벽 설정해 주고 나서 재실행이나 재부팅을 하면 정책이 적용이 안 된다.  net-tools를 통해 정책을 저장할 수 있다.</p>
+<p><code>apt-get install net-tools</code></p>
+<p>정책을 저장하고 불러온다.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">netfilter-persistent save</span><br><span class="line">netfilter-persistent start</span><br></pre></td></tr></table></figure>
+<h1 id="SSH-비밀번호-접근-및-계정-추가"><a href="#SSH-비밀번호-접근-및-계정-추가" class="headerlink" title="SSH 비밀번호 접근 및 계정 추가"></a>SSH 비밀번호 접근 및 계정 추가</h1><h2 id="SSH-계정-비밀번호로-접근"><a href="#SSH-계정-비밀번호로-접근" class="headerlink" title="SSH 계정 비밀번호로 접근"></a>SSH 계정 비밀번호로 접근</h2><p><code>sudo vim /etc/ssh/sshd_config</code> </p>
+<p>sshd_config 파일을 열어서 내용을 변경해 준다.</p>
+<p><code>PasswordAuthentication yes</code></p>
+<p>sshd  서비스를 재시작 해준다.<br><code>service sshd restart</code></p>
+<h2 id="ubuntu-계정-추가"><a href="#ubuntu-계정-추가" class="headerlink" title="ubuntu 계정 추가"></a>ubuntu 계정 추가</h2><p>계정 추가하는 법은 <code>adduser</code> ,<code>useradd</code> 두 가지가 있다.</p>
+<p><code>adduser [user]</code>을 사용하면 자동으로 설정해 쉽게 사용자를 추가할 수 있다.<br><code>useradd [user]</code>를 사용하면 홈 디렉터리도 생성되지 않고 <code>passwd [user]</code>를 통해 비밀번호도 재설정 해줘야 한다.</p>
+<h2 id="sudo-권한-설정"><a href="#sudo-권한-설정" class="headerlink" title="sudo 권한 설정"></a>sudo 권한 설정</h2><p><code>vim /etc/sudoers</code><br>sudoers 파일을 열고 내용을 추가 해 준다.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># User privilege specification</span><br><span class="line">root    ALL&#x3D;(ALL:ALL) ALL</span><br></pre></td></tr></table></figure>
+<p>위 코드 밑에 추가 해 준다.<br><code>[user] ALL=(ALL:ALL) ALL</code></p>
+<h1 id="apt-저장소-변경"><a href="#apt-저장소-변경" class="headerlink" title="apt 저장소 변경"></a>apt 저장소 변경</h1><p>기본 저장소를 <code>mirror.kakao.com</code>으로 바꾸면 apt 패키지 다운 받을 때 빨라진다.</p>
+<p><code>sudo vi /etc/apt/sources.list</code></p>
+<p>sources.list 파일을 열고 해당 명령어를 치면 변경된다.<br><code>:%s/kr.archive.ubuntu.com/mirror.kakao.com</code></p>
+<p>실행해 보면 mirror.kakao.com 으로 바뀐 걸 확인할 수 있다.<br><code>sudo apt-get update &amp;amp;&amp;amp; apt-get upgrade</code></p>
+]]></content>
+      <categories>
+        <category>서버</category>
       </categories>
   </entry>
   <entry>

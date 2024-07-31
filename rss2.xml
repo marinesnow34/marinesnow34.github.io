@@ -9,14 +9,14 @@
     <atom:link href="https://marinesnow34.github.io/rss2.xml" rel="self" type="application/rss+xml"/>
     
     <description>공부 기록용 블로그</description>
-    <pubDate>Wed, 31 Jul 2024 11:57:22 GMT</pubDate>
+    <pubDate>Wed, 31 Jul 2024 12:01:52 GMT</pubDate>
     <generator>http://hexo.io/</generator>
     
     <item>
       <title>dockerfile 도커 파일 작성법</title>
-      <link>https://marinesnow34.github.io/2024/08/31/dockerfile/</link>
-      <guid>https://marinesnow34.github.io/2024/08/31/dockerfile/</guid>
-      <pubDate>Fri, 30 Aug 2024 15:00:00 GMT</pubDate>
+      <link>https://marinesnow34.github.io/2024/07/31/dockerfile/</link>
+      <guid>https://marinesnow34.github.io/2024/07/31/dockerfile/</guid>
+      <pubDate>Tue, 30 Jul 2024 15:00:00 GMT</pubDate>
       
       <description>&lt;h2 id=&quot;도커-파일이란&quot;&gt;&lt;a href=&quot;#도커-파일이란&quot; class=&quot;headerlink&quot; title=&quot;도커 파일이란?&quot;&gt;&lt;/a&gt;도커 파일이란?&lt;/h2&gt;&lt;p&gt;도커 파일은 도커 이미지를 만들기 위한 설정 파일입니다. 도커 파일은 &lt;code&gt;Dockerfile&lt;/code&gt;이라는 이름으로 작성하며, 도커 이미지를 만들기 위한 명령어들을 순서대로 작성합니다.&lt;/p&gt;
 &lt;h2 id=&quot;도커-파일-작성법&quot;&gt;&lt;a href=&quot;#도커-파일-작성법&quot; class=&quot;headerlink&quot; title=&quot;도커 파일 작성법&quot;&gt;&lt;/a&gt;도커 파일 작성법&lt;/h2&gt;&lt;h3 id=&quot;FROM&quot;&gt;&lt;a href=&quot;#FROM&quot; class=&quot;headerlink&quot; title=&quot;FROM&quot;&gt;&lt;/a&gt;FROM&lt;/h3&gt;</description>
@@ -30,7 +30,7 @@
       
       
       
-      <comments>https://marinesnow34.github.io/2024/08/31/dockerfile/#disqus_thread</comments>
+      <comments>https://marinesnow34.github.io/2024/07/31/dockerfile/#disqus_thread</comments>
       
     </item>
     

@@ -9,11 +9,11 @@
     <atom:link href="https://marinesnow34.github.io/rss2.xml" rel="self" type="application/rss+xml"/>
     
     <description>공부 기록용 블로그</description>
-    <pubDate>Wed, 18 Sep 2024 08:50:09 GMT</pubDate>
+    <pubDate>Wed, 18 Sep 2024 08:52:09 GMT</pubDate>
     <generator>http://hexo.io/</generator>
     
     <item>
-      <title>\[spring\] 공공데이터 SERVICE KEY IS NOT REGISTERED ERROR 해결방법</title>
+      <title>(spring) 공공데이터 SERVICE KEY IS NOT REGISTERED ERROR 해결방법</title>
       <link>https://marinesnow34.github.io/2024/09/18/data-go-kr/</link>
       <guid>https://marinesnow34.github.io/2024/09/18/data-go-kr/</guid>
       <pubDate>Tue, 17 Sep 2024 15:00:00 GMT</pubDate>

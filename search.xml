@@ -620,6 +620,30 @@
       </categories>
   </entry>
   <entry>
+    <title>삼성전자 DX부분 동계 대학생 S/W 알고리즘 역량 강화 특강 사전 문제 후기</title>
+    <url>/2024/01/07/dx-pre/</url>
+    <content><![CDATA[<p><img src="/assets/img/dx_pre/note.png" alt="삼성전자"></p>
+<h1 id="신청-이유"><a href="#신청-이유" class="headerlink" title="신청 이유"></a>신청 이유</h1><p>삼성 상시 SW 역량테스트가 코로나 이후로는 없어졌습니다. 제가 아는 내용으로는 특강, SSAFY를 통해서만 B형(pro)를 응시할 수 있습니다. 그래서 특강을 통해서 B형을 응시하려고 신청했습니다.</p>
+<h1 id="정보"><a href="#정보" class="headerlink" title="정보"></a>정보</h1><p><img src="/assets/img/dx_pre/info1.png" alt="일정"><br><img src="/assets/img/dx_pre/info2.png" alt="커리큘럼"><br><img src="/assets/img/dx_pre/info.png" alt="수료 조건"></p>
+<p>사전 문제는 <a href="https://swexpertacademy.com/main/sst/intro.do">SWEA</a>에서 <a href="https://swexpertacademy.com/main/code/codeBattle/battleMain.do">CodeBattle</a>에서 진행 됩니다. 이전 기록을 확인해 보면 이전 기수의 참여자 수와 합격자 수를 유추해 볼 수 있습니다.</p>
+<h1 id="사전-문제"><a href="#사전-문제" class="headerlink" title="사전 문제"></a>사전 문제</h1><p>사전 문제는 2문제로 구성되어 있습니다. 두 문제의 난이도는 체감상 백준기준 G5이하로 느껴졌습니다.</p>
+<h3 id="기준"><a href="#기준" class="headerlink" title="기준"></a>기준</h3><p>합격 기준은 잘 모르겠습니다. 오픈톡을 보니 1솔 합격자도 있다는 말이 있어서 문제수 외에도 내부 합격 기준이 있을 것 같습니다.</p>
+<h3 id="1번"><a href="#1번" class="headerlink" title="1번"></a>1번</h3><p>1번 문제는 직관적으로 보면 BFS느낌이 나지만 규칙을 찾으면 O(N)으로 풀 수 있었습니다. </p>
+<p>사전에 메모징을 해두면 미세하게 연산을 줄일 수는 있는데 그렇게 하지는 않았습니다.</p>
+<h3 id="2번"><a href="#2번" class="headerlink" title="2번"></a>2번</h3><p><a href="https://www.acmicpc.net/problem/1149">RGB거리</a>문제에 조건을 추가한 문제입니다.</p>
+<p>다른 분들은 DP + 비트마스크로 풀었다고 합니다. </p>
+<p>저는 그리디로 푼 다음 조건에 맞게 결과를 수정하는 방식으로 풀었습니다. 이렇게 했더니 시간복잡도는 O(N)이고 구현이 조금 까다로웠습니다.</p>
+<h3 id="결과"><a href="#결과" class="headerlink" title="결과"></a>결과</h3><p>제출현황에서 테스트 케이스에 대한 결과를 확인할 수 있습니다. 시험이 종료되면 채점결과에서 최종 결과를 확인할 수 있습니다. 제 추측상 히든테케가 추가되는 느낌은 아닌 것 같습니다.</p>
+<p><img src="/assets/img/dx_pre/result.png" alt="결과"></p>
+<h3 id="팁-c"><a href="#팁-c" class="headerlink" title="팁(c++)"></a>팁(c++)</h3><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">ios::sync_with_stdio(<span class="literal">false</span>); <span class="built_in">cin</span>.tie(<span class="number">0</span>); <span class="built_in">cout</span>.tie(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<p>위 코드를 메인 함수 처음에 추가하면 입출력 속도가 빨라집니다.</p>
+<h1 id="최종"><a href="#최종" class="headerlink" title="최종"></a>최종</h1><p><img src="/assets/img/dx_pre/pass.png" alt="최종"></p>
+]]></content>
+      <categories>
+        <category>일상</category>
+      </categories>
+  </entry>
+  <entry>
     <title>dockerfile 도커 파일 작성법</title>
     <url>/2024/07/31/dockerfile/</url>
     <content><![CDATA[<h2 id="도커-파일이란"><a href="#도커-파일이란" class="headerlink" title="도커 파일이란?"></a>도커 파일이란?</h2><p>도커 파일은 도커 이미지를 만들기 위한 설정 파일입니다. 도커 파일은 <code>Dockerfile</code>이라는 이름으로 작성하며, 도커 이미지를 만들기 위한 명령어들을 순서대로 작성합니다.</p>
@@ -668,30 +692,6 @@
 ]]></content>
       <categories>
         <category>서버</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>삼성전자 DX부분 동계 대학생 S/W 알고리즘 역량 강화 특강 사전 문제 후기</title>
-    <url>/2024/01/07/dx-pre/</url>
-    <content><![CDATA[<p><img src="/assets/img/dx_pre/note.png" alt="삼성전자"></p>
-<h1 id="신청-이유"><a href="#신청-이유" class="headerlink" title="신청 이유"></a>신청 이유</h1><p>삼성 상시 SW 역량테스트가 코로나 이후로는 없어졌습니다. 제가 아는 내용으로는 특강, SSAFY를 통해서만 B형(pro)를 응시할 수 있습니다. 그래서 특강을 통해서 B형을 응시하려고 신청했습니다.</p>
-<h1 id="정보"><a href="#정보" class="headerlink" title="정보"></a>정보</h1><p><img src="/assets/img/dx_pre/info1.png" alt="일정"><br><img src="/assets/img/dx_pre/info2.png" alt="커리큘럼"><br><img src="/assets/img/dx_pre/info.png" alt="수료 조건"></p>
-<p>사전 문제는 <a href="https://swexpertacademy.com/main/sst/intro.do">SWEA</a>에서 <a href="https://swexpertacademy.com/main/code/codeBattle/battleMain.do">CodeBattle</a>에서 진행 됩니다. 이전 기록을 확인해 보면 이전 기수의 참여자 수와 합격자 수를 유추해 볼 수 있습니다.</p>
-<h1 id="사전-문제"><a href="#사전-문제" class="headerlink" title="사전 문제"></a>사전 문제</h1><p>사전 문제는 2문제로 구성되어 있습니다. 두 문제의 난이도는 체감상 백준기준 G5이하로 느껴졌습니다.</p>
-<h3 id="기준"><a href="#기준" class="headerlink" title="기준"></a>기준</h3><p>합격 기준은 잘 모르겠습니다. 오픈톡을 보니 1솔 합격자도 있다는 말이 있어서 문제수 외에도 내부 합격 기준이 있을 것 같습니다.</p>
-<h3 id="1번"><a href="#1번" class="headerlink" title="1번"></a>1번</h3><p>1번 문제는 직관적으로 보면 BFS느낌이 나지만 규칙을 찾으면 O(N)으로 풀 수 있었습니다. </p>
-<p>사전에 메모징을 해두면 미세하게 연산을 줄일 수는 있는데 그렇게 하지는 않았습니다.</p>
-<h3 id="2번"><a href="#2번" class="headerlink" title="2번"></a>2번</h3><p><a href="https://www.acmicpc.net/problem/1149">RGB거리</a>문제에 조건을 추가한 문제입니다.</p>
-<p>다른 분들은 DP + 비트마스크로 풀었다고 합니다. </p>
-<p>저는 그리디로 푼 다음 조건에 맞게 결과를 수정하는 방식으로 풀었습니다. 이렇게 했더니 시간복잡도는 O(N)이고 구현이 조금 까다로웠습니다.</p>
-<h3 id="결과"><a href="#결과" class="headerlink" title="결과"></a>결과</h3><p>제출현황에서 테스트 케이스에 대한 결과를 확인할 수 있습니다. 시험이 종료되면 채점결과에서 최종 결과를 확인할 수 있습니다. 제 추측상 히든테케가 추가되는 느낌은 아닌 것 같습니다.</p>
-<p><img src="/assets/img/dx_pre/result.png" alt="결과"></p>
-<h3 id="팁-c"><a href="#팁-c" class="headerlink" title="팁(c++)"></a>팁(c++)</h3><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">ios::sync_with_stdio(<span class="literal">false</span>); <span class="built_in">cin</span>.tie(<span class="number">0</span>); <span class="built_in">cout</span>.tie(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
-<p>위 코드를 메인 함수 처음에 추가하면 입출력 속도가 빨라집니다.</p>
-<h1 id="최종"><a href="#최종" class="headerlink" title="최종"></a>최종</h1><p><img src="/assets/img/dx_pre/pass.png" alt="최종"></p>
-]]></content>
-      <categories>
-        <category>일상</category>
       </categories>
   </entry>
   <entry>

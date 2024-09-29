@@ -9,8 +9,31 @@
     <atom:link href="https://marinesnow34.github.io/rss2.xml" rel="self" type="application/rss+xml"/>
     
     <description>공부 기록용 블로그</description>
-    <pubDate>Wed, 18 Sep 2024 09:02:38 GMT</pubDate>
+    <pubDate>Sun, 29 Sep 2024 14:03:08 GMT</pubDate>
     <generator>http://hexo.io/</generator>
+    
+    <item>
+      <title>삼성 상시 SW 역량테스트 B형 합격 후기</title>
+      <link>https://marinesnow34.github.io/2024/10/29/samsungb/</link>
+      <guid>https://marinesnow34.github.io/2024/10/29/samsungb/</guid>
+      <pubDate>Mon, 28 Oct 2024 15:00:00 GMT</pubDate>
+      
+      <description>&lt;h2 id=&quot;B형-이란&quot;&gt;&lt;a href=&quot;#B형-이란&quot; class=&quot;headerlink&quot; title=&quot;B형 이란??&quot;&gt;&lt;/a&gt;B형 이란??&lt;/h2&gt;&lt;p&gt;삼성에서 SW 개발자의 역량을 평가하기 위해 시행하는 시험이다. A형, B형, C형으로 나뉘며, 코로나 이전에는 주기적으로 시행되었으나, 코로나 이후로는 SSAFY, 대학생 특강, 임직원 등 제한된 경우에만 응시할 수 있다.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/img/samsungb/test.png&quot; alt=&quot;시험&quot;&gt;&lt;/p&gt;
+&lt;p&gt;시험 구성은 위 사진처럼 있다. 제한 언어는 C, C++, Java이며 가끔 Python도 허용한다. 시험은 4시간 동안 진행되며, 1문제를 풀어야 한다.&lt;/p&gt;</description>
+      
+      
+      
+      <content:encoded><![CDATA[<h2 id="B형-이란"><a href="#B형-이란" class="headerlink" title="B형 이란??"></a>B형 이란??</h2><p>삼성에서 SW 개발자의 역량을 평가하기 위해 시행하는 시험이다. A형, B형, C형으로 나뉘며, 코로나 이전에는 주기적으로 시행되었으나, 코로나 이후로는 SSAFY, 대학생 특강, 임직원 등 제한된 경우에만 응시할 수 있다.</p><p><img src="/assets/img/samsungb/test.png" alt="시험"></p><p>시험 구성은 위 사진처럼 있다. 제한 언어는 C, C++, Java이며 가끔 Python도 허용한다. 시험은 4시간 동안 진행되며, 1문제를 풀어야 한다.</p><p>문제 유형은 시험 응시 가능한 사람들은 <a href="https://swexpertacademy.com/main/main.do">swea</a>에 코드 배틀에서 제공이 될 것이다.</p><p>문제 유형은 경험상 자료구조와 구현을 중점으로 두는 느낌이고, 대회 수준의 알고리즘은 나오지 않는다.</p><h2 id="전략"><a href="#전략" class="headerlink" title="전략"></a>전략</h2><ol><li>문제를 읽고 제한 사항(입력 범위, 개수 등)을 파악한다.</li><li>문제를 풀기 위한 알고리즘을 생각나는 대로 종이에 적는다.</li><li>작성한 알고리즘 중 가장 효율적인 것을 선택한다.</li><li>코드를 작성한다.</li></ol><p>위와 같은 순서로 진행하는게 좋다. 이번이 3번째 응시인데, 1,2번째 응시 때는 바로 코드를 작성하고 시간초를 줄이는 방식으로 했었다. 그래서 시간이 부족해서 항상 test케이스도 통과하지 못했었다. 하지만 이번에는 종이로 생각을 정리하고, 코드를 작성하니 1시간 반만에 풀고 제출할 수 있었다.</p><h2 id="시간-복잡도-팁"><a href="#시간-복잡도-팁" class="headerlink" title="시간 복잡도 팁"></a>시간 복잡도 팁</h2><p>보통 문제에서 25개의 테스트 케이스가 주어지고 1~3초 내에 통과해야 한다. 하지만 때에 따라서 주어진 테스트 케이스보다 많은 50개의 케이스를 통과 해야는 경우도 있다. 그래서 시간 복잡도를 잘 파악하는 것이 중요하다.</p><p>50개 3초라고 생각하면 1개당 0.06초이다. 하지만 이렇게 모든 케이스가 최악인 경우는 드물다. 그래서 들리는 소문에 따르면 주어진 테스트케이스를 2배로 늘려서 생각하면 된다고 한다.</p><p>예를 들어 위와 같은 경우에 25개 테스트케이스가 주어지면 1.5초 보다 조금 더 줄이면 된다.</p><h2 id="후기"><a href="#후기" class="headerlink" title="후기"></a>후기</h2><p>SSAFY에서 한 동안 알고리즘만 풀다 보니 폼이 올랐었는데, 마침 B형을 응시할 수 있어서 통과했다. 사실 정해(正解)라고 생각한 풀이가 아니었는데 합격할 수 있어서 얼떨떨했다. 그래도 SSAFY하면서 세웠던 목표 중 하나를 달성해서 기분이 좋다.</p><p><img src="/assets/img/samsungb/mail.png" alt="success"></p>]]></content:encoded>
+      
+      
+      <category domain="https://marinesnow34.github.io/categories/%EC%9D%BC%EC%83%81/">일상</category>
+      
+      
+      
+      <comments>https://marinesnow34.github.io/2024/10/29/samsungb/#disqus_thread</comments>
+      
+    </item>
     
     <item>
       <title>(spring) 공공데이터 SERVICE KEY IS NOT REGISTERED ERROR 해결방법</title>
@@ -228,28 +251,6 @@
       
       
       <comments>https://marinesnow34.github.io/2024/07/08/mig/#disqus_thread</comments>
-      
-    </item>
-    
-    <item>
-      <title>SSAFY 싸피 12기 합격 후기(전공자)</title>
-      <link>https://marinesnow34.github.io/2024/06/21/ssafy_init/</link>
-      <guid>https://marinesnow34.github.io/2024/06/21/ssafy_init/</guid>
-      <pubDate>Thu, 20 Jun 2024 15:00:00 GMT</pubDate>
-      
-      <description>&lt;h3 id=&quot;스펙&quot;&gt;&lt;a href=&quot;#스펙&quot; class=&quot;headerlink&quot; title=&quot;스펙&quot;&gt;&lt;/a&gt;스펙&lt;/h3&gt;&lt;p&gt;스펙을 담을 공간이 부족하여 지원할 때는 스펙을 거의 담지 못하고, 팀 프로젝트 했봤다는 언급만 했다. 그래서 스펙은 크게 중요하지 않다고 생각한다.&lt;/p&gt;
-&lt;h3 id=&quot;자소서&quot;&gt;&lt;a href=&quot;#자소서&quot; class=&quot;headerlink&quot; title=&quot;자소서&quot;&gt;&lt;/a&gt;자소서&lt;/h3&gt;&lt;p&gt;500자 내외의 자소서에 담을 수 있는 내용은 많지 않았다. 교육 기관인 만큼 내가 잘한것 보다는 부족함과 성장에 대한 의지를 담았다. 그리고 싸피가 왜 나한테 필요한지, 어떤 부분을 채우고 싶은지를 담으려고 노력했다.&lt;/p&gt;</description>
-      
-      
-      
-      <content:encoded><![CDATA[<h3 id="스펙"><a href="#스펙" class="headerlink" title="스펙"></a>스펙</h3><p>스펙을 담을 공간이 부족하여 지원할 때는 스펙을 거의 담지 못하고, 팀 프로젝트 했봤다는 언급만 했다. 그래서 스펙은 크게 중요하지 않다고 생각한다.</p><h3 id="자소서"><a href="#자소서" class="headerlink" title="자소서"></a>자소서</h3><p>500자 내외의 자소서에 담을 수 있는 내용은 많지 않았다. 교육 기관인 만큼 내가 잘한것 보다는 부족함과 성장에 대한 의지를 담았다. 그리고 싸피가 왜 나한테 필요한지, 어떤 부분을 채우고 싶은지를 담으려고 노력했다.</p><p>본인이 쓴 에세이 흐름은 다음과 같다.</p><ol><li>프로그래머가 되고 싶은 이유</li><li>그래서 어떤 노력을 했는지</li><li>노력을 하면서 느낀 부족한점</li><li>싸피를 통해서 부족함을 채우고 싶다.</li><li>[문단 변경]</li><li>싸피 활동 중 마음에 드는 것</li><li>그게 왜 마음에 드는지 + 그걸 통해 내가 어떻게 성장할 계획인지</li><li>열심히 할테니 뽑아주세요.</li></ol><h3 id="코테"><a href="#코테" class="headerlink" title="코테"></a>코테</h3><p>코테 환경은 <a href="https://swexpertacademy.com/main/main.do">SWEA</a>와 유사하니 미리 연습해보는 것이 좋다. 코테 문제는 기본적인 자료구조랑 알고리즘을 알면 쉽게 풀 수 있는 문제였다. 빨리 다 풀고 퇴장 가능 시간에 바로 시험 종료를 했다.</p><h3 id="인터뷰-준비"><a href="#인터뷰-준비" class="headerlink" title="인터뷰 준비"></a>인터뷰 준비</h3><p>인터뷰는 PT + 개인 Q&amp;A로 구성되어 있다. 코테 결과가 나오고 오픈 톡방에 엄청나게 많은 PT스터디가 올라왔다. 하지만 PT스터디도 참여하지 않았다. 스터디를 하면 얼마나 도움이 될까? 라는 생각과 스터디원의 피드백 때문에 내 주관이 흔들릴까봐 참여하지 않았다. 내가 하는 말이 정답이 아니더라도 근거가 있게 논리적으로 말하면 된다고 생각했다. 귀찮기도 하고 그래서 PT준비는 전혀 하지 않았다.</p><p><strong>개인 Q&amp;A</strong>의 경우에도 많은 준비를 하지 않았다. 왜냐하면 면접관은 내 정보를 많이 알지 못하기 때문에 물어볼 수 있는게 한정적이라 생각했기 때문이다. 500자 내외의 에세이와 인터뷰중에 나온 정보로 나를 판단할 수 밖에 없다. 그래서 깊은 질문이 나올 것이라 생각하지 않았다.</p><p>그냥 다른 블로그에서 올린 간단한 면접 예상 문제를 보고 내가 어떤 컨셉을 잡을지 정도만 생각했다. 그래도 첫 인상을 결정하는 1분 자기 소개는 중요하다고 생각했다. 동기가 도와줘서 1분 자기소개 위주로 준비했다.</p><h3 id="인터뷰"><a href="#인터뷰" class="headerlink" title="인터뷰"></a>인터뷰</h3><p>인터뷰 복장의 경우 노출이 없는 단정한 복장이면 된다. 굳이 정장을 입을 필요는 없다. 본인의 면접 컨셉에 맞게 입으면 된다. 필자를 프로패셔널한 개발자 보다 노력하는 <strong>학생</strong>으로 보이길 원해서 깔끔하고 캐주얼하게 입었다.</p><p>면접 내용은 자세히 작성하기는 어렵다. 간단히 줄이면 PT는 처음이라 당황스러웠고, 면접 분위기는 우호적이지는 않았다. 압박 면접은 아니었지만 내가 한 말이 정적 속에 다시 메아리쳐 들려올 때마다 긴장이 됐다. 그래도 면접 내용은 예상에서 크게 벗어나지 않았다.</p><h3 id="합격"><a href="#합격" class="headerlink" title="합격"></a>합격</h3><p><img src="/assets/img/ssafy_init/pass.png" alt="합격"></p>]]></content:encoded>
-      
-      
-      <category domain="https://marinesnow34.github.io/categories/%EC%9D%BC%EC%83%81/">일상</category>
-      
-      
-      
-      <comments>https://marinesnow34.github.io/2024/06/21/ssafy_init/#disqus_thread</comments>
       
     </item>
     

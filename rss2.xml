@@ -9,11 +9,11 @@
     <atom:link href="https://marinesnow34.github.io/rss2.xml" rel="self" type="application/rss+xml"/>
     
     <description>공부 기록용 블로그</description>
-    <pubDate>Sun, 27 Oct 2024 09:42:53 GMT</pubDate>
+    <pubDate>Sun, 27 Oct 2024 09:43:10 GMT</pubDate>
     <generator>http://hexo.io/</generator>
     
     <item>
-      <title>Jenkins 설치하기</title>
+      <title>Jenkins 설치하고 빌드하기</title>
       <link>https://marinesnow34.github.io/2024/10/27/jenkins/</link>
       <guid>https://marinesnow34.github.io/2024/10/27/jenkins/</guid>
       <pubDate>Sat, 26 Oct 2024 15:00:00 GMT</pubDate>

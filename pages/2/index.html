@@ -205,6 +205,83 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/09/18/data-go-kr/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/09/18/data-go-kr/" class="post-title-link" itemprop="url">(spring) 공공데이터 SERVICE KEY IS NOT REGISTERED ERROR 해결방법</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2024-09-18 00:00:00" itemprop="dateCreated datePublished" datetime="2024-09-18T00:00:00+09:00">2024-09-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EA%B8%B0%ED%83%80/" itemprop="url" rel="index"><span itemprop="name">기타</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"onclick="window.location.href='/2024/09/18/data-go-kr/';">
+
+      
+          <h2 id="상황"><a href="#상황" class="headerlink" title="상황"></a>상황</h2><p>Spring Boot에서 <code>restTemplate</code>으로 공공데이터 API를 사용할 때, <code>Could not extract response: no suitable HttpMessageConverter found for response type [class ~] and content type [text/xml;charset=UTF-8]</code>가 발생했다.</p>
+<p>해당 에러는 xml을 적절한 형식으로 변환하지 못해서 발생하는 에러이다. 이를 해결하기 위해서 <code>class</code>를 String으로 변경하고 확인해 보았다.</p>
+<p><img src="/assets/img/data_go_kr/error.png" alt="error"><br>확인해보니, <code>SERVICE_KEY_IS_NOT_REGISTERED_ERROR</code>가 발생했다. 해당 에러는 서비스키가 정상적이지 않아 발생하는 에러이다. 서비스키 발급을 최근에 했다면 등록되는 시간이 필요하지만, 이미 다른 프로젝트에서 사용하고 있는 서비스키였기 때문에 이상하다고 생각했다.</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/09/18/data-go-kr/#more" rel="contents">
+                더 읽어보기 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
     <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/09/15/gitaction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -521,82 +598,6 @@
   
   
   
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
-    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/07/31/dockerfile/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Joowon Lim">
-      <meta itemprop="description" content="공부 기록용 블로그">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="marinesnow34">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/07/31/dockerfile/" class="post-title-link" itemprop="url">dockerfile 도커 파일 작성법</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">작성일</span>
-
-              <time title="Post created: 2024-07-31 00:00:00" itemprop="dateCreated datePublished" datetime="2024-07-31T00:00:00+09:00">2024-07-31</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%EC%84%9C%EB%B2%84/" itemprop="url" rel="index"><span itemprop="name">서버</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody"onclick="window.location.href='/2024/07/31/dockerfile/';">
-
-      
-          <h2 id="도커-파일이란"><a href="#도커-파일이란" class="headerlink" title="도커 파일이란?"></a>도커 파일이란?</h2><p>도커 파일은 도커 이미지를 만들기 위한 설정 파일입니다. 도커 파일은 <code>Dockerfile</code>이라는 이름으로 작성하며, 도커 이미지를 만들기 위한 명령어들을 순서대로 작성합니다.</p>
-<h2 id="도커-파일-작성법"><a href="#도커-파일-작성법" class="headerlink" title="도커 파일 작성법"></a>도커 파일 작성법</h2><h3 id="FROM"><a href="#FROM" class="headerlink" title="FROM"></a>FROM</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/07/31/dockerfile/#more" rel="contents">
-                더 읽어보기 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-
-  
-  
-  
 	
 
   
@@ -667,7 +668,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">39</span>
           <span class="site-state-item-name">포스트</span>
         </a>
       </div>

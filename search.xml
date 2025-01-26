@@ -1337,6 +1337,7 @@
 
 <h3 id="세션"><a href="#세션" class="headerlink" title="세션"></a>세션</h3><p>MySQL의 세션은 연결된 클라이언트를 의미합니다. 만일 Spring Boot 같은 프레임워크를 사용하고 있다면, 세션은 커넥션 풀에서 가져온 커넥션을 의미합니다.</p>
 <p>즉 커넥션 풀에서 커넥션을 가져오고 반납하는 과정을 제대로 관리하지 않으면 락이 의도하는 대로 동작하지 않을 수 있습니다.</p>
+<hr>
 <h2 id="세팅"><a href="#세팅" class="headerlink" title="세팅"></a>세팅</h2><p>먼저 간단하게 세팅을 하겠습니다. 제가 사용한 MySQL버전은 8.3.0입니다.</p>
 <h3 id="Users"><a href="#Users" class="headerlink" title="Users"></a>Users</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="meta">@Table(name = &quot;users&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Id</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> id;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 

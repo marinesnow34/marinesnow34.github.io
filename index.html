@@ -252,7 +252,7 @@
     <div class="post-body" itemprop="articleBody"onclick="window.location.href='/2025/01/26/mysql-named-lock/';">
 
       
-          <h2 id="서론"><a href="#서론" class="headerlink" title="서론"></a>서론</h2><p>MySQL을 사용하다 보면 insert나 집계 쿼리를 실행할 때 동시성 이슈가 발생하는 경우가 있습니다. 하지만 락을 걸 수 있는 컬럼이 없고 그렇다고 테이블 레벨에서 락을 걸면 성능 이슈가 발생하게 됩니다.</p>
+          <h2 id="서론"><a href="#서론" class="headerlink" title="서론"></a>서론</h2><p>MySQL을 사용하다 보면 insert나 집계 쿼리를 실행할 때 동시성 이슈가 발생하는 경우가 있습니다. 하지만 존재하지 않는 컬럼에 락을 걸 수 없고 그렇다고 테이블 레벨에서 락을 걸면 성능 이슈가 발생하게 됩니다.</p>
 <p>이런 상황을 효과적으로 해결할 수 있는 방법 중 하나가 네임드락(Named Lock)입니다. MySQL 네임드락을 사용할 때 특징과 주의해야할 점을 살펴보겠습니다.</p>
 <h2 id="네임드락-Named-Lock-이란"><a href="#네임드락-Named-Lock-이란" class="headerlink" title="네임드락(Named Lock)이란?"></a>네임드락(Named Lock)이란?</h2>
           <!--noindex-->

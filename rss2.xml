@@ -9,8 +9,30 @@
     <atom:link href="https://marinesnow34.github.io/rss2.xml" rel="self" type="application/rss+xml"/>
     
     <description>공부 기록용 블로그</description>
-    <pubDate>Sun, 02 Feb 2025 15:48:20 GMT</pubDate>
+    <pubDate>Sun, 09 Feb 2025 11:18:37 GMT</pubDate>
     <generator>http://hexo.io/</generator>
+    
+    <item>
+      <title>MySQL insert 충돌 시 어떤일이 일어날까?</title>
+      <link>https://marinesnow34.github.io/2025/02/09/mysql-insert/</link>
+      <guid>https://marinesnow34.github.io/2025/02/09/mysql-insert/</guid>
+      <pubDate>Sat, 08 Feb 2025 15:00:00 GMT</pubDate>
+      
+      <description>&lt;h2 id=&quot;서론&quot;&gt;&lt;a href=&quot;#서론&quot; class=&quot;headerlink&quot; title=&quot;서론&quot;&gt;&lt;/a&gt;서론&lt;/h2&gt;&lt;p&gt;&lt;a href=&quot;https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html&quot;&gt;공식문서&lt;/a&gt;를 보던중에 insert할 때 발생하는 신기한(?) 현상을 발견했습니다. 직접 실행해보니 제가 예상 했던것과 다른 결과가 나와서 이번 기회에 알아보았습니다.&lt;/p&gt;
+&lt;h2 id=&quot;퀴즈&quot;&gt;&lt;a href=&quot;#퀴즈&quot; class=&quot;headerlink&quot; title=&quot;퀴즈&quot;&gt;&lt;/a&gt;퀴즈&lt;/h2&gt;&lt;p&gt;다음과 같은 상황에서 최종 결과는 무엇일까요?&lt;/p&gt;</description>
+      
+      
+      
+      <content:encoded><![CDATA[<h2 id="서론"><a href="#서론" class="headerlink" title="서론"></a>서론</h2><p><a href="https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html">공식문서</a>를 보던중에 insert할 때 발생하는 신기한(?) 현상을 발견했습니다. 직접 실행해보니 제가 예상 했던것과 다른 결과가 나와서 이번 기회에 알아보았습니다.</p><h2 id="퀴즈"><a href="#퀴즈" class="headerlink" title="퀴즈"></a>퀴즈</h2><p>다음과 같은 상황에서 최종 결과는 무엇일까요?</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> t1 (i <span class="type">INT</span>, <span class="keyword">PRIMARY</span> <span class="keyword">KEY</span> (i)) ENGINE <span class="operator">=</span> InnoDB;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t1 <span class="keyword">VALUES</span>(<span class="number">100</span>);</span><br><span class="line"><span class="comment">-- 편의상 100이라는 row를 넣었습니다.</span></span><br></pre></td></tr></table></figure><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 세션1</span></span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t1 <span class="keyword">VALUES</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 세션2</span></span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t1 <span class="keyword">VALUES</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 세션3</span></span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t1 <span class="keyword">VALUES</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 세션1</span></span><br><span class="line"><span class="keyword">ROLLBACK</span>;</span><br></pre></td></tr></table></figure><p>위 코드를 보면 세션 1, 2, 3이 동일한 key를 가지고 t1에 insert를 시도합니다. 그 후 lock을 점유하고 있는 세션1을 rollback을 합니다. 이때 세션2, 3은 어떻게되고 어떤 lock을 가지게 될까요?</p><hr><p>직관적으로 생각해보면 한 세션은 <code>row, X</code> lock을 잡고, 다른 세션은 락에 걸려있을 것 같습니다. 하지만 정답은 최종적으로 <strong>세션2, 3중 하나만 성공하고 row, GAP 락</strong>이 걸립니다. 왜 그럴까요?</p><h2 id="해설"><a href="#해설" class="headerlink" title="해설"></a>해설</h2><p>실제 결과와 함께 설명하겠습니다.</p><ol><li>세션1이 <code>INSERT INTO t1 VALUES(1);</code>을 실행하면 <code>X</code> lock이 걸립니다.</li><li>세션2가 <code>INSERT INTO t1 VALUES(1);</code>을 실행하면 <code>duplicate-key error</code> 때문에, <code>S</code> lock을 얻고 대기합니다.</li><li>세션3도 세션2와 같은 상황입니다. <code>S</code> lock을 얻고 대기합니다.<br><img src="/assets/img/mysql_insert/1.png" alt="1.png"></li><li>세션1이 <code>ROLLBACK;</code>을 실행하면 lock이 해제됩니다. </li><li>세션 2,3 이 가진 <code>S, row</code> lock은 row가 삭제되면서 <code>GAP</code> lock으로 변경됩니다.</li><li>세션2와 세션3은 <code>X</code> lock을 얻으려고 시도합니다. 하지만 서로가 가진 <code>S</code> lock 때문에 <code>X</code> lock을 얻을 수 없습니다. 따라서 데드락이 발생합니다.</li><li>InnoDB는 데드락을 감지하고, 데드락이 발생한 세션을 롤백합니다. 세션3가 롤백됩니다.</li><li>세션2는 <code>INSERT INTO t1 VALUES(1);</code>을 재시도 하면서 <code>GAP</code> lock을 얻습니다.</li><li>최종적으로 남은 lock은 해당 <code>row</code>의 lock과 다음 <code>GAP</code>의 lock입니다.<br><img src="/assets/img/mysql_insert/2.png" alt="2.png"></li></ol><h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><p>만약 실제 서비스에서 row에만 영향이 간다 생각했는데 GAP락이 걸리면 치명적일 수 있습니다. 흔히 발생하는 상황은 아니지만 고려하고 있으면 좋을 것 같습니다.</p>]]></content:encoded>
+      
+      
+      <category domain="https://marinesnow34.github.io/categories/%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4/">데이터베이스</category>
+      
+      
+      
+      <comments>https://marinesnow34.github.io/2025/02/09/mysql-insert/#disqus_thread</comments>
+      
+    </item>
     
     <item>
       <title>Oracle Cloud 인스턴스 자동 생성 매크로 만들기</title>
@@ -213,29 +235,6 @@
       
       
       <comments>https://marinesnow34.github.io/2024/10/13/ps/#disqus_thread</comments>
-      
-    </item>
-    
-    <item>
-      <title>삼성 상시 SW 역량테스트 B형 합격 후기</title>
-      <link>https://marinesnow34.github.io/2024/09/29/samsungb/</link>
-      <guid>https://marinesnow34.github.io/2024/09/29/samsungb/</guid>
-      <pubDate>Sat, 28 Sep 2024 15:00:00 GMT</pubDate>
-      
-      <description>&lt;h2 id=&quot;B형-이란&quot;&gt;&lt;a href=&quot;#B형-이란&quot; class=&quot;headerlink&quot; title=&quot;B형 이란??&quot;&gt;&lt;/a&gt;B형 이란??&lt;/h2&gt;&lt;p&gt;삼성에서 SW 개발자의 역량을 평가하기 위해 시행하는 시험이다. A형, B형, C형으로 나뉘며, 코로나 이전에는 주기적으로 시행되었으나, 코로나 이후로는 SSAFY, 대학생 특강, 임직원 등 제한된 경우에만 응시할 수 있다.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/assets/img/samsungb/test.png&quot; alt=&quot;시험&quot;&gt;&lt;/p&gt;
-&lt;p&gt;시험 구성은 위 사진처럼 있다. 제한 언어는 C, C++, Java이며 가끔 Python도 허용한다. 시험은 4시간 동안 진행되며, 1문제를 풀어야 한다.&lt;/p&gt;</description>
-      
-      
-      
-      <content:encoded><![CDATA[<h2 id="B형-이란"><a href="#B형-이란" class="headerlink" title="B형 이란??"></a>B형 이란??</h2><p>삼성에서 SW 개발자의 역량을 평가하기 위해 시행하는 시험이다. A형, B형, C형으로 나뉘며, 코로나 이전에는 주기적으로 시행되었으나, 코로나 이후로는 SSAFY, 대학생 특강, 임직원 등 제한된 경우에만 응시할 수 있다.</p><p><img src="/assets/img/samsungb/test.png" alt="시험"></p><p>시험 구성은 위 사진처럼 있다. 제한 언어는 C, C++, Java이며 가끔 Python도 허용한다. 시험은 4시간 동안 진행되며, 1문제를 풀어야 한다.</p><p>문제 유형은 시험 응시 가능한 사람들은 <a href="https://swexpertacademy.com/main/main.do">swea</a>에 코드 배틀에서 제공이 될 것이다.</p><p>문제 유형은 경험상 자료구조와 구현을 중점으로 두는 느낌이고, 대회 수준의 알고리즘은 나오지 않는다.</p><h2 id="전략"><a href="#전략" class="headerlink" title="전략"></a>전략</h2><ol><li>문제를 읽고 제한 사항(입력 범위, 개수 등)을 파악한다.</li><li>문제를 풀기 위한 알고리즘을 생각나는 대로 종이에 적는다.</li><li>작성한 알고리즘 중 가장 효율적인 것을 선택한다.</li><li>코드를 작성한다.</li></ol><p>위와 같은 순서로 진행하는게 좋다. 이번이 3번째 응시인데, 1,2번째 응시 때는 바로 코드를 작성하고 시간초를 줄이는 방식으로 했었다. 그래서 시간이 부족해서 항상 test케이스도 통과하지 못했었다. 하지만 이번에는 종이로 생각을 정리하고, 코드를 작성하니 1시간 반만에 풀고 제출할 수 있었다.</p><h2 id="시간-복잡도-팁"><a href="#시간-복잡도-팁" class="headerlink" title="시간 복잡도 팁"></a>시간 복잡도 팁</h2><p>보통 문제에서 25개의 테스트 케이스가 주어지고 1~3초 내에 통과해야 한다. 하지만 때에 따라서 주어진 테스트 케이스보다 많은 50개의 케이스를 통과 해야는 경우도 있다. 그래서 시간 복잡도를 잘 파악하는 것이 중요하다.</p><p>50개 3초라고 생각하면 1개당 0.06초이다. 하지만 이렇게 모든 케이스가 최악인 경우는 드물다. 그래서 들리는 소문에 따르면 주어진 테스트케이스를 2배로 늘려서 생각하면 된다고 한다.</p><p>예를 들어 위와 같은 경우에 25개 테스트케이스가 주어지면 1.5초 보다 조금 더 줄이면 된다.</p><h2 id="후기"><a href="#후기" class="headerlink" title="후기"></a>후기</h2><p>SSAFY에서 한 동안 알고리즘만 풀다 보니 폼이 올랐었는데, 마침 B형을 응시할 수 있어서 통과했다. 사실 정해(正解)라고 생각한 풀이가 아니었는데 합격할 수 있어서 얼떨떨했다. 그래도 SSAFY하면서 세웠던 목표 중 하나를 달성해서 기분이 좋다.</p><p><img src="/assets/img/samsungb/mail.png" alt="success"></p>]]></content:encoded>
-      
-      
-      <category domain="https://marinesnow34.github.io/categories/%EC%9D%BC%EC%83%81/">일상</category>
-      
-      
-      
-      <comments>https://marinesnow34.github.io/2024/09/29/samsungb/#disqus_thread</comments>
       
     </item>
     

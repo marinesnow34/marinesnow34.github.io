@@ -1340,6 +1340,42 @@
       </categories>
   </entry>
   <entry>
+    <title>MySQL insert 충돌 시 어떤일이 일어날까?</title>
+    <url>/2025/02/09/mysql-insert/</url>
+    <content><![CDATA[<h2 id="서론"><a href="#서론" class="headerlink" title="서론"></a>서론</h2><p><a href="https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html">공식문서</a>를 보던중에 insert할 때 발생하는 신기한(?) 현상을 발견했습니다. 직접 실행해보니 제가 예상 했던것과 다른 결과가 나와서 이번 기회에 알아보았습니다.</p>
+<h2 id="퀴즈"><a href="#퀴즈" class="headerlink" title="퀴즈"></a>퀴즈</h2><p>다음과 같은 상황에서 최종 결과는 무엇일까요?</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> t1 (i <span class="type">INT</span>, <span class="keyword">PRIMARY</span> <span class="keyword">KEY</span> (i)) ENGINE <span class="operator">=</span> InnoDB;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t1 <span class="keyword">VALUES</span>(<span class="number">100</span>);</span><br><span class="line"><span class="comment">-- 편의상 100이라는 row를 넣었습니다.</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- 세션1</span></span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t1 <span class="keyword">VALUES</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- 세션2</span></span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t1 <span class="keyword">VALUES</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- 세션3</span></span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t1 <span class="keyword">VALUES</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- 세션1</span></span><br><span class="line"><span class="keyword">ROLLBACK</span>;</span><br></pre></td></tr></table></figure>
+
+<p>위 코드를 보면 세션 1, 2, 3이 동일한 key를 가지고 t1에 insert를 시도합니다. 그 후 lock을 점유하고 있는 세션1을 rollback을 합니다. 이때 세션2, 3은 어떻게되고 어떤 lock을 가지게 될까요?</p>
+<hr>
+<p>직관적으로 생각해보면 한 세션은 <code>row, X</code> lock을 잡고, 다른 세션은 락에 걸려있을 것 같습니다. 하지만 정답은 최종적으로 <strong>세션2, 3중 하나만 성공하고 row, GAP 락</strong>이 걸립니다. 왜 그럴까요?</p>
+<h2 id="해설"><a href="#해설" class="headerlink" title="해설"></a>해설</h2><p>실제 결과와 함께 설명하겠습니다.</p>
+<ol>
+<li>세션1이 <code>INSERT INTO t1 VALUES(1);</code>을 실행하면 <code>X</code> lock이 걸립니다.</li>
+<li>세션2가 <code>INSERT INTO t1 VALUES(1);</code>을 실행하면 <code>duplicate-key error</code> 때문에, <code>S</code> lock을 얻고 대기합니다.</li>
+<li>세션3도 세션2와 같은 상황입니다. <code>S</code> lock을 얻고 대기합니다.<br><img src="/assets/img/mysql_insert/1.png" alt="1.png"></li>
+<li>세션1이 <code>ROLLBACK;</code>을 실행하면 lock이 해제됩니다. </li>
+<li>세션 2,3 이 가진 <code>S, row</code> lock은 row가 삭제되면서 <code>GAP</code> lock으로 변경됩니다.</li>
+<li>세션2와 세션3은 <code>X</code> lock을 얻으려고 시도합니다. 하지만 서로가 가진 <code>S</code> lock 때문에 <code>X</code> lock을 얻을 수 없습니다. 따라서 데드락이 발생합니다.</li>
+<li>InnoDB는 데드락을 감지하고, 데드락이 발생한 세션을 롤백합니다. 세션3가 롤백됩니다.</li>
+<li>세션2는 <code>INSERT INTO t1 VALUES(1);</code>을 재시도 하면서 <code>GAP</code> lock을 얻습니다.</li>
+<li>최종적으로 남은 lock은 해당 <code>row</code>의 lock과 다음 <code>GAP</code>의 lock입니다.<br><img src="/assets/img/mysql_insert/2.png" alt="2.png"></li>
+</ol>
+<h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><p>만약 실제 서비스에서 row에만 영향이 간다 생각했는데 GAP락이 걸리면 치명적일 수 있습니다. 흔히 발생하는 상황은 아니지만 고려하고 있으면 좋을 것 같습니다.</p>
+]]></content>
+      <categories>
+        <category>데이터베이스</category>
+      </categories>
+  </entry>
+  <entry>
     <title>MySQL 네임드락 알고 쓰자</title>
     <url>/2025/01/26/mysql-named-lock/</url>
     <content><![CDATA[<h2 id="서론"><a href="#서론" class="headerlink" title="서론"></a>서론</h2><p>MySQL을 사용하다 보면 insert나 집계 쿼리를 실행할 때 동시성 이슈가 발생하는 경우가 있습니다. 하지만 존재하지 않는 컬럼에 락을 걸 수 없고 그렇다고 테이블 레벨에서 락을 걸면 성능 이슈가 발생하게 됩니다.</p>

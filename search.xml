@@ -941,38 +941,6 @@
       </categories>
   </entry>
   <entry>
-    <title>github action 간단 사용법</title>
-    <url>/2024/09/15/gitaction/</url>
-    <content><![CDATA[<h2 id="Github-Action"><a href="#Github-Action" class="headerlink" title="Github Action"></a>Github Action</h2><p>Github Action은 Github에서 제공하는 CI/CD 서비스입니다. Github Action을 사용하면 자동으로 워크플로우를 실행할 수 있어 빌드, 테스트, 배포 등을 자동화할 수 있습니다.</p>
-<h2 id="Github-Action-사용법"><a href="#Github-Action-사용법" class="headerlink" title="Github Action 사용법"></a>Github Action 사용법</h2><p>github action을 사용하기 위해서는 <code>.github/workflows</code> 디렉토리에 워크플로우 파일을 작성해야 합니다. 워크플로우 파일은 <code>.yml</code> 확장자를 가지며, 워크플로우 파일은 크게 <code>name</code>, <code>on</code>, <code>jobs</code> 섹션으로 구성되어 있습니다.</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">CI</span> <span class="string">하기</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span> [ <span class="string">main</span> ]</span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">      <span class="attr">steps:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">source</span> <span class="string">code.</span></span><br><span class="line">          <span class="attr">uses:</span> <span class="string">actions/checkout@v3</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Set</span> <span class="string">up</span> <span class="string">JDK</span> <span class="number">17</span></span><br><span class="line">          <span class="attr">uses:</span> <span class="string">actions/setup-java@v3</span></span><br><span class="line">          <span class="attr">with:</span></span><br><span class="line">            <span class="attr">java-version:</span> <span class="string">&#x27;17&#x27;</span></span><br><span class="line">            <span class="attr">distribution:</span> <span class="string">&#x27;adopt&#x27;</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">naem:</span> <span class="string">Build</span> <span class="string">with</span> <span class="string">Gradle</span></span><br><span class="line">          <span class="attr">run:</span> <span class="string">./gradlew</span> <span class="string">build</span></span><br></pre></td></tr></table></figure>
-
-<p><code>name</code>은 워크플로우의 이름을 나타냅니다.</p>
-<h3 id="on"><a href="#on" class="headerlink" title="on"></a>on</h3><p><code>on</code>은 워크플로우가 실행되는 조건을 나타냅니다. 위 예제에서는 <code>push</code> 이벤트가 발생하고 브랜치가 <code>main</code>일 때 워크플로우가 실행됩니다. <code>cron</code>을 사용하여 주기적으로 워크플로우를 실행할 수도 있습니다.</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">schedule:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">cron:</span> <span class="string">&#x27;0 0 * * *&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>하지만 cron의 느슨한 제약조건으로 인해 정확한 시간에 실행되지 않을 수 있으니 주의해야 합니다.</p>
-<h3 id="jobs"><a href="#jobs" class="headerlink" title="jobs"></a>jobs</h3><p><code>jobs</code>는 워크플로우의 작업을 나타냅니다. <code>jobs</code>는 여러개의 작업을 가질 수 있으며, 각 작업은 <code>runs-on</code>, <code>steps</code>로 구성되어 있습니다.</p>
-<p>여러개의 <code>jobs</code>를 가질 때 병렬로 실행됩니다. 만약 <code>jobs</code>가 서로 의존성이 있을 때는 <code>needs</code> 키워드를 사용하여 의존성을 나타낼 수 있습니다.</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">job1:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Step</span> <span class="number">1</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">echo</span> <span class="string">&quot;Hello, World!&quot;</span></span><br><span class="line">  <span class="attr">job2:</span></span><br><span class="line">    <span class="attr">needs:</span> <span class="string">job1</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Step</span> <span class="number">1</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">echo</span> <span class="string">&quot;Hello, World!&quot;</span></span><br></pre></td></tr></table></figure>
-<p>혹은 <code>if</code> 키워드를 사용하여 조건에 따라 작업을 실행할 수도 있습니다.</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">job1:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Step</span> <span class="number">1</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">echo</span> <span class="string">&quot;Hello, World!&quot;</span></span><br><span class="line">  <span class="attr">job2:</span></span><br><span class="line">    <span class="attr">if:</span> <span class="string">always()</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Step</span> <span class="number">1</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">echo</span> <span class="string">&quot;Hello, World!&quot;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="runs-on"><a href="#runs-on" class="headerlink" title="runs-on"></a>runs-on</h3><p><code>runs-on</code>은 작업이 실행되는 환경을 나타냅니다. <code>ubuntu-latest</code>, <code>windows-latest</code>, <code>macos-latest</code> 등을 사용할 수 있습니다.</p>
-<h3 id="steps"><a href="#steps" class="headerlink" title="steps"></a>steps</h3><p>steps는 작업의 단계를 나타냅니다. 각 단계는 <code>name</code>, <code>run</code>, <code>uses</code>로 구성되어 있습니다.</p>
-<p><code>name</code>은 단계의 이름을 나타냅니다.</p>
-<p><code>uses</code>는 마켓플레이스에서 제공하는 액션을 사용할 때 사용합니다. 예를 들어, <code>actions/checkout@v3</code>는 소스코드를 체크아웃하는 액션을 사용합니다.</p>
-<p><code>run</code>은 직접 명령어를 실행할 때 사용합니다. <code>uses</code>를 사용해서 환경을 설정하고, <code>run</code>을 사용해서 빌드, 테스트, 배포 등을 실행할 수 있습니다.</p>
-<h3 id="실행"><a href="#실행" class="headerlink" title="실행"></a>실행</h3><p><img src="/assets/img/gitaction/test.png" alt="github-action"></p>
-<p><code>actions</code> 탭에서 워크플로우를 확인할 수 있습니다. 워크플로우가 성공적으로 실행되었다면 초록색 체크 마크가 표시됩니다. 실패했다면 빨간색 엑스표시가 표시됩니다.</p>
-<p><img src="/assets/img/gitaction/test2.png" alt="github-action"><br>내부에 들어가면 각 <code>jobs</code> 실행 결과를 확인할 수 있습니다.</p>
-<p><img src="/assets/img/gitaction/test3.png" alt="github-action"><br><code>jobs</code>를 클릭하면 각 <code>steps</code>의 실행 결과를 확인할 수 있습니다.</p>
-<h2 id="마무리"><a href="#마무리" class="headerlink" title="마무리"></a>마무리</h2><p>Github Action을 사용하면 낮은 러닝커브로 CI/CD를 구축할 수 있습니다. Github Action을 사용하여 빌드, 테스트, 배포 등을 자동화하면 개발 생산성을 높일 수 있습니다.</p>
-]]></content>
-      <categories>
-        <category>클라우드</category>
-      </categories>
-  </entry>
-  <entry>
     <title>git으로 협업하기1</title>
     <url>/2023/01/19/git1/</url>
     <content><![CDATA[<h2 id="Git-시작하기-전에"><a href="#Git-시작하기-전에" class="headerlink" title="Git 시작하기 전에"></a>Git 시작하기 전에</h2><p>프로그래밍에 관심이 있는 사람이라면 Git에 대해 많이 들어 봤을 것이다. 하지만 Git과 GitHub는 엄밀히 다르다. git은 버전 관리 시스템이다. 로컬에서 파일 관리를 도와주는 git과 협업에서 파일 관리를 도와주는 github와 구분을 주의해야 한다.</p>
@@ -1019,6 +987,94 @@
 ]]></content>
       <categories>
         <category>Git</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>github action 간단 사용법</title>
+    <url>/2024/09/15/gitaction/</url>
+    <content><![CDATA[<h2 id="Github-Action"><a href="#Github-Action" class="headerlink" title="Github Action"></a>Github Action</h2><p>Github Action은 Github에서 제공하는 CI/CD 서비스입니다. Github Action을 사용하면 자동으로 워크플로우를 실행할 수 있어 빌드, 테스트, 배포 등을 자동화할 수 있습니다.</p>
+<h2 id="Github-Action-사용법"><a href="#Github-Action-사용법" class="headerlink" title="Github Action 사용법"></a>Github Action 사용법</h2><p>github action을 사용하기 위해서는 <code>.github/workflows</code> 디렉토리에 워크플로우 파일을 작성해야 합니다. 워크플로우 파일은 <code>.yml</code> 확장자를 가지며, 워크플로우 파일은 크게 <code>name</code>, <code>on</code>, <code>jobs</code> 섹션으로 구성되어 있습니다.</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">CI</span> <span class="string">하기</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span> [ <span class="string">main</span> ]</span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">      <span class="attr">steps:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">source</span> <span class="string">code.</span></span><br><span class="line">          <span class="attr">uses:</span> <span class="string">actions/checkout@v3</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Set</span> <span class="string">up</span> <span class="string">JDK</span> <span class="number">17</span></span><br><span class="line">          <span class="attr">uses:</span> <span class="string">actions/setup-java@v3</span></span><br><span class="line">          <span class="attr">with:</span></span><br><span class="line">            <span class="attr">java-version:</span> <span class="string">&#x27;17&#x27;</span></span><br><span class="line">            <span class="attr">distribution:</span> <span class="string">&#x27;adopt&#x27;</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">naem:</span> <span class="string">Build</span> <span class="string">with</span> <span class="string">Gradle</span></span><br><span class="line">          <span class="attr">run:</span> <span class="string">./gradlew</span> <span class="string">build</span></span><br></pre></td></tr></table></figure>
+
+<p><code>name</code>은 워크플로우의 이름을 나타냅니다.</p>
+<h3 id="on"><a href="#on" class="headerlink" title="on"></a>on</h3><p><code>on</code>은 워크플로우가 실행되는 조건을 나타냅니다. 위 예제에서는 <code>push</code> 이벤트가 발생하고 브랜치가 <code>main</code>일 때 워크플로우가 실행됩니다. <code>cron</code>을 사용하여 주기적으로 워크플로우를 실행할 수도 있습니다.</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">schedule:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">cron:</span> <span class="string">&#x27;0 0 * * *&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>하지만 cron의 느슨한 제약조건으로 인해 정확한 시간에 실행되지 않을 수 있으니 주의해야 합니다.</p>
+<h3 id="jobs"><a href="#jobs" class="headerlink" title="jobs"></a>jobs</h3><p><code>jobs</code>는 워크플로우의 작업을 나타냅니다. <code>jobs</code>는 여러개의 작업을 가질 수 있으며, 각 작업은 <code>runs-on</code>, <code>steps</code>로 구성되어 있습니다.</p>
+<p>여러개의 <code>jobs</code>를 가질 때 병렬로 실행됩니다. 만약 <code>jobs</code>가 서로 의존성이 있을 때는 <code>needs</code> 키워드를 사용하여 의존성을 나타낼 수 있습니다.</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">job1:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Step</span> <span class="number">1</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">echo</span> <span class="string">&quot;Hello, World!&quot;</span></span><br><span class="line">  <span class="attr">job2:</span></span><br><span class="line">    <span class="attr">needs:</span> <span class="string">job1</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Step</span> <span class="number">1</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">echo</span> <span class="string">&quot;Hello, World!&quot;</span></span><br></pre></td></tr></table></figure>
+<p>혹은 <code>if</code> 키워드를 사용하여 조건에 따라 작업을 실행할 수도 있습니다.</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">job1:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Step</span> <span class="number">1</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">echo</span> <span class="string">&quot;Hello, World!&quot;</span></span><br><span class="line">  <span class="attr">job2:</span></span><br><span class="line">    <span class="attr">if:</span> <span class="string">always()</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Step</span> <span class="number">1</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">echo</span> <span class="string">&quot;Hello, World!&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="runs-on"><a href="#runs-on" class="headerlink" title="runs-on"></a>runs-on</h3><p><code>runs-on</code>은 작업이 실행되는 환경을 나타냅니다. <code>ubuntu-latest</code>, <code>windows-latest</code>, <code>macos-latest</code> 등을 사용할 수 있습니다.</p>
+<h3 id="steps"><a href="#steps" class="headerlink" title="steps"></a>steps</h3><p>steps는 작업의 단계를 나타냅니다. 각 단계는 <code>name</code>, <code>run</code>, <code>uses</code>로 구성되어 있습니다.</p>
+<p><code>name</code>은 단계의 이름을 나타냅니다.</p>
+<p><code>uses</code>는 마켓플레이스에서 제공하는 액션을 사용할 때 사용합니다. 예를 들어, <code>actions/checkout@v3</code>는 소스코드를 체크아웃하는 액션을 사용합니다.</p>
+<p><code>run</code>은 직접 명령어를 실행할 때 사용합니다. <code>uses</code>를 사용해서 환경을 설정하고, <code>run</code>을 사용해서 빌드, 테스트, 배포 등을 실행할 수 있습니다.</p>
+<h3 id="실행"><a href="#실행" class="headerlink" title="실행"></a>실행</h3><p><img src="/assets/img/gitaction/test.png" alt="github-action"></p>
+<p><code>actions</code> 탭에서 워크플로우를 확인할 수 있습니다. 워크플로우가 성공적으로 실행되었다면 초록색 체크 마크가 표시됩니다. 실패했다면 빨간색 엑스표시가 표시됩니다.</p>
+<p><img src="/assets/img/gitaction/test2.png" alt="github-action"><br>내부에 들어가면 각 <code>jobs</code> 실행 결과를 확인할 수 있습니다.</p>
+<p><img src="/assets/img/gitaction/test3.png" alt="github-action"><br><code>jobs</code>를 클릭하면 각 <code>steps</code>의 실행 결과를 확인할 수 있습니다.</p>
+<h2 id="마무리"><a href="#마무리" class="headerlink" title="마무리"></a>마무리</h2><p>Github Action을 사용하면 낮은 러닝커브로 CI/CD를 구축할 수 있습니다. Github Action을 사용하여 빌드, 테스트, 배포 등을 자동화하면 개발 생산성을 높일 수 있습니다.</p>
+]]></content>
+      <categories>
+        <category>클라우드</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>자바 힙 덤프 분석 (실습 예제 있음!!)</title>
+    <url>/2025/03/27/heap-dump/</url>
+    <content><![CDATA[<h2 id="개요"><a href="#개요" class="headerlink" title="개요"></a>개요</h2><p>서버를 운영하다 보면 여러 이유로 힙 덤프를 분석할 일이 생깁니다. 힙 덤프 분석을 통해서 메모리 누수나 메모리 사용량이 높은 부분을 찾아내는데 도움이 됩니다.</p>
+<p>처음 힙 덤프를 분석하려고 하면 어떻게 해야할지 막막할 수 있습니다. 그래서 그런 분들에게 도움이 되고자 힙 덤프 예제 문제와 함께 힙 덤프 분석 방법을 설명하겠습니다. 문제는 아래 링크에서 확인 할 수 있습니다. 문제 정답은 글 맨 아래에 있습니다.</p>
+<p><a href="https://github.com/marinesnow34/dump-example">https://github.com/marinesnow34/dump-example</a></p>
+<h2 id="문제"><a href="#문제" class="headerlink" title="문제"></a>문제</h2><p>고라파덕은 멍때리며 코딩하는 것으로 유명하다. 어느 날, 고라파덕이 운영하는 서버에서 OOM(Out Of Memory) 오류가 발생했다. 다행히 Heap Dump 파일(dump.hprof)을 확보할 수 있었고, 이를 통해 문제를 분석할 수 있는 상황이다.</p>
+<p>📌 분석할 내용</p>
+<ol>
+<li>어떤 메서드에서 문제가 발생했는가?</li>
+<li>어떤 상황(변수 값)에서 문제가 발생했는가?</li>
+</ol>
+<p>소스 코드와 Heap Dump를 분석하여 고라파덕을 도와주자!!</p>
+<h2 id="정적-분석"><a href="#정적-분석" class="headerlink" title="정적 분석"></a>정적 분석</h2><p>본격적으로 힙 덤프를 분석하기 전에 간단하게 소스 코드를 확인 해 봅시다.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// src/main/java/com/example/dump/domain/UserRepository.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserRepository</span> <span class="keyword">extends</span> <span class="title">JpaRepository</span>&lt;<span class="title">User</span>, <span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line">	<span class="function">User <span class="title">findByIdx</span><span class="params">(Long idx)</span></span>;</span><br><span class="line">	<span class="function">User <span class="title">findByName</span><span class="params">(String name)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// src/main/java/com/example/dump/service/UserService.java</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="meta">@RequiredArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> UserRepository userRepository;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getUserNameById</span><span class="params">(Long idx)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> userRepository.findByIdx(idx).getName();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getUserAddressByName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> userRepository.findByName(name).getAddress();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>일단 서비스를 확인해 보니 idx가 주어지면 idx를 가진 유저의 이름을 가져오고, 이름이 주어지면 이름을 가진 유저의 주소를 가져오는 것으로 보입니다.</p>
+<p>코드로 봤을 때는 문제가 될만한 부분이 보이지 않습니다. 그럼 이제 힙 덤프를 분석해 봅시다.</p>
+<h2 id="힙-덤프-분석"><a href="#힙-덤프-분석" class="headerlink" title="힙 덤프 분석"></a>힙 덤프 분석</h2><p>힙 덤프를 분석하기 위해서는 <a href="https://eclipse.dev/mat/download/">MAT</a>와<br><a href="https://visualvm.github.io/download.html">VisualVM</a>을 사용했습니다. 먼저 MAT로 힙 덤프를 열어봅시다.</p>
+<img src="/assets/img/heap/1.png" alt="MAT 메인 화면" width=700>
+
+<p>MAT에서 dump.hprof 파일을 열면 위와 같은 화면이 나옵니다. 먼저 Leak Suspects Report를 클릭해 줍니다. 분석되는 동안 Action &gt; Dominator Tree를 합니다.</p>
+<img src="/assets/img/heap/2.png" alt="Domiantor Tree" width=700>
+내용을 보면 Retained Heap이 큰 객체를 찾을 수 있습니다. 참고로 Retained Heap은 특정 객체가 참조하고 있는 모든 객체들 입니다. 즉 GC에 의해 제거될 때 회수될 수 있는 힙 메모리의 양입니다.
+
+<br>
+ArrayList의 capacity는 360,145이고 안에 들어있는 객체의 갯수는 349,584개 입니다. 이를 통해서 모종의 이유로 ArrayList가 너무 많은 객체를 가지고 있어서 OOM이 발생했을 것으로 추측할 수 있습니다.
+
+<hr>
+<p>아까 분석시킨 supects Report를 확인 합시다.<br><img src="/assets/img/heap/3.png" alt="suspect" width=700></p>
+<p>http-nio-8080-exec-2 스레드에서 문제가 발생했음을 알 수 있습니다. Detail을 확인하면 더 많은 정보를 얻을 수 있습니다. 가독성이 좋은 VisualVM으로 해당 스레드를 확인해 봅시다.</p>
+<br>
+<img src="/assets/img/heap/4.png" alt="visualVM" width=700>
+
+<p>VisualVM에 메인에서 OutOfMemory Thread를 확인할 수 있습니다. 이번 상황에서는 메모리를 많이 들고 있는 쓰레드와 OOM이 발생한 쓰레드가 동일한 것을 알 수 있습니다. view all로 해당 쓰레드를 확인해 봅시다.</p>
+<img src="/assets/img/heap/5.png" alt="visualVM" width=700>
+
+<p>http-nio-8080-exec-2스레드의 스택트레이스가 보입니다. 길어서 저희가 호출한 부분을 찾아보겠습니다.<br><img src="/assets/img/heap/6.png" alt="visualVM" width=700></p>
+<p>익숙한 <code>UserService.getUserNameById()</code> 메서드가 보입니다. <code>findByIdx()</code>를 호출하다가 OOM이 발생했습니다. <code>findByIdx()</code>를 확인해 봅시다.<br><img src="/assets/img/heap/7.png" alt="visualVM" width=700></p>
+<p>local variable을 확인해 보면 long 값이 0인 것을 확인할 수 있습니다. 이는 idx가 0인 유저를 가져오는 것으로 추정됩니다. idx가 0인 유저는 36만명 이상으로 추측 됩니다.</p>
+<h2 id="정답-및-해설"><a href="#정답-및-해설" class="headerlink" title="정답 및 해설"></a>정답 및 해설</h2><ol>
+<li>어떤 메서드에서 문제가 발생했는가?<ul>
+<li><code>UserService.getUserNameById()</code>안 <code>userRepository.findByIdx(idx)</code>에서 idx가 동일한 유저를 <strong>모두</strong> 가져와 메모리 부족으로 인한 OOM이 발생했습니다.</li>
+</ul>
+</li>
+<li>어떤 상황(변수 값)에서 문제가 발생했는가?<ul>
+<li>idx가 0인 유저를 가져올 때 문제가 발생했습니다. idx가 0인 유저는 36만명 이상으로 추측 됩니다.</li>
+</ul>
+</li>
+</ol>
+<p>고라파덕의 서비스는 어떤 이유로 idx가 0인 유저가 36만명 이상이 되었고, 이를 findByIdx(0L)으로 호출하게 됐습니다. NonUniqueResultException가 발생하기 전에 메모리가 부족해 OOM이 발생했습니다.</p>
+]]></content>
+      <categories>
+        <category>서버</category>
       </categories>
   </entry>
   <entry>
@@ -1530,6 +1586,56 @@
       </categories>
   </entry>
   <entry>
+    <title>tosspayment 토스페이 연동하기</title>
+    <url>/2024/08/25/payment/</url>
+    <content><![CDATA[<h2 id="PG사란"><a href="#PG사란" class="headerlink" title="PG사란"></a>PG사란</h2><p>Payment Gateway의 약자로 결제를 위한 인터넷 서비스를 제공하는 결제대행사를 말한다. 국내에서는 인터넷 가맹점이 소비자의 카드정보를 보유하면 안되기 때문에 PG사를 통해 결제를 진행해야만 한다. PG사마다 수수료율이 다르고, 정산주기도 다르고, 편의성도 다르다. 따라서  자신의 상황에 맞는 PG사를 선택해야 한다.</p>
+<h2 id="Toss-Payment"><a href="#Toss-Payment" class="headerlink" title="Toss Payment"></a>Toss Payment</h2><p>당시에 토스페이를 선택한 이유는 다음과 같다.</p>
+<ol>
+<li>짧은 정산주기(5일)</li>
+<li>낮은 프론트 구현 난이도</li>
+<li>브랜드페이(자체 결제)를 제공</li>
+<li>좋은 UI/UX (API문서 포함)</li>
+<li>discord 채널을 통한 문의 가능</li>
+</ol>
+<p>이외에도 사용을 하면서 지속적인 업데이트가 있었고, 빠른 문제 해결이 가능했다.</p>
+<h2 id="결제-흐름-정리"><a href="#결제-흐름-정리" class="headerlink" title="결제 흐름 정리"></a>결제 흐름 정리</h2><p>아마 다른 PG사들도 비슷할 것이다. 결제 흐름을 정리하면 다음과 같다.<br><img src="/assets/img/payment/flow.png" alt="image"></p>
+<p>파란색은 필자가 추가한 부분이다. 이 부분을 통해서 결제를 시도한 유저가 중간에 구매를 포기했는지 파악할 수 있다.</p>
+<p>결제 흐름에서 중요한 용어를 정리하면 다음과 같다.<br><code>orderId</code>는 주문 번호이다. <code>orderId</code>는 주문을 구분하기 위한 고유한 값이다. 따라서 중복이 되면 안된다. 6자~64자 사이의 문자열로 구성되고, 서버나 클라이언트에서 생성할 수 있다.</p>
+<p><code>amount</code>는 결제 금액이다. 사용자가 결제할 금액을 의미한다. 단위는 원이다.</p>
+<p><code>paymentKey</code>는 결제 키이다. 결제데이터 관리를 위해서 필수로 필요한 값이다. <code>paymentKey</code>를 통해서 결제를 진행하게 된다. PG사에서 발급해주는 값이다.</p>
+<ol>
+<li>먼저 사용자가 결제를 시도하면, 클라이언트는 서버로 부터 해당 결제의 <code>orderId</code>, <code>amount</code>와 결제에 필요한 정보들을 받는다. 그리고 서버에서 받은 정보를 바탕으로 PG사에 결제를 요청한다. </li>
+<li>결제 요청을 받은 PG사는 사용자에게 결제창을 띄운다.</li>
+<li>사용자가 결제를 완료하면, 결제창은 사용자를 success url로 리다이렉트 시킨다.</li>
+<li>success url에 <code>amount</code>, <code>orderId</code>, <code>paymentKey</code>를 포함해서 도달한다.</li>
+<li>서버는 <code>amount</code>, <code>orderId</code>에 이상이 없는지 확인하고, PG사에 <code>paymentKey</code>를 추가해 결제 승인 요청을 보낸다. (추가로 헤더에 <code>SecretKey</code>를 추가해야 한다.)</li>
+<li>PG사는 결제 승인 요청을 받아서 결제를 승인하고, 서버에 결제 승인 정보를 보낸다.</li>
+<li>서버는 결제 승인 정보를 받아서 결제가 완료되었다는 것을 사용자에게 알린다.</li>
+</ol>
+<p>이렇게 지속적으로 서버와 PG사가 통신하면서 정상 결제인지 확인하고 결제를 진행한다.</p>
+<h2 id="결제-흐름-구현"><a href="#결제-흐름-구현" class="headerlink" title="결제 흐름 구현"></a>결제 흐름 구현</h2><ul>
+<li><p>결제 요청</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Order <span class="title">makeOrder</span><span class="params">(UserInfo user, Store store, Long amount, Cart cart, Coupon coupon, Long point)</span> </span>&#123;</span><br><span class="line">	List&lt;CartItem&gt; cartItems = cart.getCartItems().stream()</span><br><span class="line">		.filter(cartItem -&gt; !cartItem.getIsDeleted())</span><br><span class="line">		.toList();</span><br><span class="line"></span><br><span class="line">	CartItem firstItem = cartItems.get(<span class="number">0</span>);</span><br><span class="line">	String orderName =</span><br><span class="line">		firstItem.getCount() == <span class="number">1</span> ? firstItem.getFoodie().getName() :</span><br><span class="line">			firstItem.getFoodie().getName() + <span class="string">&quot; * &quot;</span> + firstItem.getCount();</span><br><span class="line">	<span class="keyword">if</span> (cartItems.size() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">		orderName += <span class="string">&quot; 외 &quot;</span></span><br><span class="line">			+ (cartItems.stream().filter(cartItem -&gt; !cartItem.getIsDeleted()).count() - <span class="number">1</span>) + <span class="string">&quot;개&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> Order.builder()</span><br><span class="line">		.userInfo(user)</span><br><span class="line">		.store(store)</span><br><span class="line">		.amount(amount)</span><br><span class="line">		.orderId(UUID.randomUUID().toString())</span><br><span class="line">		.cart(cart)</span><br><span class="line">		.paymentKey(<span class="keyword">null</span>)</span><br><span class="line">		.orderName(orderName)</span><br><span class="line">		.orderNumber(<span class="keyword">null</span>)</span><br><span class="line">		.progress(Progress.REQUEST)</span><br><span class="line">		.build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>카트에 담긴 음식들을 주문으로 만들어주는 메소드이고, 결제 금액인 <code>amount</code>에 대한 검증은 다른 매서드에서 통과한 상태이다. 주문에 필요한 정보들을 담아서 반환한다. <code>orderId</code>는 UUID를 사용해서 중복을 방지한다.</p>
+</li>
+<li><p>결제 승인</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> TosspaymentDto <span class="title">requestTossPaymentAccept</span><span class="params">(String paymentKey, String orderId, Long amount)</span> </span>&#123;</span><br><span class="line">	RestTemplate restTemplate = <span class="keyword">new</span> RestTemplate();</span><br><span class="line">	HttpHeaders headers = makeTossHeader();</span><br><span class="line">	JSONObject params = <span class="keyword">new</span> JSONObject();</span><br><span class="line"></span><br><span class="line">	params.put(<span class="string">&quot;amount&quot;</span>, amount);</span><br><span class="line">	params.put(<span class="string">&quot;orderId&quot;</span>, orderId);</span><br><span class="line">	params.put(<span class="string">&quot;paymentKey&quot;</span>, paymentKey);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> restTemplate.postForObject(TossPaymentConfig.CONFIRM_URL,</span><br><span class="line">		<span class="keyword">new</span> HttpEntity&lt;&gt;(params, headers),</span><br><span class="line">		TosspaymentDto.class);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> HttpHeaders <span class="title">makeTossHeader</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    HttpHeaders headers = <span class="keyword">new</span> HttpHeaders();</span><br><span class="line">    String encodedAuthKey = <span class="keyword">new</span> String(</span><br><span class="line">        Base64.getEncoder().encode((tosspaymentConfig.getTossSecretKey() + <span class="string">&quot;:&quot;</span>).getBytes(StandardCharsets.UTF_8)));</span><br><span class="line">    headers.setBasicAuth(encodedAuthKey);</span><br><span class="line">    headers.setContentType(MediaType.APPLICATION_JSON);</span><br><span class="line">    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));</span><br><span class="line">    <span class="keyword">return</span> headers;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>successUrl로부터 받은 <code>paymentKey</code>, <code>orderId</code>, <code>amount</code>를 통해서 결제 승인을 요청한다. <code>TosspaymentDto</code>는 결제 승인에 대한 응답을 담는 DTO이다. <code>makeToosHeader</code>는 tosspaymentConfig에서 받은 <code>secretKey</code>를 헤더에 추가해주는 메소드이다.</p>
+<p>이렇게 결제 승인을 요청하면, PG사는 결제 승인을 진행하고, 결제 승인에 대한 응답을 반환한다. 승인될 때 사용자의 계좌에서 결제 금액이 차감된다.</p>
+<h2 id="추가-고려-사항"><a href="#추가-고려-사항" class="headerlink" title="추가 고려 사항"></a>추가 고려 사항</h2><p>이렇게 하면 결제 연동은 끝이다. 하지만, 결제 연동을 하면서 추가로 고려해야 할 사항들이 있다.</p>
+<p>실결제 환경에서는 실패와 취소에 대한 처리가 필요하다. 특히 결제 실패가 생각보다 많이 발생한다. 주로 사용자의 계좌에 돈이 부족할 때 발생한다. 그래서 결제가 실패했을 때 적절한 메시지를 사용자에게 전달해서 다시 시도하게 유도해야 한다.</p>
+<h2 id="여담"><a href="#여담" class="headerlink" title="여담"></a>여담</h2><p>문제 없이 결제 연동을 하고 서비스를 운영하던중 토스페이먼츠 디코에 다음과 같은 공지가 떴다.<br><img src="/assets/img/payment/discord.png" alt="image"><br>토스페이를 사용하면서 사용성이 좋았기 때문에 신청을 했다. 운이 좋게도 선정되어서 결제 연동 경험에 대해서 다양한 이야기를 할 수 있었다.</p>
+<p>필자가 주로 얘기한 것은 예제 코드가 <code>node</code>로 되어있어서 <code>java</code>도 추가 했으면 좋겠다고 했다. 최근에 확인해보니 api문서에 <code>java</code> 예제 코드가 추가되었다. 이렇게 사용자의 의견을 적극적으로 수용하는 모습이 좋았다.</p>
+<p>당시 받은 굳즈<br><img src="/assets/img/payment/goods.jpg" alt="image"></p>
+]]></content>
+      <categories>
+        <category>기타</category>
+      </categories>
+  </entry>
+  <entry>
     <title>[프로그래머스] 주사위 고르기 JAVA</title>
     <url>/2024/08/15/pro-258709/</url>
     <content><![CDATA[<h2 id="주사위-고르기-Lv-3"><a href="#주사위-고르기-Lv-3" class="headerlink" title="주사위 고르기 (Lv. 3)"></a><a href="https://school.programmers.co.kr/learn/courses/30/lessons/258709?language=java#">주사위 고르기 (Lv. 3)</a></h2><p>문제를 간단하게 요약하면 다음과 같습니다.</p>
@@ -1642,56 +1748,6 @@
 <h2 id="전체-코드"><a href="#전체-코드" class="headerlink" title="전체 코드"></a>전체 코드</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="comment">// A, B n개의 주사위</span></span><br><span class="line">    <span class="comment">// 6개 면에 1~n</span></span><br><span class="line">    <span class="keyword">int</span> N, win, aWin;</span><br><span class="line">    <span class="keyword">int</span>[] sol, battleDice, aDice, bDice;</span><br><span class="line">    List&lt;Integer&gt; aSumCombi, bSumCombi;</span><br><span class="line">    <span class="keyword">boolean</span>[] visit = <span class="keyword">new</span> <span class="keyword">boolean</span>[<span class="number">15</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">lowerBound</span><span class="params">(List&lt;Integer&gt; arr, <span class="keyword">int</span> t)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> s = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> e = arr.size();</span><br><span class="line">        <span class="keyword">while</span>(s &lt; e)&#123;</span><br><span class="line">            Integer mid = (s+e) / <span class="number">2</span>;</span><br><span class="line">            <span class="keyword">if</span>(arr.get(mid) &lt; t) s = mid + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span> e = mid;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> e;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">game</span><span class="params">(List&lt;Integer&gt; aSumCombi, List&lt;Integer&gt; bSumCombi)</span></span>&#123;</span><br><span class="line">        Collections.sort(bSumCombi);</span><br><span class="line">        <span class="keyword">for</span>(Integer i : aSumCombi)&#123;</span><br><span class="line">            aWin = aWin + lowerBound(bSumCombi, i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rollDice</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">int</span> sum, <span class="keyword">int</span>[] nowDice, <span class="keyword">int</span>[][] dice, List&lt;Integer&gt; sumCombi)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(n == N/<span class="number">2</span>)&#123;</span><br><span class="line">            sumCombi.add(sum);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">6</span>; i++)&#123;</span><br><span class="line">            rollDice(n+<span class="number">1</span>, sum + dice[nowDice[n]][i], nowDice, dice, sumCombi);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">expectGame</span><span class="params">(<span class="keyword">int</span>[][] dice)</span></span>&#123;</span><br><span class="line">        aDice = <span class="keyword">new</span> <span class="keyword">int</span>[N/<span class="number">2</span>];</span><br><span class="line">        bDice = <span class="keyword">new</span> <span class="keyword">int</span>[N/<span class="number">2</span>];</span><br><span class="line">        <span class="keyword">int</span> aSize = <span class="number">0</span>, bSize = <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; N; i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(visit[i]) aDice[aSize++] = i;</span><br><span class="line">            <span class="keyword">else</span> bDice[bSize++] = i;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        aSumCombi = <span class="keyword">new</span> ArrayList&lt;&gt;(<span class="number">10000</span>);</span><br><span class="line">        bSumCombi = <span class="keyword">new</span> ArrayList&lt;&gt;(<span class="number">10000</span>);</span><br><span class="line">        </span><br><span class="line">        rollDice(<span class="number">0</span>, <span class="number">0</span>, aDice, dice, aSumCombi);</span><br><span class="line">        rollDice(<span class="number">0</span>, <span class="number">0</span>, bDice, dice, bSumCombi);</span><br><span class="line">        </span><br><span class="line">        game(aSumCombi, bSumCombi);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">combination</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">int</span> k, <span class="keyword">int</span>[][] dice)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(n == N/<span class="number">2</span>)&#123;</span><br><span class="line">            aWin = <span class="number">0</span>;</span><br><span class="line">            expectGame(dice);</span><br><span class="line">            <span class="keyword">if</span>(aWin &gt; win)&#123;</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; N/<span class="number">2</span>; i++) sol[i] = aDice[i] + <span class="number">1</span>;</span><br><span class="line">                win = aWin;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = k; i &lt; N; i++)&#123;</span><br><span class="line">            visit[i] = <span class="keyword">true</span>;</span><br><span class="line">            combination(n+<span class="number">1</span>, i+<span class="number">1</span>, dice);</span><br><span class="line">            visit[i] = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] solution(<span class="keyword">int</span>[][] dice) &#123;</span><br><span class="line">        N = dice.length;</span><br><span class="line">        battleDice = <span class="keyword">new</span> <span class="keyword">int</span>[N];</span><br><span class="line">        sol = <span class="keyword">new</span> <span class="keyword">int</span>[N/<span class="number">2</span>];</span><br><span class="line">        combination(<span class="number">0</span>, <span class="number">0</span>, dice);</span><br><span class="line">        <span class="keyword">return</span> sol;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>PS</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>tosspayment 토스페이 연동하기</title>
-    <url>/2024/08/25/payment/</url>
-    <content><![CDATA[<h2 id="PG사란"><a href="#PG사란" class="headerlink" title="PG사란"></a>PG사란</h2><p>Payment Gateway의 약자로 결제를 위한 인터넷 서비스를 제공하는 결제대행사를 말한다. 국내에서는 인터넷 가맹점이 소비자의 카드정보를 보유하면 안되기 때문에 PG사를 통해 결제를 진행해야만 한다. PG사마다 수수료율이 다르고, 정산주기도 다르고, 편의성도 다르다. 따라서  자신의 상황에 맞는 PG사를 선택해야 한다.</p>
-<h2 id="Toss-Payment"><a href="#Toss-Payment" class="headerlink" title="Toss Payment"></a>Toss Payment</h2><p>당시에 토스페이를 선택한 이유는 다음과 같다.</p>
-<ol>
-<li>짧은 정산주기(5일)</li>
-<li>낮은 프론트 구현 난이도</li>
-<li>브랜드페이(자체 결제)를 제공</li>
-<li>좋은 UI/UX (API문서 포함)</li>
-<li>discord 채널을 통한 문의 가능</li>
-</ol>
-<p>이외에도 사용을 하면서 지속적인 업데이트가 있었고, 빠른 문제 해결이 가능했다.</p>
-<h2 id="결제-흐름-정리"><a href="#결제-흐름-정리" class="headerlink" title="결제 흐름 정리"></a>결제 흐름 정리</h2><p>아마 다른 PG사들도 비슷할 것이다. 결제 흐름을 정리하면 다음과 같다.<br><img src="/assets/img/payment/flow.png" alt="image"></p>
-<p>파란색은 필자가 추가한 부분이다. 이 부분을 통해서 결제를 시도한 유저가 중간에 구매를 포기했는지 파악할 수 있다.</p>
-<p>결제 흐름에서 중요한 용어를 정리하면 다음과 같다.<br><code>orderId</code>는 주문 번호이다. <code>orderId</code>는 주문을 구분하기 위한 고유한 값이다. 따라서 중복이 되면 안된다. 6자~64자 사이의 문자열로 구성되고, 서버나 클라이언트에서 생성할 수 있다.</p>
-<p><code>amount</code>는 결제 금액이다. 사용자가 결제할 금액을 의미한다. 단위는 원이다.</p>
-<p><code>paymentKey</code>는 결제 키이다. 결제데이터 관리를 위해서 필수로 필요한 값이다. <code>paymentKey</code>를 통해서 결제를 진행하게 된다. PG사에서 발급해주는 값이다.</p>
-<ol>
-<li>먼저 사용자가 결제를 시도하면, 클라이언트는 서버로 부터 해당 결제의 <code>orderId</code>, <code>amount</code>와 결제에 필요한 정보들을 받는다. 그리고 서버에서 받은 정보를 바탕으로 PG사에 결제를 요청한다. </li>
-<li>결제 요청을 받은 PG사는 사용자에게 결제창을 띄운다.</li>
-<li>사용자가 결제를 완료하면, 결제창은 사용자를 success url로 리다이렉트 시킨다.</li>
-<li>success url에 <code>amount</code>, <code>orderId</code>, <code>paymentKey</code>를 포함해서 도달한다.</li>
-<li>서버는 <code>amount</code>, <code>orderId</code>에 이상이 없는지 확인하고, PG사에 <code>paymentKey</code>를 추가해 결제 승인 요청을 보낸다. (추가로 헤더에 <code>SecretKey</code>를 추가해야 한다.)</li>
-<li>PG사는 결제 승인 요청을 받아서 결제를 승인하고, 서버에 결제 승인 정보를 보낸다.</li>
-<li>서버는 결제 승인 정보를 받아서 결제가 완료되었다는 것을 사용자에게 알린다.</li>
-</ol>
-<p>이렇게 지속적으로 서버와 PG사가 통신하면서 정상 결제인지 확인하고 결제를 진행한다.</p>
-<h2 id="결제-흐름-구현"><a href="#결제-흐름-구현" class="headerlink" title="결제 흐름 구현"></a>결제 흐름 구현</h2><ul>
-<li><p>결제 요청</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Order <span class="title">makeOrder</span><span class="params">(UserInfo user, Store store, Long amount, Cart cart, Coupon coupon, Long point)</span> </span>&#123;</span><br><span class="line">	List&lt;CartItem&gt; cartItems = cart.getCartItems().stream()</span><br><span class="line">		.filter(cartItem -&gt; !cartItem.getIsDeleted())</span><br><span class="line">		.toList();</span><br><span class="line"></span><br><span class="line">	CartItem firstItem = cartItems.get(<span class="number">0</span>);</span><br><span class="line">	String orderName =</span><br><span class="line">		firstItem.getCount() == <span class="number">1</span> ? firstItem.getFoodie().getName() :</span><br><span class="line">			firstItem.getFoodie().getName() + <span class="string">&quot; * &quot;</span> + firstItem.getCount();</span><br><span class="line">	<span class="keyword">if</span> (cartItems.size() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">		orderName += <span class="string">&quot; 외 &quot;</span></span><br><span class="line">			+ (cartItems.stream().filter(cartItem -&gt; !cartItem.getIsDeleted()).count() - <span class="number">1</span>) + <span class="string">&quot;개&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> Order.builder()</span><br><span class="line">		.userInfo(user)</span><br><span class="line">		.store(store)</span><br><span class="line">		.amount(amount)</span><br><span class="line">		.orderId(UUID.randomUUID().toString())</span><br><span class="line">		.cart(cart)</span><br><span class="line">		.paymentKey(<span class="keyword">null</span>)</span><br><span class="line">		.orderName(orderName)</span><br><span class="line">		.orderNumber(<span class="keyword">null</span>)</span><br><span class="line">		.progress(Progress.REQUEST)</span><br><span class="line">		.build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>카트에 담긴 음식들을 주문으로 만들어주는 메소드이고, 결제 금액인 <code>amount</code>에 대한 검증은 다른 매서드에서 통과한 상태이다. 주문에 필요한 정보들을 담아서 반환한다. <code>orderId</code>는 UUID를 사용해서 중복을 방지한다.</p>
-</li>
-<li><p>결제 승인</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> TosspaymentDto <span class="title">requestTossPaymentAccept</span><span class="params">(String paymentKey, String orderId, Long amount)</span> </span>&#123;</span><br><span class="line">	RestTemplate restTemplate = <span class="keyword">new</span> RestTemplate();</span><br><span class="line">	HttpHeaders headers = makeTossHeader();</span><br><span class="line">	JSONObject params = <span class="keyword">new</span> JSONObject();</span><br><span class="line"></span><br><span class="line">	params.put(<span class="string">&quot;amount&quot;</span>, amount);</span><br><span class="line">	params.put(<span class="string">&quot;orderId&quot;</span>, orderId);</span><br><span class="line">	params.put(<span class="string">&quot;paymentKey&quot;</span>, paymentKey);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> restTemplate.postForObject(TossPaymentConfig.CONFIRM_URL,</span><br><span class="line">		<span class="keyword">new</span> HttpEntity&lt;&gt;(params, headers),</span><br><span class="line">		TosspaymentDto.class);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> HttpHeaders <span class="title">makeTossHeader</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    HttpHeaders headers = <span class="keyword">new</span> HttpHeaders();</span><br><span class="line">    String encodedAuthKey = <span class="keyword">new</span> String(</span><br><span class="line">        Base64.getEncoder().encode((tosspaymentConfig.getTossSecretKey() + <span class="string">&quot;:&quot;</span>).getBytes(StandardCharsets.UTF_8)));</span><br><span class="line">    headers.setBasicAuth(encodedAuthKey);</span><br><span class="line">    headers.setContentType(MediaType.APPLICATION_JSON);</span><br><span class="line">    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));</span><br><span class="line">    <span class="keyword">return</span> headers;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p>successUrl로부터 받은 <code>paymentKey</code>, <code>orderId</code>, <code>amount</code>를 통해서 결제 승인을 요청한다. <code>TosspaymentDto</code>는 결제 승인에 대한 응답을 담는 DTO이다. <code>makeToosHeader</code>는 tosspaymentConfig에서 받은 <code>secretKey</code>를 헤더에 추가해주는 메소드이다.</p>
-<p>이렇게 결제 승인을 요청하면, PG사는 결제 승인을 진행하고, 결제 승인에 대한 응답을 반환한다. 승인될 때 사용자의 계좌에서 결제 금액이 차감된다.</p>
-<h2 id="추가-고려-사항"><a href="#추가-고려-사항" class="headerlink" title="추가 고려 사항"></a>추가 고려 사항</h2><p>이렇게 하면 결제 연동은 끝이다. 하지만, 결제 연동을 하면서 추가로 고려해야 할 사항들이 있다.</p>
-<p>실결제 환경에서는 실패와 취소에 대한 처리가 필요하다. 특히 결제 실패가 생각보다 많이 발생한다. 주로 사용자의 계좌에 돈이 부족할 때 발생한다. 그래서 결제가 실패했을 때 적절한 메시지를 사용자에게 전달해서 다시 시도하게 유도해야 한다.</p>
-<h2 id="여담"><a href="#여담" class="headerlink" title="여담"></a>여담</h2><p>문제 없이 결제 연동을 하고 서비스를 운영하던중 토스페이먼츠 디코에 다음과 같은 공지가 떴다.<br><img src="/assets/img/payment/discord.png" alt="image"><br>토스페이를 사용하면서 사용성이 좋았기 때문에 신청을 했다. 운이 좋게도 선정되어서 결제 연동 경험에 대해서 다양한 이야기를 할 수 있었다.</p>
-<p>필자가 주로 얘기한 것은 예제 코드가 <code>node</code>로 되어있어서 <code>java</code>도 추가 했으면 좋겠다고 했다. 최근에 확인해보니 api문서에 <code>java</code> 예제 코드가 추가되었다. 이렇게 사용자의 의견을 적극적으로 수용하는 모습이 좋았다.</p>
-<p>당시 받은 굳즈<br><img src="/assets/img/payment/goods.jpg" alt="image"></p>
-]]></content>
-      <categories>
-        <category>기타</category>
       </categories>
   </entry>
   <entry>

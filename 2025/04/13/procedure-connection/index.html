@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="옛 버전의 슬픔JPA 2.6.x 버전 이상부터는 @Procedure를 사용하여 프로시저를 호출 할 때 @Transactional을 사용하지 않으면 에러가 발생합니다. 1You&#39;re trying to execute a @Procedure method without a surrounding transaction that keeps the connecti">
+  <meta name="description" content="옛 버전의 슬픔JPA 2.6.x 버전 이상부터는 @Procedure를 사용하여 프로시저를 호출 할 때 @Transactional을 사용하지 않으면 에러가 발생합니다.You&#39;re trying to execute a @Procedure method without a surrounding transaction that keeps the connection">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JPA @Procedure는 @Transactional에 싸서 사용하세요">
 <meta property="og:url" content="https://marinesnow34.github.io/2025/04/13/procedure-connection/index.html">
 <meta property="og:site_name" content="marinesnow34">
-<meta property="og:description" content="옛 버전의 슬픔JPA 2.6.x 버전 이상부터는 @Procedure를 사용하여 프로시저를 호출 할 때 @Transactional을 사용하지 않으면 에러가 발생합니다. 1You&#39;re trying to execute a @Procedure method without a surrounding transaction that keeps the connecti">
+<meta property="og:description" content="옛 버전의 슬픔JPA 2.6.x 버전 이상부터는 @Procedure를 사용하여 프로시저를 호출 할 때 @Transactional을 사용하지 않으면 에러가 발생합니다.You&#39;re trying to execute a @Procedure method without a surrounding transaction that keeps the connection">
 <meta property="og:locale" content="ko_KR">
 <meta property="article:published_time" content="2025-04-12T15:00:00.000Z">
-<meta property="article:modified_time" content="2025-04-12T18:28:07.644Z">
+<meta property="article:modified_time" content="2025-04-12T18:31:47.634Z">
 <meta property="article:author" content="Joowon Lim">
 <meta name="twitter:card" content="summary">
 
@@ -254,10 +254,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="옛-버전의-슬픔"><a href="#옛-버전의-슬픔" class="headerlink" title="옛 버전의 슬픔"></a>옛 버전의 슬픔</h2><p>JPA 2.6.x 버전 이상부터는 @Procedure를 사용하여 프로시저를 호출 할 때 @Transactional을 사용하지 않으면 에러가 발생합니다.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">You&#39;re trying to execute a @Procedure method without a surrounding transaction that keeps the connection open so that the ResultSet can actually be consumed. Make sure the consumer code uses @Transactional or any other way of declaring a (read-only) transaction.</span><br></pre></td></tr></table></figure>
-
-<p>하지만 그 말은 즉 이전 버전의 JPA에서는 @Transactional을 사용하지 않아도 프로시저를 호출 할 수 있고 예기치 않은 문제가 발생할 수 있습니다.</p>
+        <h2 id="옛-버전의-슬픔"><a href="#옛-버전의-슬픔" class="headerlink" title="옛 버전의 슬픔"></a>옛 버전의 슬픔</h2><p>JPA 2.6.x 버전 이상부터는 @Procedure를 사용하여 프로시저를 호출 할 때 @Transactional을 사용하지 않으면 에러가 발생합니다.<br><code>You&#39;re trying to execute a @Procedure method without a surrounding transaction that keeps the connection open so that the ResultSet can actually be consumed. Make sure the consumer code uses @Transactional or any other way of declaring a (read-only) transaction. </code></p>
+<p>하지만 그 말은 즉 이전 버전의 JPA에서는 @Transactional을 사용하지 않아도 에러 없이 프로시저를 호출 할 수 있고 예기치 않은 문제가 발생할 수 있습니다.</p>
 <hr>
 <p>저는 <strong>db 커넥션이 닫히지 않아 커넥션 풀이 고갈되는 문제</strong>가 발생해서 상당히 고생했었습니다. (검색도 잘 안됨…)</p>
 <p>재현을 하려고 해도 특수한 상황이었는지 재현이 되지 않습니다. 대신 동일 현상을 겪었던 10년도 더 된 스택오버플로우 질문을 발견했습다. <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/28054479/procedure-annotation-orphaning-database-connections-spring-data-jpa">@Procedure annotation orphaning database connections (spring-data-jpa)</a></p>

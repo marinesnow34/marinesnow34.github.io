@@ -9,11 +9,11 @@
     <atom:link href="https://marinesnow34.github.io/rss2.xml" rel="self" type="application/rss+xml"/>
     
     <description>공부 기록용 블로그</description>
-    <pubDate>Fri, 25 Apr 2025 15:51:19 GMT</pubDate>
+    <pubDate>Fri, 25 Apr 2025 15:56:40 GMT</pubDate>
     <generator>http://hexo.io/</generator>
     
     <item>
-      <title>400 응답은 신중히 사용하세요</title>
+      <title>HTTP status 400은 신중히 사용하세요</title>
       <link>https://marinesnow34.github.io/2025/04/24/status400/</link>
       <guid>https://marinesnow34.github.io/2025/04/24/status400/</guid>
       <pubDate>Wed, 23 Apr 2025 15:00:00 GMT</pubDate>

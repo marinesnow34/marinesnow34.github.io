@@ -29,7 +29,7 @@
 <meta property="og:locale" content="ko_KR">
 <meta property="og:image" content="https://marinesnow34.github.io/assets/img/status400/res.png">
 <meta property="article:published_time" content="2025-04-23T15:00:00.000Z">
-<meta property="article:modified_time" content="2025-04-25T15:44:20.305Z">
+<meta property="article:modified_time" content="2025-04-25T15:51:19.871Z">
 <meta property="article:author" content="Joowon Lim">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/status400/res.png">
@@ -285,8 +285,8 @@
 <blockquote>
 <p>A server MUST read the entire request message body or close the connection after sending its response, since otherwise the remaining data on a persistent connection would be misinterpreted as the next request.</p>
 </blockquote>
-<p>위 내용을 해석해 보면 요청 메시지 본문 전체를 읽을 수 없는 상황에서는 커넥션을 닫아야 한다고 합니다. 왜냐하면 커넥션을 닫지 않으면 다음 요청으로 잘못 해석될 수 있기 때문입니다.</p>
-<p>그리고 tomcat 소스코드에서 확인한 커넥션을 닫는 응답 코드들은 다음 요청에 영향을 줄 수 있는 상태 코드들입니다. (tcp는 stream 기반이기 때문)</p>
+<p>위 내용을 해석해 보면 <em>요청 메시지 본문 전체를 읽을 수 없는 상황에서는 커넥션을 닫아야 한다고 합니다. 왜냐하면 커넥션을 닫지 않으면 다음 요청으로 잘못 해석될 수 있기 때문입니다.(tcp는 stream 기반이기 때문)</em></p>
+<p>마침 tomcat 소스코드에서 확인한 커넥션을 닫는 응답 코드들은 다음 요청에 영향을 줄 수 있는 상태 코드인 것을 알 수 있습니다.</p>
 <h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><p>평소에 무심코 사용하던 400 응답이 커넥션을 닫고 있었다는 사실을 알게 되었습니다. 이런일이 또 발생하지 않도록 사용하는 기술에 대해 더 관심을 가지는 계기가 됐습니다.</p>
 
     </div>

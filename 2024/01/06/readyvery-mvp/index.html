@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="발단이 카톡의 시작으로 PM분과 만나서 팀을 꾸리게 되었습니다. 이 때 상당히 흥미로운 주제를 가지고 오셔서 고민 없이 바로 둘이서 팀을 만들기 시작했습니다. 개발을 시작하기 전까지 사람을 모으는 것이 가장 어려웠습니다. 구인 광고를 해도 아무것도 없는 팀에 선뜻 도전하는 사람은 없었습니다. 저 역시 개인적인 카톡이 오기 전에는 관심이 없었기 때문에 이해는">
+<meta property="og:type" content="article">
+<meta property="og:title" content="무식하고 용감한 실결제 서비스 MVP 회고">
+<meta property="og:url" content="https://marinesnow34.github.io/2024/01/06/readyvery-mvp/index.html">
+<meta property="og:site_name" content="marinesnow34">
+<meta property="og:description" content="발단이 카톡의 시작으로 PM분과 만나서 팀을 꾸리게 되었습니다. 이 때 상당히 흥미로운 주제를 가지고 오셔서 고민 없이 바로 둘이서 팀을 만들기 시작했습니다. 개발을 시작하기 전까지 사람을 모으는 것이 가장 어려웠습니다. 구인 광고를 해도 아무것도 없는 팀에 선뜻 도전하는 사람은 없었습니다. 저 역시 개인적인 카톡이 오기 전에는 관심이 없었기 때문에 이해는">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/readyvery/st.JPEG">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/readyvery/calendar.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/readyvery/main.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/readyvery/dev.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/readyvery/success.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/readyvery/fail.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/readyvery/erd.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/readyvery/user.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/readyvery/pay.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/readyvery/kakao.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/readyvery/toss.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/readyvery/main.jpeg">
+<meta property="article:published_time" content="2024-01-06T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-18T08:44:56.807Z">
+<meta property="article:author" content="Joowon Lim">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/readyvery/st.JPEG">
+
+<link rel="canonical" href="https://marinesnow34.github.io/2024/01/06/readyvery-mvp/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>무식하고 용감한 실결제 서비스 MVP 회고 | marinesnow34</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-ZE41Y65DKL');
+      }
+    </script>
+
+
+
+
+
+
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "izvke9bs7i");
+</script>
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <meta name="naver-site-verification" content="7a60549b2cc3ba1fdee5febc98244b8fd772746c" />
+  <script data-ad-client="ca-pub-9904296847545064" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<link rel="alternate" href="/rss2.xml" title="marinesnow34" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">marinesnow34</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/01/06/readyvery-mvp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          무식하고 용감한 실결제 서비스 MVP 회고
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2024-01-06 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-06T00:00:00+00:00">2024-01-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%ED%9A%8C%EA%B3%A0/" itemprop="url" rel="index"><span itemprop="name">회고</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="발단"><a href="#발단" class="headerlink" title="발단"></a>발단</h1><p><img src="/assets/img/readyvery/st.JPEG" alt="카톡"><br>이 카톡의 시작으로 PM분과 만나서 팀을 꾸리게 되었습니다. 이 때 상당히 흥미로운 주제를 가지고 오셔서 고민 없이 바로 둘이서 팀을 만들기 시작했습니다.</p>
+<p>개발을 시작하기 전까지 사람을 모으는 것이 가장 어려웠습니다. 구인 광고를 해도 아무것도 없는 팀에 선뜻 도전하는 사람은 없었습니다. 저 역시 개인적인 카톡이 오기 전에는 관심이 없었기 때문에 이해는 갔습니다.</p>
+<p>그래서 지인 중심으로 사람을 모으기 시작했습니다. 그러나 주변에 백엔드 개발자만 있어서 그런지 프론트엔드 개발자를 구하기가 쉽지 않았습니다. </p>
+<p><del>왜 기업들이 사람을 뽑기가 어렵다고 하는지 간접적으로 체험할 수 있었습니다.</del></p>
+<p>여차저차해서 개발 시작 전까지 1 PM, 1 디자이너, 2 백엔드, 3 프론트 총 7명이 모였고,<br>개발 중간에 프론트 1명이 추가로 합류하여 총 8명이 MVP를 개발하였습니다.</p>
+<h1 id="아이디어"><a href="#아이디어" class="headerlink" title="아이디어"></a>아이디어</h1><p>PM분이 가져온 아이디어는 학교 주변의 카페와 연결하여 커피 원격 주문 서비스를 학생들에게 제공하는 것이었습니다. 이 아이디어는 학생들이 교내 카페를 쉬는 시간에 이용하고 싶더라도 줄이 너무 길어서 이용하지 못하는 경우가 많다는 점에서 출발했습니다.</p>
+<p>실결제 서비스가 궁금하기도 하였고, 아무도 사용하지 않더라도 최소한 <code>저</code>라는 유저  한 명은 서비스의 끝까지 사용할것 같아서 긍정적으로 생각했습니다.</p>
+<h1 id="계획"><a href="#계획" class="headerlink" title="계획"></a>계획</h1><p><img src="/assets/img/readyvery/calendar.png" alt="달력"><br>개발 기간은 매우매우 촉박하였습니다. 각자 기존에 계획된 일정을 마무리하고 10월 23일에 개발 시작을 하기로 결정했기 때문이었습니다.</p>
+<p>배포는 기말고사(12월 11일 전주)인 12월 4일에 하기로 계획을 했었는데, 왜냐하면 학생수가 종강주에 점점 줄어 들기 때문에 최소한 그 전 주에는 서비스를 시작해야 유의미한 데이터를 얻을 수 있다고 판단했기 때문입니다.</p>
+<p>또한 유의미한 데이터를 얻지 못하면 다음 학기에 서비스를 시작해야 하는데, 그렇게 된다면 경험상 팀이 흩어지는 경우가 많기 때문에 종강전 까지 빨리 서비스를 시작해야 했습니다.</p>
+<p>따라서 <code>6주</code>라는 짧은 기간내에 실제 결제가 가능한 서비스를 만들어야 했기 때문에 속도와 안정성 이라는 모순된 목표를 가지고 개발을 진행했습니다.</p>
+<h1 id="기획"><a href="#기획" class="headerlink" title="기획"></a>기획</h1><p>기획 단계에서 고려해야 했던 부분은 여러가지가 있었습니다. 먼저 크게 핵심 기능인 학생들이 커피를 멀리서 주문을 하기 위한 <code>유저 페이지</code>와 유저의 주문을 카페 사장님이 받기 위한 <code>점주 페이지</code>가 필요했습니다.</p>
+<p>기능적으로 유저 페이지에는 <code>로그인</code>, <code>메뉴판</code>, <code>장바구니</code>, <code>주문</code>, <code>결제</code>, <code>결제 취소</code>, <code>주문 상태</code>,<code>주문 내역</code>, <code>(주문) 즐겨찾기</code>, <code>이벤트</code>, <code>쿠폰</code>등 여러가지가 있었고,</p>
+<p>점주 페이지에는 <code>로그인</code>, <code>주문 거부</code>, <code>주문 수락</code>, <code>주문 상태 변경</code>, <code>주문 내역</code>, <code>알림톡 전송</code>, <code>메뉴 품절</code>, <code>매출 확인</code>등이 있었습니다.</p>
+<p>대학생 8명이 학교를 다니며 6주내로 개발을 할 수 있을지 의심이 들었지만 실패를 하더라도 <code>최선</code>을 다해보자는 마음으로 개발을 시작했습니다.</p>
+<h1 id="인프라-설계"><a href="#인프라-설계" class="headerlink" title="인프라 설계"></a>인프라 설계</h1><p>인프라를 할 수 있는 사람이 저밖에 없기 때문에 저 혼자서 인프라를 설계하고 구축하였습니다. 같이 논의할 사람이 없기 때문에 외로운 작업이었습니다.</p>
+<p>인프라를 설계 할 때는 <code>비용</code>이라는 큰 제약이 이었기 때문에 <code>AWS</code>와 <code>Oracle Cloud</code>의 <code>프리티어</code>를 최대한 사용하려고 노력했습니다. 그러고 나서 추후에 <a target="_blank" rel="noopener" href="https://aws.amazon.com/ko/activate/activate-landing/">AWS Activate</a>를 통해서 크레딧을 받고 나면 <code>AWS</code>로 이전을 하기로 결정했습니다.</p>
+<p>실제 서비스가 시작되면 오류에 대한 수정이나 기능 추가에 대한 점검을 서버에서 하기 어렵기 때문에 <code>main서버</code>와 <code>dev서버</code>를 분리하기로 했습니다.</p>
+<ul>
+<li><p>메인 서버<br><img src="/assets/img/readyvery/main.png" alt="메인 서버" title="메인 서버"></p>
+</li>
+<li><p>개발 서버<br><img src="/assets/img/readyvery/dev.png" alt="개발 서버" title="개발 서버"></p>
+</li>
+</ul>
+<p>인프라에 투자할 시간이 많이 없어서 모니터링을 도입하지 못한건 아쉬웠습니다. 메인서버가 <code>Oracle Cloud</code>이기 때문에 <code>AWS</code>의 <code>CloudWatch</code>를 사용할 수 없었고, 모니터링 시스템을 직접 구축하기에는 많은 리소스가 들기에 2주라는 서비스 기간 동안 제가 <code>인간 CloudWatch</code>가 되기로 결정했습니다.</p>
+<p>불행인지 다행인지 동시 접속자가 30명을 넘어가지 않아서 서버가 죽는 일은 없었습니다.</p>
+<h1 id="Github-Action"><a href="#Github-Action" class="headerlink" title="Github Action"></a>Github Action</h1><p>이번에 처음으로 <code>Github Action</code>을 사용해보았는데, 매우 만족스러웠습니다. </p>
+<p>기존 프로젝트에서 인프라를 담당했을 때는 변경이 일어나면 제가 <code>직접 빌드</code>하고 <code>수동</code>으로 서버에 접속해서 <code>배포</code>를 했었습니다. 그러다 보니 저도 시간을 많이 잡아먹고, 상대방도 저를 기다려야 했기 때문에 매우 <code>비효율적</code>이었습니다. 그 과정에서 <code>오류</code>가 발생 한다면 더더욱 시간이 많이 소요되었습니다.</p>
+<p>그래서 시간이 많이 없는 이번 프로젝트에서는 <code>CI/CD</code>를 도입하기로 마음 먹었는데, yml파일로 관리가 쉬운 <code>Github Action</code>을 사용하기로 결정했습니다.</p>
+<p>여러 커스텀을 해서 빌드에 실패를 하면 닫아버리고, 빌드에 성공하면 서버에 접속해서 <code>자동으로 배포</code>를 하도록 설정했습니다. 그리고 모든 결과에 대해서 <code>디스코드</code>로 알림을 받도록 설정했습니다. 그 결과 모두의 시간을 아낄 수 있었습니다.<br><img src="/assets/img/readyvery/success.png" alt="success"><br><img src="/assets/img/readyvery/fail.png" alt="fail"></p>
+<p>그래도 단점이 아닌 단점이 있었습니다. <code>비용</code> 절감을 위해서 <code>organization Free</code>플랜을 썼었는데 <code>organization secrets</code>를 사용 못해서 4개의 레포지토리(점주 백/프, 유저 백/프)에 모두 <code>secrets</code>를 등록해야 했습니다. 그래서 관리가 힘들었지만 적은 러닝커브로 <code>CI/CD</code>를 사용할 수 있어서 좋았습니다.</p>
+<p>그래도 <code>Github Action</code>을 사용하지 않았더라면 프로젝트를 완성하지 못했을 것이라고 장담합니다.</p>
+<h1 id="ERD-설계"><a href="#ERD-설계" class="headerlink" title="ERD 설계"></a>ERD 설계</h1><p>ERD를 설계하는 것은 쉽지 않았습니다. ERD를 잘못 설계하면 나중에 <code>엄청난 비용</code>을 치뤄야 하기 때문에 신중하게 설계해야 했습니다. 하지만 나름 신중하계 설계를 했다고 생각했고 설계의 이유도 있었지만, 실제 개발을 하면서 더 나은 방법이 있어서 ERD를 수정하게 되었습니다.</p>
+<p>초기 ERD보다 많은 수정을 했지만, 그래도 개선할 점이 많이 보입니다.<br><img src="/assets/img/readyvery/erd.png" alt="ERD"></p>
+<h1 id="개발"><a href="#개발" class="headerlink" title="개발"></a>개발</h1><p>기획과 인프라가 끝나고 개발을 시작했습니다. 백엔드는 2명으로 둘 다 사용해 본적이 있는 <code>Spring Boot</code>를 사용하기로 결정했습니다. API명세서를 작성해 보니 약 50개의 API가 필요했고, 저는 외부 API(PG사, 알림톡)과 관련된 API를 맡았습니다.</p>
+<p>PG사는 <code>TossPayment</code>를 사용했습니다. 주문, 결제를 처음으로 해보는 것이라 이해를 하는데 시간이 걸렸지만, 이해를 하고나니 <code>TossPayment</code>의 인프라가 매우 잘 구축되어 있어서 개발이 매우 쉬웠습니다.</p>
+<p><code>테스트 결제</code>에서는 <code>결제 실패</code>를 하는 경우가 없어서 <code>결제 실패</code>에 대한 처리를 하지 못했는데, <code>실제 결제</code>에서는 <code>결제 실패</code>가 생기는 경우가 있어서 당황했습니다. <code>3건</code>이 <code>결제 실패</code>가 되었는데, 모두 <code>잔액 부족</code>이었습니다. 그래서 <code>테스트 환경</code>과 <code>실제 환경</code>이 다르니 <code>테스트 환경</code>에서 장애가 발생하지 않더라도 <code>실제 환경</code>에서는 <code>장애</code>가 발생할 수 있다는 것을 깨달았습니다.</p>
+<p>단기간 내에 개발을 해야했기 때문에 기존에 공부했던 것들이 큰 도움이 되었습니다. 그 중에서 <code>보안</code>공부를 했던것이 가장 도움이 되었습니다. 결제가 들어가는 서비스이다 보니 <code>시큐어 코딩</code>을 신경 써서 적용할 수 있었고, 모든 결제에 대해 DB데이터와 <code>Tosspayment</code>데이터를 비교해 보았을 때 <code>모두 일치</code>하는 것을 확인할 수 있었습니다.</p>
+<p>개발 중간에도 <code>Race Condition</code>이 발생할 수 있는 부분을 발견할 수 있었습니다. <code>쿠폰 발급</code>과 <code>쿠폰 사용</code> 두 가지 경우에서 발생 할 수 있었습니다.</p>
+<p><code>쿠폰 사용</code>의 경우 <code>isUsed</code>를 <code>true</code>로 바꾸는 경우라 <code>낙관적 락</code>을 사용해서 해결했습니다.</p>
+<p>하지만 <code>쿠폰 발급</code>의 경우 <code>락</code>을 사용해서 해결하지 못했습니다. <code>쿠폰 발급</code>은 <code>쿠폰 테이블</code>에 존재하는 <code>쿠폰의 갯수</code>를 센다음에 <code>쿠폰의 갯수</code>가 <code>쿠폰 상세 테이블</code>에 존재하는 <code>발급 가능 갯수</code>보다 작으면 <code>쿠폰 발급</code>을 하도록 했습니다.</p>
+<p><code>SQL count</code>는 데이터의 변경이 아니라서 <code>락</code>을 걸 수 없었습니다. 그렇다고 <code>테이블 락</code>을 사용하기에는 <code>쿠폰 발급</code>, <code>쿠폰 사용</code>이라는 작업이 자주 일어난다고 판단하여 <code>테이블 락</code>을 사용하기에는 적절하지 않았습니다.</p>
+<p>그래서 대신에 <code>Synchronized</code>를 사용해 <code>쓰레드</code>를 조정하여 해결하였습니다. 하지만 먼~~훗낫 <code>MSA</code>환경이 된다면 <code>Synchronized</code>를 사용할 수 없기 때문에 완벽한 해결책은 아닙니다.</p>
+<p>글을 작성하고 있는 지금 생각한건데 <code>쿠폰 상세 idx</code>와 <code>유저 idx</code>를 <code>복합키</code>로 설정하고 <code>유니크</code>를 걸어서 <code>쿠폰 발급</code>할 때 <code>유일성</code>을 보장합니다. 그리고 <code>쿠폰</code>에 <code>사용 가능 횟수</code>를 두어서 <code>쿠폰 사용</code>할 때 <code>사용 가능 횟수</code>를 <code>차감(낙관적 락)</code>하는 방법으로 해결할 수 있을 것 같습니다.</p>
+<h1 id="QA"><a href="#QA" class="headerlink" title="QA"></a>QA</h1><p>개발을 다 하고 나니 서비스 시작 예정까지 <code>6시간</code>도 남지 않았습니다. <code>점주</code>님들과의 <code>계약</code>이 있었기 때문에 서비스 시작을 미루기가 어려웠습니다. 그래서 남은 시간동안 <code>QA</code>를 진행했습니다.</p>
+<p>이미 출시 때문에 며칠을 밤을 새서 개발을 했기 때문에 마지막 QA와 수정은 모든 팀원들이 <code>정신력</code>으로 버틴것 같습니다. 그래도 끝까지 포기하지 않고 QA를 한 덕분에 치명적인 오류는 없었습니다.</p>
+<h1 id="이슈"><a href="#이슈" class="headerlink" title="이슈"></a>이슈</h1><p>문제는 QA까지 완료한 이후에 발생했습니다. QA를 다한 후 30분 뒤 <code>점주</code>님에게 주문 승인용 아이패드를 전달해 드릴려고 준비를 하고 있었는데, 아이패드에서 <code>점주페이지</code>가 <code>하얀 화면</code>이 나오면서 아무것도 보이지 않았습니다.</p>
+<p>원인을 모르나 최신 <code>iphone</code>과 <code>mac</code>에서는 잘 실행 돼서 <code>ios</code>의 <code>버전 문제</code>라고 추측하였습니다. 하지만 아이패드가 <code>구형</code> 아이패드라서 최신 버전을 설치할 수 없었습니다. 그래서 팀 내에 유일한 <code>mac</code>인 저의 맥북에 연결을 하여 확인했습니다.</p>
+<p>확인해보니 <code>ios</code>에서 <code>정규식</code>을 사용할 때 <code>후위표기</code>를 지원하지 않아서 발생하는 문제였습니다. 원인을 파악한 후에는 금방 해결할 수 있었습니다. 만일 저도 윈도우를 사용하고 있었다면 어떻게 해결을 했을지 모르겠습니다.</p>
+<h1 id="반응"><a href="#반응" class="headerlink" title="반응"></a>반응</h1><h2 id="유저"><a href="#유저" class="headerlink" title="유저"></a>유저</h2><p>아쉽게도 유저들의 반응은 예상보다 뜨겁지는 않았습니다. 이미 <code>종강</code>을 한 강의도 존재했고, 홍보가 잘 되지 않아서 저희 서비스를 알지 못하는 사람들이 많았습니다. 그래도 2주간의 서비스 기간동안 <code>227</code>명의 유저가 저희 서비스를 이용해 주었습니다.</p>
+<p>홍보 부스를 운영했는데 몇몇 분들이 응원을 해주시고 치켜세우기도 해주셔서 매우 감사했습니다.</p>
+<h2 id="점주"><a href="#점주" class="headerlink" title="점주"></a>점주</h2><p>점주님들의 반응은 매우 좋았습니다. 한 점주님은 계약 때 시험기간에 바쁘다는 이유로 <code>3일</code>만 서비스를 사용하신다고 말씀을 해주셨는데, 3일이 지나고 <code>마지막 주차</code>까지 계속해서 서비스를 사용해 주셨습니다.</p>
+<p>하지만 점주 페이지에서 아이패드로 오래 창을 켜두고 있으면 주문이 들어올 때 알림 소리가 나지 않는다는 <code>버그</code>를 알게 되었습니다. 그래서 점주님들께서는 주기적으로 확인을 해 주문이 들어왔는지 확인을 해야 했습니다. 이 부분은 모든 점주님들께서 불편하다고 하셨고 다음 학기까지 수정하기로 했습니다.</p>
+<p>크론탭을 이용해서 매주 월요일마다 DB에 있는 주문 내역을 액셀로 바꾸고 정리해서 드라이브에 저장하는 자동화 프로그램을 만들었는데, 이 부분도 점주님들께서 매우 만족해 주셔서 기분이 좋았습니다.</p>
+<h1 id="지표"><a href="#지표" class="headerlink" title="지표"></a>지표</h1><p>현재까지 측정한 지표로는 서비스가 지속가능한지 판단을 하는데 무리라고 생각합니다. 아직 해보지 못한것들도 많고 <code>마케팅</code>도 부족하다고 생각하기 때문입니다.</p>
+<p>정확한 DAU는 아니지만 Analytics를 통해서 2주간의 유저를 측정해 보았습니다.<br><img src="/assets/img/readyvery/user.png" alt="user"><br>13일에 유저수가 가장 많았는데 12일 밤에 에브리타임에 핫게시물로 올라가서 그런 것 같습니다. 그러나 종강 이슈로 13일에 구매전환이 일어나지 않았습니다.</p>
+<p><img src="/assets/img/readyvery/pay.png" alt="매출"><br>매출은 64만원 정도로 나왔는데 다 점주님께 드리고 마케팅 비용을 제외하면 마이너스입니다. 취소가 29건인 이유는 저희가 테스트를 위해 결제를 하고 취소한 것과, 주문 소리가 나지 않는것 때문에 점주님들이 주문을 오랫동안 승인을 하지 않아서 취소가 된 것이 이었습니다.</p>
+<h1 id="그-외"><a href="#그-외" class="headerlink" title="그 외"></a>그 외</h1><p>사실 이렇게 개발을 다 하고 나서 서비스를 시작하지 못 할뻔 했습니다. <code>서비스 시작</code>이 <code>12월 4일</code>인데, <code>알림톡</code> 전송을 위한 <code>카카오톡 승인</code>이 <code>12월 1일</code>에 되었습니다. 또 결제를 위한 <code>카드사 승인</code>이 <code>당일 10시</code>에 되었습니다. 이게 안됐다면 서비스를 시작하지 못했을 것입니다.</p>
+<ul>
+<li>카카오톡 승인<br><img src="/assets/img/readyvery/kakao.png" alt="카카오톡 승인"></li>
+<li>카드사 승인<br><img src="/assets/img/readyvery/toss.png" alt="카드사 승인"></li>
+</ul>
+<p>개발도 중요하지만 서비스를 시작하기 위한 준비도 중요하다는 것을 깨달았습니다.</p>
+<h1 id="마무리"><a href="#마무리" class="headerlink" title="마무리"></a>마무리</h1><p>무식하면 용감하다는 말이 있습니다. 이번 프로젝트만큼 잘 어울리는 말은 없었던 것 같습니다. 무식하게도 6주라는 짧은 기간에 실제 결제가 가능한 서비스를 만들었고, 용감하게도 서비스를 시작했습니다. 조금이라도 똑똑했더라면 이 서비스를 시작하지도 않았을 것입니다. </p>
+<p>돌이켜 보면 엄청난 운이 따른 것 같습니다. 모든 과정에서 하나라도 잘못됐다면 서비스를 시작하지 못했을 것입니다. 그 중에서도 가장 큰 운이라고 생각하는 것은 좋은 팀원들을 만난 것입니다. 몸은 엄청 힘들었지만 팀원들과 함께 해서 개발하는 동안 정말 즐거웠습니다.</p>
+<ul>
+<li>실제 서비스 화면<br><img src="/assets/img/readyvery/main.jpeg" alt="main"></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/10/01/mail/" rel="prev" title="무료로 내 도메인으로 메일 만들기 (cloudflare Email Routing + Gmail)">
+      <i class="fa fa-chevron-left"></i> 무료로 내 도메인으로 메일 만들기 (cloudflare Email Routing + Gmail)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/07/dx-pre/" rel="next" title="삼성전자 DX부분 동계 대학생 S/W 알고리즘 역량 강화 특강 사전 문제 후기">
+      삼성전자 DX부분 동계 대학생 S/W 알고리즘 역량 강화 특강 사전 문제 후기 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="giscus" id="giscus"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%EB%B0%9C%EB%8B%A8"><span class="nav-number">1.</span> <span class="nav-text">발단</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EC%95%84%EC%9D%B4%EB%94%94%EC%96%B4"><span class="nav-number">2.</span> <span class="nav-text">아이디어</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EA%B3%84%ED%9A%8D"><span class="nav-number">3.</span> <span class="nav-text">계획</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EA%B8%B0%ED%9A%8D"><span class="nav-number">4.</span> <span class="nav-text">기획</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EC%9D%B8%ED%94%84%EB%9D%BC-%EC%84%A4%EA%B3%84"><span class="nav-number">5.</span> <span class="nav-text">인프라 설계</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Github-Action"><span class="nav-number">6.</span> <span class="nav-text">Github Action</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ERD-%EC%84%A4%EA%B3%84"><span class="nav-number">7.</span> <span class="nav-text">ERD 설계</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EA%B0%9C%EB%B0%9C"><span class="nav-number">8.</span> <span class="nav-text">개발</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#QA"><span class="nav-number">9.</span> <span class="nav-text">QA</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EC%9D%B4%EC%8A%88"><span class="nav-number">10.</span> <span class="nav-text">이슈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EB%B0%98%EC%9D%91"><span class="nav-number">11.</span> <span class="nav-text">반응</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%9C%A0%EC%A0%80"><span class="nav-number">11.1.</span> <span class="nav-text">유저</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%A0%90%EC%A3%BC"><span class="nav-number">11.2.</span> <span class="nav-text">점주</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EC%A7%80%ED%91%9C"><span class="nav-number">12.</span> <span class="nav-text">지표</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EA%B7%B8-%EC%99%B8"><span class="nav-number">13.</span> <span class="nav-text">그 외</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EB%A7%88%EB%AC%B4%EB%A6%AC"><span class="nav-number">14.</span> <span class="nav-text">마무리</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Joowon Lim</p>
+  <div class="site-description" itemprop="description">공부 기록용 블로그</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/marinesnow34" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;marinesnow34" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:joowon.dev@marinesnow34.com" title="E-Mail → mailto:joowon.dev@marinesnow34.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Joowon Lim</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="marinesnow34/marinesnow34.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzMjUzNjQ4NDc="
+        data-category="Comments"
+        data-category-id="DIC_kwDOE2Ssb84CcJ-b"
+        data-mapping="og:title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="aws VS cloudflare필자는 2022년에 cloudflare를 알고 난 후 착한 가격 정책에 매료되어 현재 까지도 사용하고 있습니다. 최근 서비스 배포를 준비하면서 aws의 S3 + cloudfront와 cloudflare의 R2를 비교하게 되었고, cloudflare에 대한 애착(가격) 때문에 R2에 마음이 기울여졌습니다. 하지만 가격 차이 외에">
+<meta property="og:type" content="article">
+<meta property="og:title" content="aws S3, cloudflare R2 속도 비교 (with. cloudfront)">
+<meta property="og:url" content="https://marinesnow34.github.io/2023/09/23/s3r2/index.html">
+<meta property="og:site_name" content="marinesnow34">
+<meta property="og:description" content="aws VS cloudflare필자는 2022년에 cloudflare를 알고 난 후 착한 가격 정책에 매료되어 현재 까지도 사용하고 있습니다. 최근 서비스 배포를 준비하면서 aws의 S3 + cloudfront와 cloudflare의 R2를 비교하게 되었고, cloudflare에 대한 애착(가격) 때문에 R2에 마음이 기울여졌습니다. 하지만 가격 차이 외에">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/fee.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/cdn.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/r2_dev.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/cf.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/cf_cash.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/s3_res.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/cloudfront_res.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/pub_r2.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/pub_r2_2.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/r2.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/r2_2.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/s3.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/s3.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/cloudfront.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/cloudfront2.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/pub_r2_jpg.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/r2_jpg.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/s3_jpg.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/s3r2/cloudfront_jpg.png">
+<meta property="article:published_time" content="2023-09-23T22:05:52.000Z">
+<meta property="article:modified_time" content="2025-11-18T08:44:56.807Z">
+<meta property="article:author" content="Joowon Lim">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/s3r2/fee.png">
+
+<link rel="canonical" href="https://marinesnow34.github.io/2023/09/23/s3r2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>aws S3, cloudflare R2 속도 비교 (with. cloudfront) | marinesnow34</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-ZE41Y65DKL');
+      }
+    </script>
+
+
+
+
+
+
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "izvke9bs7i");
+</script>
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <meta name="naver-site-verification" content="7a60549b2cc3ba1fdee5febc98244b8fd772746c" />
+  <script data-ad-client="ca-pub-9904296847545064" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<link rel="alternate" href="/rss2.xml" title="marinesnow34" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">marinesnow34</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2023/09/23/s3r2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          aws S3, cloudflare R2 속도 비교 (with. cloudfront)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2023-09-23 22:05:52" itemprop="dateCreated datePublished" datetime="2023-09-23T22:05:52+00:00">2023-09-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C/" itemprop="url" rel="index"><span itemprop="name">클라우드</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="aws-VS-cloudflare"><a href="#aws-VS-cloudflare" class="headerlink" title="aws VS cloudflare"></a>aws VS cloudflare</h2><p>필자는 2022년에 cloudflare를 알고 난 후 착한 가격 정책에 매료되어 현재 까지도 사용하고 있습니다. 최근 서비스 배포를 준비하면서 aws의 <code>S3</code> + <code>cloudfront</code>와 cloudflare의 <code>R2</code>를 비교하게 되었고, cloudflare에 대한 애착(가격) 때문에 R2에 마음이 기울여졌습니다. 하지만 가격 차이 외에도 성능 차이가 궁금했기 때문에 직접 실험해 보기로 했습니다. </p>
+<p><strong><em>이 글에서는 버킷과 CDN에 대한 설명은 생략합니다.</em></strong></p>
+<h2 id="가격-비교"><a href="#가격-비교" class="headerlink" title="가격 비교"></a>가격 비교</h2><p>성능과는 별개로 가격 정책에서는 cloudflare가 매우 매력적입니다.<br><img src="/assets/img/s3r2/fee.png" alt="cloudflare 가격"><br>Free Tier에서는 cloudflare가 압도적이고, 이후 추가 요금에서도 모든 면에서 cloudflare가 더 저렴합니다. 특히 cloudflare는 데이터 전송 수수료가 <strong>무료</strong>인게 인상적입니다. </p>
+<p>또한 R2는 S3의 API를 사용할 수 있습니다. 따라서 손쉽게 마이그레이션 할 수 있습니다.</p>
+<p>하지만 cloudflare는 리전을 선택할 수 없는것은 아쉽습니다.</p>
+<h2 id="실험-환경"><a href="#실험-환경" class="headerlink" title="실험 환경"></a>실험 환경</h2><ul>
+<li><p>서버: OCI (Oracle Cloud Infrastructure)</p>
+<ul>
+<li>Region: South Korea Central (Seoul)</li>
+<li>CPU: 4 OCPU</li>
+<li>RAM: 24GB</li>
+<li>OS: Ubuntu 22.04</li>
+<li>대역폭: 4Gbps</li>
+</ul>
+</li>
+<li><p>파일: </p>
+<ul>
+<li>255MB mp4 파일 (용량이 큰 파일)</li>
+<li>113.14kB JPG 파일 (용량이 작은 파일)</li>
+</ul>
+</li>
+<li><p>실험 방법: 서버에서 파일을 다운로드 받는 시간을 측정합니다. <code>wget</code>을 사용했습니다.</p>
+</li>
+<li><p>실험 대상:</p>
+<ul>
+<li>aws S3 (region: ap-northeast-2)</li>
+<li>aws S3 + cloudfront</li>
+<li>cloudflare R2</li>
+<li>cloudflare R2 + CDN</li>
+</ul>
+</li>
+<li><p>주의 사항:</p>
+<ul>
+<li>시간대 별로 다른 결과가 나올 수 있습니다.</li>
+<li>wget을 사용하여 브라우저에서 다운로드 받는 것과는 다른 결과가 나올 수 있습니다. </li>
+<li>S3를 public으로 설정하는 것은 aws에서 권장하지 않습니다. 따라서 실험을 위해 public으로 설정했지만, 실제 서비스에서는 private으로 설정하는 것이 좋습니다.</li>
+</ul>
+</li>
+</ul>
+<h2 id="기타"><a href="#기타" class="headerlink" title="기타"></a>기타</h2><ul>
+<li><p>R2 CDN 서버 위치: HKG(Hong Kong)<br><img src="/assets/img/s3r2/cdn.png" alt="cloudflare R2"></p>
+</li>
+<li><p>cloudflare R2에서 캐시를 사용 하지 않는 방법은 Public access를 허용하는 것입니다. <img src="/assets/img/s3r2/r2_dev.png" alt="public access"></p>
+</li>
+</ul>
+<h3 id="캐싱-확인"><a href="#캐싱-확인" class="headerlink" title="캐싱 확인"></a>캐싱 확인</h3><p>여담으로 CDN에 캐싱이 됐는지 확인하는 방법은 HTTP 헤더를 확인하는 것입니다.</p>
+<h4 id="cloudflare-R2"><a href="#cloudflare-R2" class="headerlink" title="cloudflare R2"></a>cloudflare R2</h4><img src="/assets/img/s3r2/cf.png" alt="cloudflare R2" width="70%" height="70%">
+
+<p><a target="_blank" rel="noopener" href="https://developers.cloudflare.com/fundamentals/reference/http-request-headers/#cf-ray">CF-RAY</a>는 방문자의 요청과 데이터 센터의 해시 값 입니다. 데이터 센터가 <code>ICN(Seoul)</code>인 것을 알 수 있습니다.</p>
+<h4 id="cloudflare-R2-CDN"><a href="#cloudflare-R2-CDN" class="headerlink" title="cloudflare R2 + CDN"></a>cloudflare R2 + CDN</h4><p><code>cf-cache-statu</code>s가 <code>HIT</code>이면 캐싱이 된 것입니다.<br><img src="/assets/img/s3r2/cf_cash.png" alt="cloudflare R2 + CDN"><br>데이터 센터가 <code>HKG(Hong Kong)</code>인 것을 알 수 있습니다.</p>
+<h4 id="aws-S3"><a href="#aws-S3" class="headerlink" title="aws S3"></a>aws S3</h4><p><img src="/assets/img/s3r2/s3_res.png" alt="aws S3"></p>
+<h4 id="aws-S3-cloudfront"><a href="#aws-S3-cloudfront" class="headerlink" title="aws S3 + cloudfront"></a>aws S3 + cloudfront</h4><p><code>x-cache: Hit from cloudfront</code>가 있으면 캐싱이 된 것입니다. 아래 사진은 캐싱이 안된 경우입니다.<br><img src="/assets/img/s3r2/cloudfront_res.png" alt="aws S3 + cloudfront"></p>
+<h2 id="실험-결과"><a href="#실험-결과" class="headerlink" title="실험 결과"></a>실험 결과</h2><h3 id="255MB-mp4-파일"><a href="#255MB-mp4-파일" class="headerlink" title="255MB mp4 파일"></a>255MB mp4 파일</h3><h4 id="cloudflare-R2-1"><a href="#cloudflare-R2-1" class="headerlink" title="cloudflare R2"></a>cloudflare R2</h4><h5 id="1회-3-5s"><a href="#1회-3-5s" class="headerlink" title="1회 (3.5s)"></a>1회 (3.5s)</h5><p><img src="/assets/img/s3r2/pub_r2.png" alt="cloudflare R2"></p>
+<h4 id="2회-3-8s"><a href="#2회-3-8s" class="headerlink" title="2회 (3.8s)"></a>2회 (3.8s)</h4><p><img src="/assets/img/s3r2/pub_r2_2.png" alt="cloudflare R2"></p>
+<h4 id="cloudflare-R2-CDN-1"><a href="#cloudflare-R2-CDN-1" class="headerlink" title="cloudflare R2 + CDN"></a>cloudflare R2 + CDN</h4><p><em>cloudflare R2 + CDN은 일정 시간이 지나고 접근이 가능했습니다. 따라서 1회차에 이미 캐시가 되어 있을 수 있습니다.</em></p>
+<h5 id="1회-23s"><a href="#1회-23s" class="headerlink" title="1회 (23s)"></a>1회 (23s)</h5><p><img src="/assets/img/s3r2/r2.png" alt="cloudflare R2 + CDN"></p>
+<h5 id="2회-23s"><a href="#2회-23s" class="headerlink" title="2회 (23s)"></a>2회 (23s)</h5><p><img src="/assets/img/s3r2/r2_2.png" alt="cloudflare R2 + CDN"></p>
+<h4 id="aws-S3-1"><a href="#aws-S3-1" class="headerlink" title="aws S3"></a>aws S3</h4><p>s3는 2.5 ~ 심하면 7초 정도 걸렸습니다. 다만 대부분 3초 내외로 걸렸습니다.</p>
+<h5 id="1회-4-7s"><a href="#1회-4-7s" class="headerlink" title="1회 (4.7s)"></a>1회 (4.7s)</h5><p><img src="/assets/img/s3r2/s3.png" alt="aws S3"></p>
+<h4 id="2회-2-7s"><a href="#2회-2-7s" class="headerlink" title="2회 (2.7s)"></a>2회 (2.7s)</h4><p><img src="/assets/img/s3r2/s3.png" alt="aws S3"></p>
+<h4 id="aws-S3-cloudfront-1"><a href="#aws-S3-cloudfront-1" class="headerlink" title="aws S3 + cloudfront"></a>aws S3 + cloudfront</h4><p><em>파일에 접근이 가능한지 확인을 해서 1회에 살짝 캐시가 되어 있을 수 있습니다.</em></p>
+<h5 id="1회-3-1s"><a href="#1회-3-1s" class="headerlink" title="1회 (3.1s)"></a>1회 (3.1s)</h5><p><img src="/assets/img/s3r2/cloudfront.png" alt="aws S3 + cloudfront1"></p>
+<h5 id="2회-0-7s"><a href="#2회-0-7s" class="headerlink" title="2회 (0.7s)"></a>2회 (0.7s)</h5><p><img src="/assets/img/s3r2/cloudfront2.png" alt="aws S3 + cloudfront2"></p>
+<h3 id="113-14-kB-JPG-파일"><a href="#113-14-kB-JPG-파일" class="headerlink" title="113.14 kB JPG 파일"></a>113.14 kB JPG 파일</h3><p>용량이 작은 파일이라 여러번 확인 했습니다. 캐싱은 이미 된 상태입니다.</p>
+<h4 id="cloudflare-R2-0-002s-0-1s"><a href="#cloudflare-R2-0-002s-0-1s" class="headerlink" title="cloudflare R2 (0.002s ~ 0.1s)"></a>cloudflare R2 (0.002s ~ 0.1s)</h4><p>값이 일정하지 않습니다.<br><img src="/assets/img/s3r2/pub_r2_jpg.png" alt="cloudflare R2"></p>
+<h4 id="cloudflare-R2-CDN-0-3s"><a href="#cloudflare-R2-CDN-0-3s" class="headerlink" title="cloudflare R2 + CDN (0.3s)"></a>cloudflare R2 + CDN (0.3s)</h4><p><img src="/assets/img/s3r2/r2_jpg.png" alt="cloudflare R2 + CDN"></p>
+<h4 id="aws-S3-평균-0-01s"><a href="#aws-S3-평균-0-01s" class="headerlink" title="aws S3 (평균 0.01s)"></a>aws S3 (평균 0.01s)</h4><p><img src="/assets/img/s3r2/s3_jpg.png" alt="aws S3"></p>
+<h4 id="aws-S3-cloudfront-평균-0-005s"><a href="#aws-S3-cloudfront-평균-0-005s" class="headerlink" title="aws S3 + cloudfront (평균 0.005s)"></a>aws S3 + cloudfront (평균 0.005s)</h4><p><img src="/assets/img/s3r2/cloudfront_jpg.png" alt="aws S3 + cloudfront"></p>
+<h2 id="요약"><a href="#요약" class="headerlink" title="요약"></a>요약</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>cloudflare R2</th>
+<th>cloudflare R2 + CDN</th>
+<th>aws S3</th>
+<th>aws S3 + cloudfront</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>255MB mp4 파일 (1회)</td>
+<td>3.5s</td>
+<td><strong>23s</strong></td>
+<td>4.7s</td>
+<td>3.1s</td>
+</tr>
+<tr>
+<td>255MB mp4 파일 (2회)</td>
+<td>3.8s</td>
+<td><strong>23s</strong></td>
+<td>2.7s</td>
+<td>0.7s</td>
+</tr>
+<tr>
+<td>113.14 kB JPG 파일</td>
+<td>0.002s ~ 0.1s</td>
+<td><strong>0.3s(동일)</strong></td>
+<td>평균 0.01s</td>
+<td>평균 0.005s</td>
+</tr>
+</tbody></table>
+<h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><p>대한민국 국내에서는 망사용료 이슈 때문에 cloudflare의 CDN을 사용하는 경우 CDN을 사용하기 위해서 요청이 해외로 나갔다가 돌아오는 기형적인 상황을 목격할 수 있었습니다. 현재 실험에서는 홍콩으로 서버를 배정받았지만, 더 먼곳으로 배정받는 경우 더 큰 속도 저하가 발생할 수 있습니다.</p>
+<p>따라서 특수한 상황을 제외하고는 aws S3 + cloudfront가 적절한 선택일것입니다. 하지만 R2를 사용하게 된다면 CDN을 사용하지 않는 선택지도 고려해야 할 것 같습니다.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/01/23/jpa-syntax-error/" rel="prev" title="JPA SQLSyntaxErrorException 오류 해결">
+      <i class="fa fa-chevron-left"></i> JPA SQLSyntaxErrorException 오류 해결
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/10/01/mail/" rel="next" title="무료로 내 도메인으로 메일 만들기 (cloudflare Email Routing + Gmail)">
+      무료로 내 도메인으로 메일 만들기 (cloudflare Email Routing + Gmail) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="giscus" id="giscus"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#aws-VS-cloudflare"><span class="nav-number">1.</span> <span class="nav-text">aws VS cloudflare</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B0%80%EA%B2%A9-%EB%B9%84%EA%B5%90"><span class="nav-number">2.</span> <span class="nav-text">가격 비교</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%8B%A4%ED%97%98-%ED%99%98%EA%B2%BD"><span class="nav-number">3.</span> <span class="nav-text">실험 환경</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B8%B0%ED%83%80"><span class="nav-number">4.</span> <span class="nav-text">기타</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EC%BA%90%EC%8B%B1-%ED%99%95%EC%9D%B8"><span class="nav-number">4.1.</span> <span class="nav-text">캐싱 확인</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cloudflare-R2"><span class="nav-number">4.1.1.</span> <span class="nav-text">cloudflare R2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cloudflare-R2-CDN"><span class="nav-number">4.1.2.</span> <span class="nav-text">cloudflare R2 + CDN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#aws-S3"><span class="nav-number">4.1.3.</span> <span class="nav-text">aws S3</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#aws-S3-cloudfront"><span class="nav-number">4.1.4.</span> <span class="nav-text">aws S3 + cloudfront</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%8B%A4%ED%97%98-%EA%B2%B0%EA%B3%BC"><span class="nav-number">5.</span> <span class="nav-text">실험 결과</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#255MB-mp4-%ED%8C%8C%EC%9D%BC"><span class="nav-number">5.1.</span> <span class="nav-text">255MB mp4 파일</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cloudflare-R2-1"><span class="nav-number">5.1.1.</span> <span class="nav-text">cloudflare R2</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1%ED%9A%8C-3-5s"><span class="nav-number">5.1.1.1.</span> <span class="nav-text">1회 (3.5s)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%ED%9A%8C-3-8s"><span class="nav-number">5.1.2.</span> <span class="nav-text">2회 (3.8s)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cloudflare-R2-CDN-1"><span class="nav-number">5.1.3.</span> <span class="nav-text">cloudflare R2 + CDN</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1%ED%9A%8C-23s"><span class="nav-number">5.1.3.1.</span> <span class="nav-text">1회 (23s)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2%ED%9A%8C-23s"><span class="nav-number">5.1.3.2.</span> <span class="nav-text">2회 (23s)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#aws-S3-1"><span class="nav-number">5.1.4.</span> <span class="nav-text">aws S3</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1%ED%9A%8C-4-7s"><span class="nav-number">5.1.4.1.</span> <span class="nav-text">1회 (4.7s)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%ED%9A%8C-2-7s"><span class="nav-number">5.1.5.</span> <span class="nav-text">2회 (2.7s)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#aws-S3-cloudfront-1"><span class="nav-number">5.1.6.</span> <span class="nav-text">aws S3 + cloudfront</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1%ED%9A%8C-3-1s"><span class="nav-number">5.1.6.1.</span> <span class="nav-text">1회 (3.1s)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2%ED%9A%8C-0-7s"><span class="nav-number">5.1.6.2.</span> <span class="nav-text">2회 (0.7s)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#113-14-kB-JPG-%ED%8C%8C%EC%9D%BC"><span class="nav-number">5.2.</span> <span class="nav-text">113.14 kB JPG 파일</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cloudflare-R2-0-002s-0-1s"><span class="nav-number">5.2.1.</span> <span class="nav-text">cloudflare R2 (0.002s ~ 0.1s)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cloudflare-R2-CDN-0-3s"><span class="nav-number">5.2.2.</span> <span class="nav-text">cloudflare R2 + CDN (0.3s)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#aws-S3-%ED%8F%89%EA%B7%A0-0-01s"><span class="nav-number">5.2.3.</span> <span class="nav-text">aws S3 (평균 0.01s)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#aws-S3-cloudfront-%ED%8F%89%EA%B7%A0-0-005s"><span class="nav-number">5.2.4.</span> <span class="nav-text">aws S3 + cloudfront (평균 0.005s)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%9A%94%EC%95%BD"><span class="nav-number">6.</span> <span class="nav-text">요약</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B2%B0%EB%A1%A0"><span class="nav-number">7.</span> <span class="nav-text">결론</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Joowon Lim</p>
+  <div class="site-description" itemprop="description">공부 기록용 블로그</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/marinesnow34" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;marinesnow34" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:joowon.dev@marinesnow34.com" title="E-Mail → mailto:joowon.dev@marinesnow34.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Joowon Lim</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="marinesnow34/marinesnow34.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzMjUzNjQ4NDc="
+        data-category="Comments"
+        data-category-id="DIC_kwDOE2Ssb84CcJ-b"
+        data-mapping="og:title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+</body>
+</html>

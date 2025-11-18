@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Jenkins로 배포(CD) 자동화하기이전 글에 이어지는 내용입니다. 저번 글에서 Jenkins를 설치했으니 이번에는 Jenkins를 사용해서 배포 자동화를 해보겠습니다. jenkins 설정Jenkins Plugin 설치">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jenkins로 배포(CD) 자동화하기">
+<meta property="og:url" content="https://marinesnow34.github.io/2024/11/10/jenkins-cd/index.html">
+<meta property="og:site_name" content="marinesnow34">
+<meta property="og:description" content="Jenkins로 배포(CD) 자동화하기이전 글에 이어지는 내용입니다. 저번 글에서 Jenkins를 설치했으니 이번에는 Jenkins를 사용해서 배포 자동화를 해보겠습니다. jenkins 설정Jenkins Plugin 설치">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/jenkins/ghcr-token.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/jenkins/ghcr.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/jenkins/docker.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/jenkins/package.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/jenkins/ssh_agent.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/jenkins/docker_ps.png">
+<meta property="article:published_time" content="2024-11-10T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-18T08:44:56.806Z">
+<meta property="article:author" content="Joowon Lim">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/jenkins/ghcr-token.png">
+
+<link rel="canonical" href="https://marinesnow34.github.io/2024/11/10/jenkins-cd/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>Jenkins로 배포(CD) 자동화하기 | marinesnow34</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-ZE41Y65DKL');
+      }
+    </script>
+
+
+
+
+
+
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "izvke9bs7i");
+</script>
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <meta name="naver-site-verification" content="7a60549b2cc3ba1fdee5febc98244b8fd772746c" />
+  <script data-ad-client="ca-pub-9904296847545064" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<link rel="alternate" href="/rss2.xml" title="marinesnow34" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">marinesnow34</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/11/10/jenkins-cd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Jenkins로 배포(CD) 자동화하기
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2024-11-10 00:00:00" itemprop="dateCreated datePublished" datetime="2024-11-10T00:00:00+00:00">2024-11-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EC%84%9C%EB%B2%84/" itemprop="url" rel="index"><span itemprop="name">서버</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Jenkins로-배포-CD-자동화하기"><a href="#Jenkins로-배포-CD-자동화하기" class="headerlink" title="Jenkins로 배포(CD) 자동화하기"></a>Jenkins로 배포(CD) 자동화하기</h2><p><a href="https://marinesnow34.github.io/2024/10/27/jenkins/">이전 글</a>에 이어지는 내용입니다. 저번 글에서 Jenkins를 설치했으니 이번에는 Jenkins를 사용해서 배포 자동화를 해보겠습니다.</p>
+<h2 id="jenkins-설정"><a href="#jenkins-설정" class="headerlink" title="jenkins 설정"></a>jenkins 설정</h2><h3 id="Jenkins-Plugin-설치"><a href="#Jenkins-Plugin-설치" class="headerlink" title="Jenkins Plugin 설치"></a>Jenkins Plugin 설치</h3><p><code>docker Pipeline</code>을 설치합니다. <code>Manage Jenkins</code> -&gt; <code>Manage Plugins</code> -&gt; <code>Available</code> -&gt; <code>Docker Pipeline</code> 설치.</p>
+<h3 id="Github-Token-생성"><a href="#Github-Token-생성" class="headerlink" title="Github Token 생성"></a>Github Token 생성</h3><p>전에 추가한 github Token에 권한을 추가해도 되지만, 관리 편의를 위해서 새로운 Token을 생성합니다. <code>Settings</code> -&gt; <code>Developer settings</code> -&gt; <code>Personal access tokens</code> -&gt; <code>Generate new token (classic)</code></p>
+<p>권한은 다음과 같이 설정합니다.<br><img src="/assets/img/jenkins/ghcr-token.png" alt="gh-token"></p>
+<h3 id="Jenkins-Credential-추가"><a href="#Jenkins-Credential-추가" class="headerlink" title="Jenkins Credential 추가"></a>Jenkins Credential 추가</h3><p> Jenkins에서도 새로운 Credential을 추가합니다. <code>Manage Jenkins</code> -&gt; <code>Manage Credentials</code> -&gt; <code>Stores scoped to Jenkins</code> -&gt; <code>Global credentials (unrestricted)</code> -&gt; <code>Add Credentials</code></p>
+<p><img src="/assets/img/jenkins/ghcr.png" alt="ghcr"></p>
+<h3 id="docker-socket-권한-설정"><a href="#docker-socket-권한-설정" class="headerlink" title="docker socket 권한 설정"></a>docker socket 권한 설정</h3><p>Jenkins 컨테이너 내부에서 외부 docker에 대해 명령어를 사용하기 위한 설정을 해줍니다. <code>docker-compose.yml</code>파일에 <code>- /var/run/docker.sock:/var/run/docker.sock</code>를 추가해 줍니다.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">jenkins:</span></span><br><span class="line">  <span class="attr">image:</span> <span class="string">jenkins/jenkins:lts</span></span><br><span class="line">  <span class="attr">container_name:</span> <span class="string">jenkins</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&quot;8080:8080&quot;</span></span><br><span class="line">  <span class="attr">volumes:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">jenkins_home:/var/jenkins_home</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">/var/run/docker.sock:/var/run/docker.sock</span> <span class="comment">#새로 추가</span></span><br><span class="line">  <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br></pre></td></tr></table></figure>
+
+<p>또한 Jenkins 컨테이너 내부에서 docker 명령어를 사용하기 위해서 추가 설정해줍니다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Jenkins 컨테이너에 접속</span></span><br><span class="line">docker <span class="built_in">exec</span> -u root -it jenkins /bin/bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># 도커 설치</span></span><br><span class="line">apt-get update</span><br><span class="line">apt-get install docker.io</span><br><span class="line"></span><br><span class="line"><span class="comment"># Jenkins 컨테이너 삭제 후 재시작</span></span><br><span class="line">docker rm -f jenkins</span><br><span class="line">docker-compose up -d jenkins</span><br></pre></td></tr></table></figure>
+<p>jenkins 컨테이너에 접속해서 docker 명령어를 정상 작동하면 성공입니다.<br><img src="/assets/img/jenkins/docker.png" alt="docker-ps"></p>
+<h3 id="Dockerfile-생성"><a href="#Dockerfile-생성" class="headerlink" title="Dockerfile 생성"></a>Dockerfile 생성</h3><p>Docker bulid를 위한 Dockerfile을 생성합니다. repository root에 <code>Dockerfile</code>이라는 파일을 생성합니다.</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> amazoncorretto:<span class="number">17</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">8080</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> build/libs/*SNAPSHOT.jar /app/spring-app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="bash"> [<span class="string">&quot;java&quot;</span>,<span class="string">&quot;-jar&quot;</span>,<span class="string">&quot;/app/spring-app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Jenkinsfile-수정"><a href="#Jenkinsfile-수정" class="headerlink" title="Jenkinsfile 수정"></a>Jenkinsfile 수정</h3><p>Jenkinsfile을 수정합니다.</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        GHCR_URL = <span class="string">&#x27;ghcr.io&#x27;</span></span><br><span class="line">        IMAGE_NAME = <span class="string">&#x27;ghcr.io/&lt;유저네임&gt;/&lt;리포지토리명&gt;&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    stages &#123;</span><br><span class="line">        stage(<span class="string">&#x27;Login to GHCR&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    docker.withRegistry(<span class="string">&quot;https://$&#123;env.GHCR_URL&#125;&quot;</span>, <span class="string">&#x27;ghcr_credentials&#x27;</span>) &#123;&#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                echo <span class="string">&#x27;Checking out the repository...&#x27;</span></span><br><span class="line">                checkout scm</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                echo <span class="string">&#x27;Building the application...&#x27;</span></span><br><span class="line">                sh <span class="string">&#x27;chmod +x gradlew&#x27;</span></span><br><span class="line">                sh <span class="string">&#x27;./gradlew clean build -x test&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                echo <span class="string">&#x27;Running tests...&#x27;</span></span><br><span class="line">                sh <span class="string">&#x27;./gradlew test&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(<span class="string">&#x27;Build Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh <span class="string">&quot;docker build -t $&#123;env.IMAGE_NAME&#125;:latest .&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(<span class="string">&#x27;Push Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    docker.withRegistry(<span class="string">&quot;https://$&#123;env.GHCR_URL&#125;&quot;</span>, <span class="string">&#x27;ghcr_credentials&#x27;</span>) &#123;</span><br><span class="line">                        docker.image(<span class="string">&quot;$&#123;env.IMAGE_NAME&#125;:latest&quot;</span>).push()</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="확인"><a href="#확인" class="headerlink" title="확인"></a>확인</h3><ul>
+<li><code>https://github.com/&lt;본인 이름&gt;?tab=packages</code>에 들어가서 이미지가 잘 올라갔는지 확인합니다.<br><img src="/assets/img/jenkins/package.png" alt="package"></li>
+</ul>
+<h3 id="ssh-설정"><a href="#ssh-설정" class="headerlink" title="ssh 설정"></a>ssh 설정</h3><p><code>Plugin</code>에서 <code>SSH Agent</code>가 설치되지 않았다면 설치해 줍니다. 설치가 됐으면 키 설정을 해줍니다.</p>
+<p><code>jenkins &gt; Manage Jenkins &gt; Credentials &gt; System &gt; Global credentials (unrestricted) &gt; Add Credentials</code>에서 <code>SSH Username with private key</code>를 추가합니다. 그러면 다음과 같은 화면이 보입니다.</p>
+<p><img src="/assets/img/jenkins/ssh_agent.png" alt="ssh"><br>username은 서버의 username을 입력하고, private key는 <a href="https://marinesnow34.github.io/2024/10/27/jenkins/">이전 글</a>에서 발급한 서버의 private key를 입력합니다.</p>
+<h3 id="Jenkinsfile-수정-해서-ssh로-서버에-배포하기"><a href="#Jenkinsfile-수정-해서-ssh로-서버에-배포하기" class="headerlink" title="Jenkinsfile 수정 해서 ssh로 서버에 배포하기"></a>Jenkinsfile 수정 해서 ssh로 서버에 배포하기</h3><p><code>environment</code>에 SSH관련정보와 GHCR관련 정보를 추가합니다.</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        GHCR_URL = <span class="string">&#x27;ghcr.io&#x27;</span></span><br><span class="line">        IMAGE_NAME = <span class="string">&#x27;ghcr.io/marinesnow34/jenkins-test&#x27;</span></span><br><span class="line">        SSH_USER = credentials(<span class="string">&#x27;ARM_SSH_USER&#x27;</span>)</span><br><span class="line">        SSH_HOST = credentials(<span class="string">&#x27;ARM_SSH_HOST&#x27;</span>)</span><br><span class="line">        GHCR_USERNAME = <span class="string">&#x27;marinesnow34&#x27;</span></span><br><span class="line">        GHCR_PASSWORD = credentials(<span class="string">&#x27;ghcr_credentials&#x27;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    stages &#123;</span><br><span class="line">        ... 생략</span><br><span class="line"></span><br><span class="line">        stage(<span class="string">&#x27;Deploy on Server&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sshagent([<span class="string">&#x27;arm-ssh-credential&#x27;</span>]) &#123;</span><br><span class="line">                    sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    ssh -o StrictHostKeyChecking=no $&#123;SSH_USER&#125;@$&#123;SSH_HOST&#125; &quot;</span></span><br><span class="line"><span class="string">                    echo &#x27;$&#123;GHCR_PASSWORD&#125;&#x27; | docker login $&#123;GHCR_URL&#125; -u $&#123;GHCR_USERNAME&#125; --password-stdin</span></span><br><span class="line"><span class="string">                    docker pull $&#123;IMAGE_NAME&#125;:latest</span></span><br><span class="line"><span class="string">                    docker stop app || true &amp;&amp; docker rm app || true</span></span><br><span class="line"><span class="string">                    docker run -d --name app $&#123;IMAGE_NAME&#125;:latest</span></span><br><span class="line"><span class="string">                    &quot;</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>sshagent를 사용해서 ssh로 서버에 접속하고, docker 명령어를 사용해서 이미지를 pull하고, 컨테이너를 실행합니다.</p>
+<p>컨테이너가 잘 실행되었는지 확인합니다.<br><img src="/assets/img/jenkins/docker_ps.png" alt="jenkins"></p>
+<h2 id="마무리"><a href="#마무리" class="headerlink" title="마무리"></a>마무리</h2><p>이렇게 Jenkins를 사용해서 CI/CD 배포 자동화를 해보았습니다. 아직은 Jenkins의 간단한 사용법만 알아봤지만, Jenkins는 다양한 플러그인을 사용해서 작업을 간단히 자동화할 수 있는 방법이 많습니다. Jenkins를 사용해서 더 많은 작업을 편하게 자동화 해봅시다.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/10/27/jenkins/" rel="prev" title="Jenkins 설치하고 빌드하기">
+      <i class="fa fa-chevron-left"></i> Jenkins 설치하고 빌드하기
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/12/22/geultto/" rel="next" title="글또 백엔드 & 인프라 반상회 후기">
+      글또 백엔드 & 인프라 반상회 후기 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="giscus" id="giscus"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Jenkins%EB%A1%9C-%EB%B0%B0%ED%8F%AC-CD-%EC%9E%90%EB%8F%99%ED%99%94%ED%95%98%EA%B8%B0"><span class="nav-number">1.</span> <span class="nav-text">Jenkins로 배포(CD) 자동화하기</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jenkins-%EC%84%A4%EC%A0%95"><span class="nav-number">2.</span> <span class="nav-text">jenkins 설정</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Jenkins-Plugin-%EC%84%A4%EC%B9%98"><span class="nav-number">2.1.</span> <span class="nav-text">Jenkins Plugin 설치</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Github-Token-%EC%83%9D%EC%84%B1"><span class="nav-number">2.2.</span> <span class="nav-text">Github Token 생성</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jenkins-Credential-%EC%B6%94%EA%B0%80"><span class="nav-number">2.3.</span> <span class="nav-text">Jenkins Credential 추가</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-socket-%EA%B6%8C%ED%95%9C-%EC%84%A4%EC%A0%95"><span class="nav-number">2.4.</span> <span class="nav-text">docker socket 권한 설정</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dockerfile-%EC%83%9D%EC%84%B1"><span class="nav-number">2.5.</span> <span class="nav-text">Dockerfile 생성</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jenkinsfile-%EC%88%98%EC%A0%95"><span class="nav-number">2.6.</span> <span class="nav-text">Jenkinsfile 수정</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%ED%99%95%EC%9D%B8"><span class="nav-number">2.7.</span> <span class="nav-text">확인</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ssh-%EC%84%A4%EC%A0%95"><span class="nav-number">2.8.</span> <span class="nav-text">ssh 설정</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jenkinsfile-%EC%88%98%EC%A0%95-%ED%95%B4%EC%84%9C-ssh%EB%A1%9C-%EC%84%9C%EB%B2%84%EC%97%90-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0"><span class="nav-number">2.9.</span> <span class="nav-text">Jenkinsfile 수정 해서 ssh로 서버에 배포하기</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%A7%88%EB%AC%B4%EB%A6%AC"><span class="nav-number">3.</span> <span class="nav-text">마무리</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Joowon Lim</p>
+  <div class="site-description" itemprop="description">공부 기록용 블로그</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/marinesnow34" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;marinesnow34" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:joowon.dev@marinesnow34.com" title="E-Mail → mailto:joowon.dev@marinesnow34.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Joowon Lim</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="marinesnow34/marinesnow34.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzMjUzNjQ4NDc="
+        data-category="Comments"
+        data-category-id="DIC_kwDOE2Ssb84CcJ-b"
+        data-mapping="og:title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+</body>
+</html>

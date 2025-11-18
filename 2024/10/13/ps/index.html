@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="앞서서…2024년 10월에 작성된 글이기 때문에 시간에 따라 트랜드가 변할 수 있습니다. 여러 기업 코테에 합격도 하고, 삼성 B형 취득도 해서 제가 공부한 방법이 나름대로 효과가 있었다고 생각합니다. 그래서 취뽀한 지금 나만의 코테 준비 전략을 기록해 보려 합니다. 언어 선택아마 코딩 테스트를 준비하는 분들에게 언어 선택은 큰 고민거리일 것입니다. 저는">
+<meta property="og:type" content="article">
+<meta property="og:title" content="코딩 테스트 준비 전략">
+<meta property="og:url" content="https://marinesnow34.github.io/2024/10/13/ps/index.html">
+<meta property="og:site_name" content="marinesnow34">
+<meta property="og:description" content="앞서서…2024년 10월에 작성된 글이기 때문에 시간에 따라 트랜드가 변할 수 있습니다. 여러 기업 코테에 합격도 하고, 삼성 B형 취득도 해서 제가 공부한 방법이 나름대로 효과가 있었다고 생각합니다. 그래서 취뽀한 지금 나만의 코테 준비 전략을 기록해 보려 합니다. 언어 선택아마 코딩 테스트를 준비하는 분들에게 언어 선택은 큰 고민거리일 것입니다. 저는">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/ps/solved.png">
+<meta property="article:published_time" content="2024-10-13T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-18T08:44:56.806Z">
+<meta property="article:author" content="Joowon Lim">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/ps/solved.png">
+
+<link rel="canonical" href="https://marinesnow34.github.io/2024/10/13/ps/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>코딩 테스트 준비 전략 | marinesnow34</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-ZE41Y65DKL');
+      }
+    </script>
+
+
+
+
+
+
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "izvke9bs7i");
+</script>
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <meta name="naver-site-verification" content="7a60549b2cc3ba1fdee5febc98244b8fd772746c" />
+  <script data-ad-client="ca-pub-9904296847545064" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<link rel="alternate" href="/rss2.xml" title="marinesnow34" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">marinesnow34</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/10/13/ps/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          코딩 테스트 준비 전략
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2024-10-13 00:00:00" itemprop="dateCreated datePublished" datetime="2024-10-13T00:00:00+00:00">2024-10-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PS/" itemprop="url" rel="index"><span itemprop="name">PS</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="앞서서…"><a href="#앞서서…" class="headerlink" title="앞서서…"></a>앞서서…</h2><p><code>2024년 10월</code>에 작성된 글이기 때문에 시간에 따라 트랜드가 변할 수 있습니다. 여러 기업 코테에 합격도 하고, <a href="https://marinesnow34.github.io/2024/09/29/samsungb/">삼성 B형</a> 취득도 해서 제가 공부한 방법이 나름대로 효과가 있었다고 생각합니다. 그래서 취뽀한 지금 나만의 코테 준비 전략을 기록해 보려 합니다.</p>
+<h2 id="언어-선택"><a href="#언어-선택" class="headerlink" title="언어 선택"></a>언어 선택</h2><p>아마 코딩 테스트를 준비하는 분들에게 언어 선택은 큰 고민거리일 것입니다. 저는 <code>Python</code> -&gt; <code>C++</code> -&gt; <code>Java</code> 순으로 언어를 바꿨기에 언어 선택에 대한 고민을 많이 했습니다. 그래서 제가 <code>Java</code>를 선택한 이유를 적어보려 합니다.</p>
+<p>제일 큰 이유는 최근 백엔드 공채 코테 언어가 <code>Java</code>로 제한되는 경우가 많아졌기 때문입니다. <code>Coupang</code>, <code>현대 오토에버</code>등 에서는 <code>Java</code>로만 응시할 수 있었고 다른 기업에서도 <code>C++</code>와 <code>Java</code>로만 응시할 수 있는 경우가 많았습니다. 그래서 언어에 대한 고민을 줄이기 위해 <code>Java</code>를 선택했습니다. 반대로 말하면 <code>Python</code>은 코테에서 매력도가 조금 떨어지고 있다고 볼 수 있습니다. (그래도 많은 기업에서 <code>Python</code>을 허용하고 있습니다.)</p>
+<p>위에서는 조금 일반화해서 말했지만, 본인이 지원하는 기업이 어떤 언어를 주로 사용하는지 확인하고 그 언어를 선택하는 것이 좋을 것 같습니다. 즉 <code>Django</code>를 사용하는 기업이라면 <code>Python</code>을 선택하는 것이 좋고, <code>Spring</code>을 사용하는 기업이라면 <code>Java</code>를 선택하는 게 조금이라도 호감도를 높일 수 있다고 판단했습니다. 또한 코테 언어로 판단하는 경우는 많이 없다고 알려졌지만, 제 프로젝트가 <code>Spring</code>인데 <code>Python</code>을 선택하면 <code>Java</code>에 대한 이해도가 떨어진다고 볼 수도 있기 때문에 최대한 안전하게 프로젝트에 사용한 언어를 선택했습니다.</p>
+<p>두 번째 이유로는 언어별 코테 유불리가 크지 않다고 생각하기 때문입니다. <code>Python</code>은 문법이 간결하고 <code>C++</code>은 빠르다는 장점이 있습니다. 하지만 코테에서는 특정 언어가 쉽게 풀리거나 아니면 속도가 유리한 문제가 나오지 않기 때문입니다. 왜냐하면 출제자가 의도한 <code>자료구조</code>와 <code>알고리즘</code>을 사용하면 어떤 언어를 사용하더라도 풀 수 있게 만들어져 있기 때문입니다.</p>
+<p>마지막으로 이미 <code>알고리즘</code>과 <code>자료구조</code>에 대해서 이해가 있다면 언어를 바꾸는 것은 큰 문제가 되지 않습니다. 저 같은 경우에도 <code>C++</code>에서 <code>Java</code>로 바꾸고 2주 만에 현재 다니는 기업 코테를 통과했습니다. 그래서 언어를 바꾸는 것에 대한 고민이 있다면 큰 부담을 느끼지 않으셔도 됩니다.</p>
+<h2 id="알고리즘"><a href="#알고리즘" class="headerlink" title="알고리즘"></a>알고리즘</h2><p>알고리즘은 본인이 선호하는 기업에 맞게 준비하는 게 좋습니다. 기본 알고리즘을 베이스로 해서 <code>삼성</code>의 경우에는 시뮬레이션, <code>카카오</code>의 경우에는 문자열과 세그먼트트리 등을 기출을 분석해서 준비하는 것이 좋습니다. 이 분야는 공부법도 여러 가지가 있기 때문에 본인에게 맞는 방법을 찾아서 공부하는 것이 좋습니다.</p>
+<p>저 같은 경우에는 특정 기업을 타깃으로 하지는 않았습니다. 넓은 기업을 포괄할 수 있도록 학습했고, 어려운 문제를 풀기보다는 실수를 하지 않는 것을 중점으로 공부했습니다. 그래서 골드 상위권 문제는 거의 풀지 않았고, 실버 ~ 골드 하위권 문제를 중점으로 풀었습니다.</p>
+<p><img src="/assets/img/ps/solved.png" alt="solved"></p>
+<h2 id="자료구조"><a href="#자료구조" class="headerlink" title="자료구조"></a>자료구조</h2><p>알고리즘만큼이나 자료구조도 중요하다고 생각합니다. <code>스택</code>, <code>큐</code>, <code>힙</code>, <code>트리</code>, <code>그래프</code> 등을 잘 이해하고 있어야 효율적인 알고리즘을 작성할 수 있습니다. 직접 구현해 보면서 이해하는 정도는 아니더라도, 최소한 본인이 사용하는 언어에서 제공하는 라이브러리가 어떤 방식으로 동작하는지는 알고 있어야 합니다. 예를 들면 <code>Java</code>의 <code>ArrayList</code>가 언제 배열을 늘리는지 같은 걸 알고 있어야 효율적인 코드를 작성할 수 있습니다.</p>
+<h2 id="시간-관리"><a href="#시간-관리" class="headerlink" title="시간 관리"></a>시간 관리</h2><p>풀이를 알고 있더라도 제한 시간 내에 풀지 못한다면 의미가 없습니다. 그래서 시간 관리가 중요합니다. 저 같은 경우에는 알고리즘을 <code>떠올리는 시간</code>은 줄일 수 없다고 생각해서 <code>코딩 시간</code>을 줄이는 방법을 찾으려고 노력했습니다. 그래서 자주 사용하는 알고리즘(백트래킹, 이분탐색 등)은 <code>템플릿</code>을 만들어두고 매번 동일하게 작성하도록 했습니다. 그 결과 실수와 코딩 시간을 줄일 수 있었습니다.</p>
+<h2 id="후기"><a href="#후기" class="headerlink" title="후기"></a>후기</h2><p><a target="_blank" rel="noopener" href="https://solved.ac/profile/marinesnow34">solved</a>를 보면 알 수 있듯 제가 남들만큼 꾸준히 문제를 푼 것은 아닙니다. 하지만 그럼에도 불구하고 코테를 통과할 수 있었던 이유는 <code>의식적</code>으로 공부했기 때문이라고 생각합니다. 코테를 왜 해야 하고 어떤 것을 보여주려고 하는지를 명확하게 정리하고 공부하면 효율적으로 공부할 수 있다고 생각합니다.</p>
+<p>이 글을 보는 여러분도 본인이 왜 코테를 준비하는지, 어떤 기업을 타깃으로 하는지 생각해 보면 좋을 것 같습니다. 행운을 빕니다.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/09/29/samsungb/" rel="prev" title="삼성 상시 SW 역량테스트 B형 합격 후기">
+      <i class="fa fa-chevron-left"></i> 삼성 상시 SW 역량테스트 B형 합격 후기
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/10/27/jenkins/" rel="next" title="Jenkins 설치하고 빌드하기">
+      Jenkins 설치하고 빌드하기 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="giscus" id="giscus"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%95%9E%EC%84%9C%EC%84%9C%E2%80%A6"><span class="nav-number">1.</span> <span class="nav-text">앞서서…</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%96%B8%EC%96%B4-%EC%84%A0%ED%83%9D"><span class="nav-number">2.</span> <span class="nav-text">언어 선택</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98"><span class="nav-number">3.</span> <span class="nav-text">알고리즘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%9E%90%EB%A3%8C%EA%B5%AC%EC%A1%B0"><span class="nav-number">4.</span> <span class="nav-text">자료구조</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%8B%9C%EA%B0%84-%EA%B4%80%EB%A6%AC"><span class="nav-number">5.</span> <span class="nav-text">시간 관리</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%ED%9B%84%EA%B8%B0"><span class="nav-number">6.</span> <span class="nav-text">후기</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Joowon Lim</p>
+  <div class="site-description" itemprop="description">공부 기록용 블로그</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/marinesnow34" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;marinesnow34" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:joowon.dev@marinesnow34.com" title="E-Mail → mailto:joowon.dev@marinesnow34.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Joowon Lim</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="marinesnow34/marinesnow34.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzMjUzNjQ4NDc="
+        data-category="Comments"
+        data-category-id="DIC_kwDOE2Ssb84CcJ-b"
+        data-mapping="og:title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+</body>
+</html>

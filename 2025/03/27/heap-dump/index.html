@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="개요서버를 운영하다 보면 여러 이유로 힙 덤프를 분석할 일이 생깁니다. 힙 덤프 분석을 통해서 메모리 누수나 메모리 사용량이 높은 부분을 찾아내는데 도움이 됩니다. 처음 힙 덤프를 분석하려고 하면 어떻게 해야할지 막막할 수 있습니다. 그래서 그런 분들에게 도움이 되고자 힙 덤프 예제 문제와 함께 힙 덤프 분석 방법을 설명하겠습니다. 문제는 아래 링크에서 확">
+<meta property="og:type" content="article">
+<meta property="og:title" content="자바 힙 덤프 분석 (실습 예제 있음!!)">
+<meta property="og:url" content="https://marinesnow34.github.io/2025/03/27/heap-dump/index.html">
+<meta property="og:site_name" content="marinesnow34">
+<meta property="og:description" content="개요서버를 운영하다 보면 여러 이유로 힙 덤프를 분석할 일이 생깁니다. 힙 덤프 분석을 통해서 메모리 누수나 메모리 사용량이 높은 부분을 찾아내는데 도움이 됩니다. 처음 힙 덤프를 분석하려고 하면 어떻게 해야할지 막막할 수 있습니다. 그래서 그런 분들에게 도움이 되고자 힙 덤프 예제 문제와 함께 힙 덤프 분석 방법을 설명하겠습니다. 문제는 아래 링크에서 확">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/heap/1.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/heap/2.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/heap/3.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/heap/4.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/heap/5.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/heap/6.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/heap/7.png">
+<meta property="article:published_time" content="2025-03-27T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-18T08:44:56.806Z">
+<meta property="article:author" content="Joowon Lim">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/heap/1.png">
+
+<link rel="canonical" href="https://marinesnow34.github.io/2025/03/27/heap-dump/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>자바 힙 덤프 분석 (실습 예제 있음!!) | marinesnow34</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-ZE41Y65DKL');
+      }
+    </script>
+
+
+
+
+
+
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "izvke9bs7i");
+</script>
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <meta name="naver-site-verification" content="7a60549b2cc3ba1fdee5febc98244b8fd772746c" />
+  <script data-ad-client="ca-pub-9904296847545064" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<link rel="alternate" href="/rss2.xml" title="marinesnow34" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">marinesnow34</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2025/03/27/heap-dump/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          자바 힙 덤프 분석 (실습 예제 있음!!)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2025-03-27 00:00:00" itemprop="dateCreated datePublished" datetime="2025-03-27T00:00:00+00:00">2025-03-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EC%84%9C%EB%B2%84/" itemprop="url" rel="index"><span itemprop="name">서버</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="개요"><a href="#개요" class="headerlink" title="개요"></a>개요</h2><p>서버를 운영하다 보면 여러 이유로 힙 덤프를 분석할 일이 생깁니다. 힙 덤프 분석을 통해서 메모리 누수나 메모리 사용량이 높은 부분을 찾아내는데 도움이 됩니다.</p>
+<p>처음 힙 덤프를 분석하려고 하면 어떻게 해야할지 막막할 수 있습니다. 그래서 그런 분들에게 도움이 되고자 힙 덤프 예제 문제와 함께 힙 덤프 분석 방법을 설명하겠습니다. 문제는 아래 링크에서 확인 할 수 있습니다. 문제 정답은 글 맨 아래에 있습니다.</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/marinesnow34/dump-example">https://github.com/marinesnow34/dump-example</a></p>
+<h2 id="문제"><a href="#문제" class="headerlink" title="문제"></a>문제</h2><p>고라파덕은 멍때리며 코딩하는 것으로 유명하다. 어느 날, 고라파덕이 운영하는 서버에서 OOM(Out Of Memory) 오류가 발생했다. 다행히 Heap Dump 파일(dump.hprof)을 확보할 수 있었고, 이를 통해 문제를 분석할 수 있는 상황이다.</p>
+<p>📌 분석할 내용</p>
+<ol>
+<li>어떤 메서드에서 문제가 발생했는가?</li>
+<li>어떤 상황(변수 값)에서 문제가 발생했는가?</li>
+</ol>
+<p>소스 코드와 Heap Dump를 분석하여 고라파덕을 도와주자!!</p>
+<h2 id="정적-분석"><a href="#정적-분석" class="headerlink" title="정적 분석"></a>정적 분석</h2><p>본격적으로 힙 덤프를 분석하기 전에 간단하게 소스 코드를 확인 해 봅시다.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/main/java/com/example/dump/domain/UserRepository.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserRepository</span> <span class="keyword">extends</span> <span class="title">JpaRepository</span>&lt;<span class="title">User</span>, <span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line">	<span class="function">User <span class="title">findByIdx</span><span class="params">(Long idx)</span></span>;</span><br><span class="line">	<span class="function">User <span class="title">findByName</span><span class="params">(String name)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// src/main/java/com/example/dump/service/UserService.java</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="meta">@RequiredArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserService</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> UserRepository userRepository;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getUserNameById</span><span class="params">(Long idx)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> userRepository.findByIdx(idx).getName();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getUserAddressByName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> userRepository.findByName(name).getAddress();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>일단 서비스를 확인해 보니 idx가 주어지면 idx를 가진 유저의 이름을 가져오고, 이름이 주어지면 이름을 가진 유저의 주소를 가져오는 것으로 보입니다.</p>
+<p>코드로 봤을 때는 문제가 될만한 부분이 보이지 않습니다. 그럼 이제 힙 덤프를 분석해 봅시다.</p>
+<h2 id="힙-덤프-분석"><a href="#힙-덤프-분석" class="headerlink" title="힙 덤프 분석"></a>힙 덤프 분석</h2><p>힙 덤프를 분석하기 위해서는 <a target="_blank" rel="noopener" href="https://eclipse.dev/mat/download/">MAT</a>와<br><a target="_blank" rel="noopener" href="https://visualvm.github.io/download.html">VisualVM</a>을 사용했습니다. 먼저 MAT로 힙 덤프를 열어봅시다.</p>
+<img src="/assets/img/heap/1.png" alt="MAT 메인 화면" width=700>
+
+<p>MAT에서 dump.hprof 파일을 열면 위와 같은 화면이 나옵니다. 먼저 Leak Suspects Report를 클릭해 줍니다. 분석되는 동안 Action &gt; Dominator Tree를 합니다.</p>
+<img src="/assets/img/heap/2.png" alt="Domiantor Tree" width=700>
+내용을 보면 Retained Heap이 큰 객체를 찾을 수 있습니다. 참고로 Retained Heap은 특정 객체가 참조하고 있는 모든 객체들 입니다. 즉 GC에 의해 제거될 때 회수될 수 있는 힙 메모리의 양입니다.
+
+<br>
+ArrayList의 capacity는 360,145이고 안에 들어있는 객체의 갯수는 349,584개 입니다. 이를 통해서 모종의 이유로 ArrayList가 너무 많은 객체를 가지고 있어서 OOM이 발생했을 것으로 추측할 수 있습니다.
+
+<hr>
+<p>아까 분석시킨 supects Report를 확인 합시다.<br><img src="/assets/img/heap/3.png" alt="suspect" width=700></p>
+<p>http-nio-8080-exec-2 스레드에서 문제가 발생했음을 알 수 있습니다. Detail을 확인하면 더 많은 정보를 얻을 수 있습니다. 가독성이 좋은 VisualVM으로 해당 스레드를 확인해 봅시다.</p>
+<br>
+<img src="/assets/img/heap/4.png" alt="visualVM" width=700>
+
+<p>VisualVM에 메인에서 OutOfMemory Thread를 확인할 수 있습니다. 이번 상황에서는 메모리를 많이 들고 있는 쓰레드와 OOM이 발생한 쓰레드가 동일한 것을 알 수 있습니다. view all로 해당 쓰레드를 확인해 봅시다.</p>
+<img src="/assets/img/heap/5.png" alt="visualVM" width=700>
+
+<p>http-nio-8080-exec-2스레드의 스택트레이스가 보입니다. 길어서 저희가 호출한 부분을 찾아보겠습니다.<br><img src="/assets/img/heap/6.png" alt="visualVM" width=700></p>
+<p>익숙한 <code>UserService.getUserNameById()</code> 메서드가 보입니다. <code>findByIdx()</code>를 호출하다가 OOM이 발생했습니다. <code>findByIdx()</code>를 확인해 봅시다.<br><img src="/assets/img/heap/7.png" alt="visualVM" width=700></p>
+<p>local variable을 확인해 보면 long 값이 0인 것을 확인할 수 있습니다. 이는 idx가 0인 유저를 가져오는 것으로 추정됩니다. idx가 0인 유저는 36만명 이상으로 추측 됩니다.</p>
+<h2 id="정답-및-해설"><a href="#정답-및-해설" class="headerlink" title="정답 및 해설"></a>정답 및 해설</h2><ol>
+<li>어떤 메서드에서 문제가 발생했는가?<ul>
+<li><code>UserService.getUserNameById()</code>안 <code>userRepository.findByIdx(idx)</code>에서 idx가 동일한 유저를 <strong>모두</strong> 가져와 메모리 부족으로 인한 OOM이 발생했습니다.</li>
+</ul>
+</li>
+<li>어떤 상황(변수 값)에서 문제가 발생했는가?<ul>
+<li>idx가 0인 유저를 가져올 때 문제가 발생했습니다. idx가 0인 유저는 36만명 이상으로 추측 됩니다.</li>
+</ul>
+</li>
+</ol>
+<p>고라파덕의 서비스는 어떤 이유로 idx가 0인 유저가 36만명 이상이 되었고, 이를 findByIdx(0L)으로 호출하게 됐습니다. NonUniqueResultException가 발생하기 전에 메모리가 부족해 OOM이 발생했습니다.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/02/09/mysql-insert/" rel="prev" title="MySQL insert 충돌 시 어떤일이 일어날까?">
+      <i class="fa fa-chevron-left"></i> MySQL insert 충돌 시 어떤일이 일어날까?
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/04/13/procedure-connection/" rel="next" title="JPA @Procedure는 @Transactional에 싸서 사용하세요">
+      JPA @Procedure는 @Transactional에 싸서 사용하세요 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="giscus" id="giscus"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B0%9C%EC%9A%94"><span class="nav-number">1.</span> <span class="nav-text">개요</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%AC%B8%EC%A0%9C"><span class="nav-number">2.</span> <span class="nav-text">문제</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%A0%95%EC%A0%81-%EB%B6%84%EC%84%9D"><span class="nav-number">3.</span> <span class="nav-text">정적 분석</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%ED%9E%99-%EB%8D%A4%ED%94%84-%EB%B6%84%EC%84%9D"><span class="nav-number">4.</span> <span class="nav-text">힙 덤프 분석</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%A0%95%EB%8B%B5-%EB%B0%8F-%ED%95%B4%EC%84%A4"><span class="nav-number">5.</span> <span class="nav-text">정답 및 해설</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Joowon Lim</p>
+  <div class="site-description" itemprop="description">공부 기록용 블로그</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/marinesnow34" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;marinesnow34" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:joowon.dev@marinesnow34.com" title="E-Mail → mailto:joowon.dev@marinesnow34.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Joowon Lim</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="marinesnow34/marinesnow34.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzMjUzNjQ4NDc="
+        data-category="Comments"
+        data-category-id="DIC_kwDOE2Ssb84CcJ-b"
+        data-mapping="og:title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+</body>
+</html>

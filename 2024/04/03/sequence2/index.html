@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="이전 글(DB에서 해결)의 시리즈 입니다. 따라서 예시의 자세한 상황은 이전 글을 참고해주세요. 간단한 상황주문 번호의 스펙을 다시 설명하면 다음과 같습니다.  주문 번호는 매일 초기화 주문 번호는 가게별로 다름 같은 날 같은 가게에는 동일한 주문 번호가 없음 주문 번호는 1부터 시작해서 1씩 증가">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 동시성 해결하기 이론 with. MULIT(Transaction), pipeline, Lua">
+<meta property="og:url" content="https://marinesnow34.github.io/2024/04/03/sequence2/index.html">
+<meta property="og:site_name" content="marinesnow34">
+<meta property="og:description" content="이전 글(DB에서 해결)의 시리즈 입니다. 따라서 예시의 자세한 상황은 이전 글을 참고해주세요. 간단한 상황주문 번호의 스펙을 다시 설명하면 다음과 같습니다.  주문 번호는 매일 초기화 주문 번호는 가게별로 다름 같은 날 같은 가게에는 동일한 주문 번호가 없음 주문 번호는 1부터 시작해서 1씩 증가">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/sequence2/redis.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/sequence2/redis0.jpeg">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/sequence2/redis1.jpeg">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/sequence2/http_pipeline.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/sequence2/pipeline.png">
+<meta property="article:published_time" content="2024-04-03T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-18T08:44:56.807Z">
+<meta property="article:author" content="Joowon Lim">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/sequence2/redis.png">
+
+<link rel="canonical" href="https://marinesnow34.github.io/2024/04/03/sequence2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>Redis 동시성 해결하기 이론 with. MULIT(Transaction), pipeline, Lua | marinesnow34</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-ZE41Y65DKL');
+      }
+    </script>
+
+
+
+
+
+
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "izvke9bs7i");
+</script>
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <meta name="naver-site-verification" content="7a60549b2cc3ba1fdee5febc98244b8fd772746c" />
+  <script data-ad-client="ca-pub-9904296847545064" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<link rel="alternate" href="/rss2.xml" title="marinesnow34" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">marinesnow34</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/04/03/sequence2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis 동시성 해결하기 이론 with. MULIT(Transaction), pipeline, Lua
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2024-04-03 00:00:00" itemprop="dateCreated datePublished" datetime="2024-04-03T00:00:00+00:00">2024-04-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EC%84%9C%EB%B2%84/" itemprop="url" rel="index"><span itemprop="name">서버</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="/assets/img/sequence2/redis.png" alt="redis"><br><a href="https://marinesnow34.github.io/2024/04/02/sequence1/">이전 글(DB에서 해결)</a>의 시리즈 입니다. 따라서 예시의 자세한 상황은 이전 글을 참고해주세요.</p>
+<h2 id="간단한-상황"><a href="#간단한-상황" class="headerlink" title="간단한 상황"></a>간단한 상황</h2><p>주문 번호의 스펙을 다시 설명하면 다음과 같습니다.</p>
+<ul>
+<li>주문 번호는 매일 초기화</li>
+<li>주문 번호는 가게별로 다름</li>
+<li>같은 날 같은 가게에는 동일한 주문 번호가 없음</li>
+<li>주문 번호는 1부터 시작해서 1씩 증가</li>
+</ul>
+<h2 id="레디스-도입-이유"><a href="#레디스-도입-이유" class="headerlink" title="레디스 도입 이유"></a>레디스 도입 이유</h2><p><code>MySQL</code>에서 <code>Redis</code>로 변경하려는 이유는 다음과 같습니다.</p>
+<ul>
+<li>빠른 속도</li>
+<li><code>DB</code>에 부하를 줄이기 위함</li>
+<li>이미 레디스를 사용 중</li>
+</ul>
+<h2 id="레디스의-동시성-문제"><a href="#레디스의-동시성-문제" class="headerlink" title="레디스의 동시성 문제"></a>레디스의 동시성 문제</h2><p>레디스는 싱글 스레드로 동작하기 때문에 <code>동시성 문제</code>가 발생하지 않습니다. 하지만 이것은 단일 레디스만 사용하는 경우입니다. 보통 레디스를 멀티 스레드 환경에서 사용하기 때문에 <code>동시성 문제</code>가 발생할 수 있습니다.</p>
+<p><em><code>INCR</code>을 사용하면 현재 상황에서는 동시성이 발생하지 않습니다. 하지만 동시성 해결이 주제라 일부로 동시성 문제를 발생 시키겠습니다.</em></p>
+<h2 id="동시성이-발생하는-상황"><a href="#동시성이-발생하는-상황" class="headerlink" title="동시성이 발생하는 상황"></a>동시성이 발생하는 상황</h2><p>주문번호를 가져오고 증가시키는 코드는 다음과 같습니다.</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:<span class="number">6379</span>&gt; get store1</span><br><span class="line"><span class="string">&quot;0&quot;</span></span><br><span class="line">127.0.0.1:<span class="number">6379</span>&gt; set store1 <span class="number">1</span></span><br><span class="line">OK</span><br></pre></td></tr></table></figure>
+<p>store1의 값을 가져오고 증가시키는 코드입니다. 현재의 주문 번호는 1입니다.</p>
+<h2 id="문제-발생"><a href="#문제-발생" class="headerlink" title="문제 발생"></a>문제 발생</h2><p><img src="/assets/img/sequence2/redis0.jpeg" alt="문제 상황"><br>위의 그림을 보면 <code>get store1</code>을 한 후에 컨텍스트 스위칭이 발생하면, <code>get store1</code>의 값이 동일한 값이 나올 수 있습니다.</p>
+<h2 id="Transaction사용"><a href="#Transaction사용" class="headerlink" title="Transaction사용"></a>Transaction사용</h2><p><code>Transaction</code>을 사용하면 <code>원자성</code>을 보장할 수 있습니다. <code>MULTI</code>를 통해서 트랜잭션을 시작하고 <code>EXEC</code>/<code>DISCARD</code>를 통해서 트랜잭션을 실행/취소합니다. </p>
+<p>원리는 <code>MULTI</code>로 트랜잭션을 시작하면 <code>queue</code>에 명령어를 넣고 <code>EXEC</code>를 하면 <code>queue</code>에 존재하는 명령어가 순차적으로 실행됩니다. 그래서 트랜잭션이 실행되는 동안 다른 명령어가 실행되지 않습니다.</p>
+<p>특이한 점은 <code>트랜잭션</code>이 실행되는 동안 <code>중간 결과</code>를 확인할 수 없습니다.</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:<span class="number">6379</span>&gt; MULTI</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:<span class="number">6379</span>(TX)&gt; get store1</span><br><span class="line">QUEUED</span><br><span class="line">127.0.0.1:<span class="number">6379</span>(TX)&gt; set store1 <span class="string">&quot;????&quot;</span></span><br><span class="line">QUEUED</span><br><span class="line">127.0.0.1:<span class="number">6379</span>(TX)&gt; EXEC</span><br><span class="line">1) <span class="string">&quot;0&quot;</span></span><br><span class="line">2) OK</span><br></pre></td></tr></table></figure>
+<p>EXEC를 하기 전에는 <code>get store1</code>의 결과를 알 수 없습니다. 따라서 <code>get store1</code>의 결과에 +1의 값을 <code>set store1 [value]</code>에 넣을 수 없습니다.</p>
+<h2 id="문제-상황"><a href="#문제-상황" class="headerlink" title="문제 상황"></a>문제 상황</h2><p><img src="/assets/img/sequence2/redis1.jpeg" alt="문제 상황"></p>
+<p>그림처럼 트랜잭션을 사용하면 트랜잭션 동안 <code>race condition</code>이 발생하지 않지만, 트랜잭션이 끝나고 <code>get store1</code>을 했을 때 컨텍스트 스위칭이 발생하면 <code>race condition</code>이 발생할 수 있습니다.</p>
+<h2 id="Pipeline"><a href="#Pipeline" class="headerlink" title="Pipeline"></a>Pipeline</h2><p><a target="_blank" rel="noopener" href="https://redis.io/docs/manual/pipelining/">redis pipeline</a>의 기본적인 아이디어는 한번에 여러 명령어를 보내는 것입니다. 클라이언트가 명령어에 대한 응답을 받기 전에 다음 명령어를 보내기 때문에 <code>round-trip time(RTT)</code>가 적습니다. 따라서 여러 명령어를 보낼 때 <code>pipeline</code>을 사용하면 성능이 향상됩니다.</p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/HTTP_pipelining">pipeline</a><br> <img src="/assets/img/sequence2/http_pipeline.png" alt="http pipeline"></p>
+<p>한번에 여러 명령어를 보내서 <code>원자성</code>을 보장하는 것 처럼 보이지만 <code>pipeline</code>은 <code>원자성</code>을 보장하지 않습니다. 왜냐하면 다른 <code>pipeline</code>이 끼어들어서 명령어를 실행할 수 있기 때문입니다.</p>
+<p><a target="_blank" rel="noopener" href="https://www.slideshare.net/RedisLabs/atomicity-in-redis-thomas-hunter#slide-image-18">출처</a><br><img src="/assets/img/sequence2/pipeline.png" alt="pipeline"></p>
+<h2 id="redis-Lua-Script"><a href="#redis-Lua-Script" class="headerlink" title="redis Lua Script"></a>redis Lua Script</h2><p><a target="_blank" rel="noopener" href="https://redis.io/docs/interact/programmability/eval-intro/">Lua Script</a>를 사용해서 문제를 해결할 수 있습니다. <code>Lua Script</code>는 <code>Redis</code>에서 제공하는 스크립트 언어입니다. <code>Lua Script</code>를 사용하면 스크립트가 실행되는 동안 다른 명령어가 실행되지 않기 때문에 <code>race condition</code>이 발생하지 않습니다.</p>
+<h2 id="예제"><a href="#예제" class="headerlink" title="예제"></a>예제</h2><ul>
+<li><p>lua script</p>
+  <figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> key = KEYS[<span class="number">1</span>]</span><br><span class="line"><span class="keyword">local</span> currentValue = redis.call(<span class="string">&#x27;GET&#x27;</span>, key)</span><br><span class="line"><span class="keyword">if</span> currentValue == <span class="literal">false</span> <span class="keyword">then</span></span><br><span class="line">    currentValue = <span class="number">0</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    currentValue = <span class="built_in">tonumber</span>(currentValue)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">local</span> newValue = currentValue + <span class="number">1</span></span><br><span class="line">redis.call(<span class="string">&#x27;SET&#x27;</span>, key, <span class="built_in">tostring</span>(newValue))</span><br><span class="line"><span class="keyword">return</span> newValue</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>redis</p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; EVAL <span class="string">&quot;local key = KEYS[1] local currentValue = redis.call(&#x27;GET&#x27;, key) if currentValue == false then currentValue = 0 else currentValue = tonumber(currentValue) end local newValue = currentValue + 1 redis.call(&#x27;SET&#x27;, key, tostring(newValue)) return newValue&quot;</span> 1 store1</span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>이렇게 하면 <code>race condition</code>을 방지할 수 있고, <code>중간 결과</code>를 확인할 수 있습니다.</p>
+<h2 id="Lua-Script-주의사항"><a href="#Lua-Script-주의사항" class="headerlink" title="Lua Script 주의사항"></a>Lua Script 주의사항</h2><p>앞서 말했듯이 <code>Lua script</code>가 실행 된다면 <code>Lua script</code>가 실행되는 동안 다른 명령어가 실행되지 않습니다. 그래서 오래 걸리는 작업을 할 때는 <code>Lua script</code>를 사용하지 않는 것이 좋습니다.</p>
+<h2 id="pipeline-vs-Lua-Script"><a href="#pipeline-vs-Lua-Script" class="headerlink" title="pipeline vs Lua Script"></a>pipeline vs Lua Script</h2><p>사실 <code>Redis 2.6</code>버전 이상에서는 여러 명령어를 보낼 때도 대부분의 상황에서 <code>Lua Script</code>가 <code>pipeline</code>보다 낫습니다.</p>
+<p><a target="_blank" rel="noopener" href="https://redis.io/docs/manual/pipelining/#pipelining-vs-scripting">공식 문서</a>를 보면 응답값을 활용하는 경우 <code>pipeline</code>은 읽기 명령어를 <code>클라이언트</code>가 받은 다음에 응답을 하지만, <code>Lua Script</code>는 <code>Redis 서버</code>에서 실행되기 때문에 <code>pipeline</code>보다 빠릅니다.</p>
+<h2 id="결론-특징"><a href="#결론-특징" class="headerlink" title="결론(특징)"></a>결론(특징)</h2><h3 id="Transaction"><a href="#Transaction" class="headerlink" title="Transaction"></a>Transaction</h3><ul>
+<li>원자성이 필요할 때</li>
+<li>다음 명령어가 이전 명령어의 응답이 필요 없을 때</li>
+</ul>
+<h3 id="Pipeline-1"><a href="#Pipeline-1" class="headerlink" title="Pipeline"></a>Pipeline</h3><ul>
+<li>Redis 서버로 여러 명령어를 보낼 때</li>
+<li>다음 명령어가 이전 명령어의 응답이 필요 없을 때</li>
+</ul>
+<h3 id="Lua-Script"><a href="#Lua-Script" class="headerlink" title="Lua Script"></a>Lua Script</h3><ul>
+<li>원자성이 필요할 때</li>
+<li>명령어를 실행하는 동안 중간 값이 필요할 때</li>
+<li>조건부 명령어를 실행할 때</li>
+<li>단 오래 걸리는 작업은 주의</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/04/03/sequence3/" rel="prev" title="Redis Lua로 동시성 문제 해결하기">
+      <i class="fa fa-chevron-left"></i> Redis Lua로 동시성 문제 해결하기
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/04/07/asc/" rel="next" title="AWS Student Community Day 발표 후기">
+      AWS Student Community Day 발표 후기 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="giscus" id="giscus"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B0%84%EB%8B%A8%ED%95%9C-%EC%83%81%ED%99%A9"><span class="nav-number">1.</span> <span class="nav-text">간단한 상황</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%A0%88%EB%94%94%EC%8A%A4-%EB%8F%84%EC%9E%85-%EC%9D%B4%EC%9C%A0"><span class="nav-number">2.</span> <span class="nav-text">레디스 도입 이유</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%A0%88%EB%94%94%EC%8A%A4%EC%9D%98-%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%AC%B8%EC%A0%9C"><span class="nav-number">3.</span> <span class="nav-text">레디스의 동시성 문제</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%8F%99%EC%8B%9C%EC%84%B1%EC%9D%B4-%EB%B0%9C%EC%83%9D%ED%95%98%EB%8A%94-%EC%83%81%ED%99%A9"><span class="nav-number">4.</span> <span class="nav-text">동시성이 발생하는 상황</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%AC%B8%EC%A0%9C-%EB%B0%9C%EC%83%9D"><span class="nav-number">5.</span> <span class="nav-text">문제 발생</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Transaction%EC%82%AC%EC%9A%A9"><span class="nav-number">6.</span> <span class="nav-text">Transaction사용</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%AC%B8%EC%A0%9C-%EC%83%81%ED%99%A9"><span class="nav-number">7.</span> <span class="nav-text">문제 상황</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pipeline"><span class="nav-number">8.</span> <span class="nav-text">Pipeline</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redis-Lua-Script"><span class="nav-number">9.</span> <span class="nav-text">redis Lua Script</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%98%88%EC%A0%9C"><span class="nav-number">10.</span> <span class="nav-text">예제</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lua-Script-%EC%A3%BC%EC%9D%98%EC%82%AC%ED%95%AD"><span class="nav-number">11.</span> <span class="nav-text">Lua Script 주의사항</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pipeline-vs-Lua-Script"><span class="nav-number">12.</span> <span class="nav-text">pipeline vs Lua Script</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B2%B0%EB%A1%A0-%ED%8A%B9%EC%A7%95"><span class="nav-number">13.</span> <span class="nav-text">결론(특징)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Transaction"><span class="nav-number">13.1.</span> <span class="nav-text">Transaction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pipeline-1"><span class="nav-number">13.2.</span> <span class="nav-text">Pipeline</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lua-Script"><span class="nav-number">13.3.</span> <span class="nav-text">Lua Script</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Joowon Lim</p>
+  <div class="site-description" itemprop="description">공부 기록용 블로그</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/marinesnow34" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;marinesnow34" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:joowon.dev@marinesnow34.com" title="E-Mail → mailto:joowon.dev@marinesnow34.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Joowon Lim</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="marinesnow34/marinesnow34.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzMjUzNjQ4NDc="
+        data-category="Comments"
+        data-category-id="DIC_kwDOE2Ssb84CcJ-b"
+        data-mapping="og:title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+</body>
+</html>

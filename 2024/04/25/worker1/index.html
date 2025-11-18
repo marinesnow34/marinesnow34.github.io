@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="서론간단하게 서버리스 컴퓨팅을 사용할 일이 생겨서 생겨서 클라우드플레어 워커를 사용해봤습니다. 다른 서버리스 서비스와 비교했을 때 차이점과 클라우드플레어 워커의 특징에 대해 알아보겠습니다. 서버리스(serverless)란?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="클라우드플레어 워커(cloudflare workers)와 AWS 람다(AWS Lambda) 비교">
+<meta property="og:url" content="https://marinesnow34.github.io/2024/04/25/worker1/index.html">
+<meta property="og:site_name" content="marinesnow34">
+<meta property="og:description" content="서론간단하게 서버리스 컴퓨팅을 사용할 일이 생겨서 생겨서 클라우드플레어 워커를 사용해봤습니다. 다른 서버리스 서비스와 비교했을 때 차이점과 클라우드플레어 워커의 특징에 대해 알아보겠습니다. 서버리스(serverless)란?">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/worker1/logo.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/worker1/compare.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/worker1/price.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/worker1/fee.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/worker1/cold.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/worker1/warm.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/worker1/v8.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/worker1/hand.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/worker1/edge.svg">
+<meta property="article:published_time" content="2024-04-25T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-18T08:44:56.807Z">
+<meta property="article:author" content="Joowon Lim">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/worker1/logo.png">
+
+<link rel="canonical" href="https://marinesnow34.github.io/2024/04/25/worker1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>클라우드플레어 워커(cloudflare workers)와 AWS 람다(AWS Lambda) 비교 | marinesnow34</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-ZE41Y65DKL');
+      }
+    </script>
+
+
+
+
+
+
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "izvke9bs7i");
+</script>
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <meta name="naver-site-verification" content="7a60549b2cc3ba1fdee5febc98244b8fd772746c" />
+  <script data-ad-client="ca-pub-9904296847545064" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<link rel="alternate" href="/rss2.xml" title="marinesnow34" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">marinesnow34</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/04/25/worker1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          클라우드플레어 워커(cloudflare workers)와 AWS 람다(AWS Lambda) 비교
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2024-04-25 00:00:00" itemprop="dateCreated datePublished" datetime="2024-04-25T00:00:00+00:00">2024-04-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C/" itemprop="url" rel="index"><span itemprop="name">클라우드</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="/assets/img/worker1/logo.png" alt="cloudflare workers"></p>
+<h2 id="서론"><a href="#서론" class="headerlink" title="서론"></a>서론</h2><p>간단하게 <code>서버리스 컴퓨팅</code>을 사용할 일이 생겨서 생겨서 클라우드플레어 <code>워커</code>를 사용해봤습니다. 다른 서버리스 서비스와 비교했을 때 차이점과 클라우드플레어 워커의 <code>특징</code>에 대해 알아보겠습니다.</p>
+<h2 id="서버리스-serverless-란"><a href="#서버리스-serverless-란" class="headerlink" title="서버리스(serverless)란?"></a>서버리스(serverless)란?</h2><p>먼저 서버리스는 물리 서버가 존재 하지 않아서 붙여진 이름이 아닌 <code>&#39;서버를 관리할 필요가 없어서&#39; 서버리스</code> 라고 불립니다. 서버를 관리하는 것을 클라우드 제공 업체에 맡기고, <code>사용한 만큼만 비용을 지불</code>하는 방식입니다. 서버를 관리할 필요가 없기 때문에 개발자는 비지니스 로직에만 집중할 수 있습니다. </p>
+<p>따라서 개발자는 원하는 함수를 작성하고 <code>원할 때만 실행</code>할 수 있습니다.</p>
+<p>서버리스를 사용하는 이유는 함수를 <code>특정 상황</code>에 실행할 수 있다는 것에 있습니다. 서버를 띄우지 않아서 비용이 절약되고 <code>유지보수할 필요가 없습니다</code>. 또한 배포도 서버리스 서비스 업체에서 해주기 때문에 개발자는 배포에 신경쓸 필요가 없습니다. cron이나 트리거를 사용해서 특정 시간에 함수를 실행할 수 있습니다.</p>
+<h2 id="cloudflare를-선택한-이유"><a href="#cloudflare를-선택한-이유" class="headerlink" title="cloudflare를 선택한 이유"></a>cloudflare를 선택한 이유</h2><p>일반적인 사용자에게는 두 회사 모두 널널하고 무료 범위를 넘기가 어렵습니다. 각 회사의 대표적인 장점은 다음과 같습니다.</p>
+<ul>
+<li>AWS: 세분화된 함수 스펙</li>
+<li>Cloudflare: 추과 과금 방지</li>
+</ul>
+<p>과거에는 AWS가 시간 측정을 할 때 100ms 단위로 올림을 했었습니다. 하지만 최근에는 <code>1ms로 반올림</code>해서 측정하게 변해서 그나마 있던 <code>Cloudflare</code>의 장점이 사라졌습니다.</p>
+<p>따라서 현재는 <code>Lambda</code>가 더 좋은 선택이지만 개인적으로 Cloudflare를 애정하고 응원하기 때문에 <code>Wokers</code>를 사용하게 됐습니다.</p>
+<p>그래도 특정 상황에서는 Workers를 사용하는게 좋은 선택일 수 있습니다.</p>
+<h2 id="Workers-VS-Lambda"><a href="#Workers-VS-Lambda" class="headerlink" title="Workers VS Lambda"></a>Workers VS Lambda</h2><p>워커랑 람다를 일대일 대응을 할 수 없지만 비교해보겠습니다.</p>
+<ul>
+<li>무료 사용량<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>Workers</th>
+<th>Lambda</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>무료 호출 횟수</td>
+<td>10만/일</td>
+<td>1백만/월</td>
+</tr>
+<tr>
+<td>무료 컴퓨팅 시간</td>
+<td>10ms cpu time/실행</td>
+<td>400,000GB-초/월</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<p><code>호출 횟수</code>는 <code>워커</code>가 월로 환산하면 약 <code>3배</code>가량 많습니다. 컴퓨팅 시간을 비교하려면 단위를 정확히 알아야 하는데 그러기 위해서 구체적인 스펙을 알아야 합니다.</p>
+<p>자세히 비교 하면 끝도 없어서 대표적으로 이런 차이가 있습니다.</p>
+<ul>
+<li>상세 스펙<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>Workers</th>
+<th>Lambda</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Language</td>
+<td>JavaScript, TypeScript, Python, Rust</td>
+<td>Java, Go, PowerShell, Node.js, C#, Python, Ruby</td>
+</tr>
+<tr>
+<td>CPU time</td>
+<td>10ms(무료), 30초, 15분(cron, queue)</td>
+<td>측정 X</td>
+</tr>
+<tr>
+<td>Duration(wall-clock time)</td>
+<td>무제한</td>
+<td>15분</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>128MB</td>
+<td>128MB ~ 50GB</td>
+</tr>
+<tr>
+<td>전 세계 배포</td>
+<td>기본</td>
+<td>@Edge 사용</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<p><code>Lambda</code>의 <code>Free Tier</code>로 비교 해보겠습니다.<br><img src="/assets/img/worker1/compare.png" alt="cloudflare workers pricing"><br><code>Lambda@Edge</code>는 유료이므로 제외 하겠습니다. 최소 메모리인 <code>128MB</code>로 비교하면 <code>3.2초</code>가 걸리는 함수를 <code>1백만번</code> 호출할 수 있습니다. <code>호출 횟수/10회</code>로 줄이면 <code>실행시간*10초</code> 까지를 무료로 실행할 수 있습니다.</p>
+<p>결론적으로 Free Tier에서는 많은 <code>메모리</code>가 필요로 하면 <code>Lambda</code>가 더 좋은 선택이 됩니다. 하지만 무료 <code>Edge server</code>배포가 필요하면 <code>Workers</code>가 더 좋은 선택이 됩니다.</p>
+<h2 id="CPU-time과-Duration-wall-clock-time"><a href="#CPU-time과-Duration-wall-clock-time" class="headerlink" title="CPU time과 Duration(wall-clock time)"></a>CPU time과 Duration(wall-clock time)</h2><p>눈여겨 볼만한 점은 <code>실행 시간</code>을 <code>측정하는 방식</code> 입니다. 클라우드플레어에서는 <code>CPU time</code>과 <code>wall-clock time</code>이라는 개념을 도입합니다. 공식 블로그인 <a target="_blank" rel="noopener" href="https://blog.cloudflare.com/workers-pricing-scale-to-zero/">New Workers pricing</a>에서 자세한 설명이 나옵니다.</p>
+<p><img src="/assets/img/worker1/price.png" alt="cloudflare workers pricing"></p>
+<p>대부분의 애플리케이션은 <code>CPU를 사용</code>하는것 보다 <code>I/O</code>를 대기하는데 더 많은 시간을 사용합니다. 그래서 <code>cloudflare</code>는 <code>CPU time</code>에만 비용을 부과하고, <code>Duration(wall-clock time)</code>에 비용을 부과하는 것을 숨은 비용이라고 칭합니다.</p>
+<p>마치 택시를 탔는데 택시에 기름을 넣고 밥을 먹기 위해서 멈췄지만 미터기는 계속 작동하는것과 같습니다. 이처럼 목표를 향해 다가가지 않는 동안에도 비용을 지불하고 있는것 입니다. 이제 운전자가 기름을 넣는 동안 미터기가 일시 중지되었다고 상상해 봅시다. 이것이 바로 <code>CPU time</code>과 <code>wall clock time</code>의 차이입니다.</p>
+<h2 id="과금-범위-비교"><a href="#과금-범위-비교" class="headerlink" title="과금 범위 비교"></a>과금 범위 비교</h2><ul>
+<li>10억 requests/월</li>
+<li>7ms CPU time/request</li>
+<li>200ms duration/request</li>
+</ul>
+<p><img src="/assets/img/worker1/fee.png" alt="cloudflare workers pricing"></p>
+<h2 id="콜드-스타트"><a href="#콜드-스타트" class="headerlink" title="콜드 스타트"></a>콜드 스타트</h2><p>일반적인 <code>서버리스 환경</code>에서는 <code>콜드 스타드</code>가 발생합니다. 콜드 스타트란 함수가 <code>처음 실행</code>될 때 <code>초기화 시간</code>이 발생하는 것을 말합니다.<br><img src="/assets/img/worker1/cold.png" alt="cold start"></p>
+<ol>
+<li>(cold)내부 S3 버킷에 저정된 함수 다운</li>
+<li>(cold)지정된 메모리, 런타임 및 구성을 사용하는 환경 생성</li>
+<li>(duration)핸들러 외부 초기화 코드 실행</li>
+<li>(durtaion)핸들러 코드 실행</li>
+</ol>
+<p>콜드 스타트가 발생한 이후 실행 환경을 반환하기 전에 함수가 다시 실행된다면 콜드 스타트가 발생하지 않습니다. 이를 <code>웜 스타트</code>라고 합니다.<br><img src="/assets/img/worker1/warm.png" alt="warm start"><br>하지만 언젠가는 실행 환경이 삭제되기 때문에 콜드 스타트를 피할 수 없고, 이를 최소화하기 위해 다양한 전략이 있습니다.</p>
+<p>자세한 내용은 <a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/lambda/latest/operatorguide/execution-environments.html">aws 람다 실행 환경</a>을 참고하세요</p>
+<h2 id="워커의-콜드-스타트"><a href="#워커의-콜드-스타트" class="headerlink" title="워커의 콜드 스타트(?)"></a>워커의 콜드 스타트(?)</h2><p>반면 워커는 콜드 스타트가 발생하지 않습니다. Workers는 <code>Chrome V8</code>에서 직접 실행되며 <code>spin-up(콜드 스타트)</code> 시간이 <code>5ms 미만</code>입니다.<br><img src="/assets/img/worker1/v8.png" alt="v8"></p>
+<p>그리고 핸드셰이크 시간동안 진행되므로 이론상 콜드 스타트가 발생하지 않습니다.<br><img src="/assets/img/worker1/hand.png" alt="hand shake"></p>
+<p>또한 CloudFlare는 <code>CDN</code>서비스를 중점으로 해서 더 많은 <code>Edge</code>서버를 가지고 있습니다. 따라서 전 세계 범위에서 빠른 응답을 기대할 수 있습니다.<br><img src="/assets/img/worker1/edge.svg" alt="cloudflare edge"></p>
+<p><strong><em>참고 자료</em></strong>: <a target="_blank" rel="noopener" href="https://blog.cloudflare.com/eliminating-cold-starts-with-cloudflare-workers">Workers로 콜드 스타트 제거</a>, <a target="_blank" rel="noopener" href="https://www.cloudflare.com/learning/serverless/serverless-performance/">서버리스 컴퓨팅 성능을 향상 하는 방법</a></p>
+<h2 id="Workers의-단점"><a href="#Workers의-단점" class="headerlink" title="Workers의 단점"></a>Workers의 단점</h2><h4 id="V8-엔진의-제한"><a href="#V8-엔진의-제한" class="headerlink" title="V8 엔진의 제한"></a>V8 엔진의 제한</h4><p><code>V8</code>엔진이 콜드 스타트를 최소화 하지만 <code>개발 언어가 제한</code>됩니다. <code>JS</code>와 <code>TS</code>정도만 멀쩡히 사용 가능하고, <code>WebAssembly</code>를 지원하는 <code>Python</code>과 <code>Rust</code>는 사용은 가능하지만 번거롭습니다.</p>
+<p><code>외부 라이브러리</code>를 사용하는 것도 <code>제한적</code>입니다. 예를 들어 <code>express</code>를 사용할 수 없어서 <a target="_blank" rel="noopener" href="https://github.com/honojs/hono">hono</a>나 <a target="_blank" rel="noopener" href="https://github.com/kwhitley/itty-router">itty-router</a>를 사용해야 합니다.</p>
+<h4 id="제한적인-서비스"><a href="#제한적인-서비스" class="headerlink" title="제한적인 서비스"></a>제한적인 서비스</h4><p>Workers가 사용할 수 있는 <code>CloudFlare의 서비스</code>도 아쉽습니다.</p>
+<p> key-value 스토리지인 <code>KV</code>, SQLite를 사용하는 <code>D1</code>, 버킷 스토리지인 <code>R2</code>등 있을건 있지만 AWS의 서비스에 비하면 제한적입니다.</p>
+<h4 id="로깅과-모니터링"><a href="#로깅과-모니터링" class="headerlink" title="로깅과 모니터링"></a>로깅과 모니터링</h4><p><code>Workers</code>에서 불가능한건 아니지만 추가 설정이 필요하고, AWS의 <code>CloudWatch</code>에 비교하면 불편합니다.</p>
+<h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><p>각 서비스의 <code>장점</code>을 요약하면 다음과 같습니다.</p>
+<ul>
+<li>AWS Lambda<ul>
+<li>128MB를 초과하는 메모리 사용</li>
+<li>다양한 언어 사용</li>
+<li>10ms를 초과하는 CPU time을 무료로 사용</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Cloudflare Workers<ul>
+<li>무료 Edge server 배포</li>
+<li>I/O 작업이 많은 경우</li>
+<li>콜드 스타트를 피하고 싶은 경우</li>
+<li>Duration이 15분 초과(제한적)</li>
+<li>혹시 모를 과금 방지</li>
+</ul>
+</li>
+</ul>
+<p><code>Workers</code>를 추천하려고 적은 글이지만, 대부분의 상황에서 <code>Lambda</code>가 더 좋은 선택인것 같습니다.<br><strong>하지만 <code>Cloudflare</code>를 응원하고 <code>Workers</code>의 발전이 기대가 된다면 <code>Workers</code>를 사용해보는게 어떨까요??</strong></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/04/20/java-initial/" rel="prev" title="자바 명시적 초기화, 초기화 블럭 고찰">
+      <i class="fa fa-chevron-left"></i> 자바 명시적 초기화, 초기화 블럭 고찰
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/04/27/worker2/" rel="next" title="클라우드플레어 워커(cloudflare workers) wrangler 사용기">
+      클라우드플레어 워커(cloudflare workers) wrangler 사용기 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="giscus" id="giscus"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%84%9C%EB%A1%A0"><span class="nav-number">1.</span> <span class="nav-text">서론</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%84%9C%EB%B2%84%EB%A6%AC%EC%8A%A4-serverless-%EB%9E%80"><span class="nav-number">2.</span> <span class="nav-text">서버리스(serverless)란?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cloudflare%EB%A5%BC-%EC%84%A0%ED%83%9D%ED%95%9C-%EC%9D%B4%EC%9C%A0"><span class="nav-number">3.</span> <span class="nav-text">cloudflare를 선택한 이유</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Workers-VS-Lambda"><span class="nav-number">4.</span> <span class="nav-text">Workers VS Lambda</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU-time%EA%B3%BC-Duration-wall-clock-time"><span class="nav-number">5.</span> <span class="nav-text">CPU time과 Duration(wall-clock time)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B3%BC%EA%B8%88-%EB%B2%94%EC%9C%84-%EB%B9%84%EA%B5%90"><span class="nav-number">6.</span> <span class="nav-text">과금 범위 비교</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%BD%9C%EB%93%9C-%EC%8A%A4%ED%83%80%ED%8A%B8"><span class="nav-number">7.</span> <span class="nav-text">콜드 스타트</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%9B%8C%EC%BB%A4%EC%9D%98-%EC%BD%9C%EB%93%9C-%EC%8A%A4%ED%83%80%ED%8A%B8"><span class="nav-number">8.</span> <span class="nav-text">워커의 콜드 스타트(?)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Workers%EC%9D%98-%EB%8B%A8%EC%A0%90"><span class="nav-number">9.</span> <span class="nav-text">Workers의 단점</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#V8-%EC%97%94%EC%A7%84%EC%9D%98-%EC%A0%9C%ED%95%9C"><span class="nav-number">9.0.1.</span> <span class="nav-text">V8 엔진의 제한</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%EC%A0%9C%ED%95%9C%EC%A0%81%EC%9D%B8-%EC%84%9C%EB%B9%84%EC%8A%A4"><span class="nav-number">9.0.2.</span> <span class="nav-text">제한적인 서비스</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%EB%A1%9C%EA%B9%85%EA%B3%BC-%EB%AA%A8%EB%8B%88%ED%84%B0%EB%A7%81"><span class="nav-number">9.0.3.</span> <span class="nav-text">로깅과 모니터링</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B2%B0%EB%A1%A0"><span class="nav-number">10.</span> <span class="nav-text">결론</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Joowon Lim</p>
+  <div class="site-description" itemprop="description">공부 기록용 블로그</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/marinesnow34" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;marinesnow34" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:joowon.dev@marinesnow34.com" title="E-Mail → mailto:joowon.dev@marinesnow34.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Joowon Lim</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="marinesnow34/marinesnow34.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzMjUzNjQ4NDc="
+        data-category="Comments"
+        data-category-id="DIC_kwDOE2Ssb84CcJ-b"
+        data-mapping="og:title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+</body>
+</html>

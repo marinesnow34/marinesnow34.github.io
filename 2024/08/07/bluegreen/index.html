@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="서론최근 도커를 활용하는 방법(도커, 레지스트리, 도커 파일)에 대한 글을 작성했습니다. 도커를 활용하면 무중단 배포를 쉽게 구현할 수 있어서 간단하게 무중단 배포를 구현하는 방법에 대해 알아보겠습니다. 무중단 배포란?먼저 무중단 배포란 서비스를 업데이트 할 때 기존 서비스에 영향을 주지 않고 업데이트 하는 것을 말합니다. 기존에서는 서비스를 업데이트 할">
+<meta property="og:type" content="article">
+<meta property="og:title" content="간단하게 무중단 배포 도커로 구현하기">
+<meta property="og:url" content="https://marinesnow34.github.io/2024/08/07/bluegreen/index.html">
+<meta property="og:site_name" content="marinesnow34">
+<meta property="og:description" content="서론최근 도커를 활용하는 방법(도커, 레지스트리, 도커 파일)에 대한 글을 작성했습니다. 도커를 활용하면 무중단 배포를 쉽게 구현할 수 있어서 간단하게 무중단 배포를 구현하는 방법에 대해 알아보겠습니다. 무중단 배포란?먼저 무중단 배포란 서비스를 업데이트 할 때 기존 서비스에 영향을 주지 않고 업데이트 하는 것을 말합니다. 기존에서는 서비스를 업데이트 할">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/bluegreen/bg.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/bluegreen/live.gif">
+<meta property="article:published_time" content="2024-08-07T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-18T08:44:56.805Z">
+<meta property="article:author" content="Joowon Lim">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/bluegreen/bg.png">
+
+<link rel="canonical" href="https://marinesnow34.github.io/2024/08/07/bluegreen/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>간단하게 무중단 배포 도커로 구현하기 | marinesnow34</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-ZE41Y65DKL');
+      }
+    </script>
+
+
+
+
+
+
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "izvke9bs7i");
+</script>
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <meta name="naver-site-verification" content="7a60549b2cc3ba1fdee5febc98244b8fd772746c" />
+  <script data-ad-client="ca-pub-9904296847545064" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<link rel="alternate" href="/rss2.xml" title="marinesnow34" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">marinesnow34</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/08/07/bluegreen/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          간단하게 무중단 배포 도커로 구현하기
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2024-08-07 00:00:00" itemprop="dateCreated datePublished" datetime="2024-08-07T00:00:00+00:00">2024-08-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EC%84%9C%EB%B2%84/" itemprop="url" rel="index"><span itemprop="name">서버</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="서론"><a href="#서론" class="headerlink" title="서론"></a>서론</h2><p>최근 도커를 활용하는 방법(<a href="https://marinesnow34.github.io/2024/07/21/docker1/">도커</a>, <a href="https://marinesnow34.github.io/2024/06/12/ghcr/">레지스트리</a>, <a href="https://marinesnow34.github.io/2024/07/31/dockerfile/">도커 파일</a>)에 대한 글을 작성했습니다. 도커를 활용하면 무중단 배포를 쉽게 구현할 수 있어서 간단하게 무중단 배포를 구현하는 방법에 대해 알아보겠습니다.</p>
+<h2 id="무중단-배포란"><a href="#무중단-배포란" class="headerlink" title="무중단 배포란?"></a>무중단 배포란?</h2><p>먼저 무중단 배포란 서비스를 업데이트 할 때 기존 서비스에 영향을 주지 않고 업데이트 하는 것을 말합니다. 기존에서는 서비스를 업데이트 할 때 서비스를 중단하고 업데이트를 해야 했습니다. 왜냐하면 업데이트 되지 않은 서비스가 <code>포트를 점유</code>하고 있기 때문에 서비스를 내린 내리지 않으면 포트를 사용할 수 없기 때문입니다. 그래서 서비스를 내린 후 업데이트를 하고 다시 서비스를 올려야 했습니다.</p>
+<p>서비스가 내려가고 올라가는 시간 동안 사용자는 서비스를 이용할 수 없습니다. 이런 시간을 다운타임이라고 합니다. 무중단 배포는 이런 다운타임을 최소화 하기 위해 사용됩니다.</p>
+<h2 id="무중단-배포-방식"><a href="#무중단-배포-방식" class="headerlink" title="무중단 배포 방식"></a>무중단 배포 방식</h2><p>무중단 배포 방식은 여러가지가 있습니다. 그 중 Blue-Green 배포 방식을 알아보겠습니다.</p>
+<p><img src="/assets/img/bluegreen/bg.png" alt="bg"></p>
+<p>블루 그린 배포 방식은, 구버전과 동일하게 신버전을 구성을 하고 한 번에 트래픽을 신버전으로 전환하는 방식입니다.</p>
+<p>장점은 구버전과 신버전이 존재해서 신버전에 오류가 발생하는걸 파악하면 트래픽을 구버전으로 전환해서 빠른 롤백이 가능합니다. 또한 실제 운영환경과 동일한 환경에서 테스트가 가능합니다.</p>
+<p>하지만 구버전과 신버전이 두 개가 존재하므로 자원이 두 배로 필요한 단점이 있습니다.</p>
+<h2 id="무중단-배포-아이디어"><a href="#무중단-배포-아이디어" class="headerlink" title="무중단 배포 아이디어"></a>무중단 배포 아이디어</h2><p>제가 사용하는 서비스는 서버 한 대에 한 개의 컨테이너를 사용하고 있습니다. 컨테이너를 두 개 유지하기는 부담스러웠습니다. 그래서 Blue-Green 배포 방식에서 살짝 변형 해, 새로운 버전을 테스트 하지 않고 바로 트래픽을 전환하는 방식을 사용했습니다. 그러면 컨테이너가 두 개가 존재하는 시간이 짧아져 두 배의 자원을 사용하는 시간이 짧아집니다.</p>
+<p>구체적인 방법은 다음과 같습니다.</p>
+<ol start="0">
+<li>blue 컨테이너는 이미 실행 중이고 green 컨테이너는 실행 중이지 않습니다.</li>
+<li>green 컨테이너를 최신 버전으로 빌드합니다.</li>
+<li>green 컨테이너를 실행합니다.</li>
+<li>nginx로 기존 blue 컨테이너 요청을 green 컨테이너로 보냅니다.</li>
+<li>blue 컨테이너를 종료합니다.</li>
+</ol>
+<p>blue, green의 실행 상황이 반대여도 상관이 없게 구현합니다.</p>
+<p>주의 해야할 부분은 컨테이너 실행 명령어를 사용하더라도 컨테이너가 실행되는 시간이 있기 때문에 다운타임이 발생 할 수 있습니다. 그래서 컨테이너가 실행되는 시간을 고려해서 무중단 배포를 구현해야 합니다.</p>
+<p>nginx에서 요청을 다른 컨테이너로 바꿀 때 재시작을 하게 되면 다운타임이 발생할 수 있습니다. 그래서 nginx의 설정파일을 바꾼 후에 reload 명령어를 사용해서 무중단 배포를 구현할 수 있습니다.</p>
+<h2 id="무중단-배포-구현"><a href="#무중단-배포-구현" class="headerlink" title="무중단 배포 구현"></a>무중단 배포 구현</h2><p>먼저 <code>docker-compose.yml</code> 파일을 작성합니다.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3.7&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">x-dang:</span> <span class="meta">&amp;dang</span></span><br><span class="line">  <span class="attr">environment:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/dang</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">SPRING_DATASOURCE_USERNAME=username</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">SPRING_DATASOURCE_PASSWORD=password</span></span><br><span class="line">  <span class="attr">expose:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="number">8080</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">nginx:</span></span><br><span class="line">    <span class="attr">build:</span> <span class="string">./nginx</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./nginx/nginx.conf:/etc/nginx/nginx.conf</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./nginx/conf.d/:/etc/nginx/conf.d/</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">443</span><span class="string">:443</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">80</span><span class="string">:80</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">dang-green:</span></span><br><span class="line">    <span class="attr">build:</span> <span class="string">./java/dang</span></span><br><span class="line">    <span class="string">&lt;&lt;:</span> <span class="meta">*dang</span></span><br><span class="line">    </span><br><span class="line">  <span class="attr">dang-blue:</span></span><br><span class="line">    <span class="attr">build:</span> <span class="string">./java/dang</span></span><br><span class="line">    <span class="string">&lt;&lt;:</span> <span class="meta">*dang</span></span><br></pre></td></tr></table></figure>
+<p>docker-compose의 핵심 부분을 가져왔습니다.</p>
+<p><code>x-dang</code>은 <a target="_blank" rel="noopener" href="https://docs.docker.com/compose/compose-file/11-extension/">extensions</a>라고 불리는 기능을 사용했습니다. 간단하게 말하면 blue와 green 컨테이너의 환경 변수를 두 번 작성하지 않고 동일한 환경 변수를 사용할 수 있습니다.</p>
+<p><code>dang-green</code>과 <code>dang-blue</code>는 blue와 green 컨테이너를 나타냅니다. 두 컨테이너는 같은 이미지와 환경 변수를 사용합니다.</p>
+<p><code>nginx</code>는 nginx 컨테이너를 나타냅니다. volumes의 conf.d에는 blue와 green 컨테이너로 요청을 보내는 설정 파일이 있습니다.</p>
+<p>blue.conf와 green.conf.tmp 파일을 작성합니다. 여기서 핵심은 두 가지 입니다. </p>
+<p>첫 번째는 upstream을 사용해서 blue와 green 컨테이너를 나타내고 server내부의 값은 동일하게 작성합니다. </p>
+<p>두 번째는 현재 실행 중이지 않은 컨테이너의 파일은 <code>.tmp</code>로 끝나게 합니다. 이렇게 하면 <code>nginx.conf</code>파일에서 <code>include /etc/nginx/conf.d/*.conf;</code>가 실행이 될 때 .tmp로 끝나는 파일은 실행되지 않습니다.</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># conf.d/blue.conf</span></span><br><span class="line">upstream dang-blue &#123;</span><br><span class="line">    server dang-blue:8080;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 443 ssl;</span><br><span class="line">    server_name one.marinesnow34.com;</span><br><span class="line">    </span><br><span class="line">    client_max_body_size 1024M;</span><br><span class="line"></span><br><span class="line">    ssl_certificate /etc/letsencrypt/live/one.marinesnow34.com/fullchain.pem;</span><br><span class="line">    ssl_certificate_key /etc/letsencrypt/live/one.marinesnow34.com/privkey.pem;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://dang-blue;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># conf.d/green.conf.tmp</span></span><br><span class="line">upstream dang-green &#123;</span><br><span class="line">    server dang-green:8080;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 443 ssl;</span><br><span class="line">    server_name one.marinesnow34.com;</span><br><span class="line">    </span><br><span class="line">    client_max_body_size 1024M;</span><br><span class="line"></span><br><span class="line">    ssl_certificate /etc/letsencrypt/live/one.marinesnow34.com/fullchain.pem;</span><br><span class="line">    ssl_certificate_key /etc/letsencrypt/live/one.marinesnow34.com/privkey.pem;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://dang-green;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>conf 파일에서는 upstream과 proxy_pass를 확인하면 됩니다. upstream에서는 컨테이너 이름과 포트를 명시하고 proxy_pass에서는 upstream을 그대로 사용합니다.</p>
+<p>마지막으로 blue-green 배포 스크립트를 작성합니다. 스크립트는 다음과 같습니다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">set</span> -e</span><br><span class="line"></span><br><span class="line">COMPOSE_FILE_PATH=<span class="string">&quot;/home/ubuntu/docker/docker-compose.yml&quot;</span></span><br><span class="line">NGINX_CONF_DIR=<span class="string">&quot;/home/ubuntu/docker/nginx/conf.d&quot;</span></span><br><span class="line">SLEEP_TIME=10 <span class="comment"># 필요시 조정</span></span><br><span class="line">NGINX_SERVICE_NAME=<span class="string">&quot;nginx&quot;</span> <span class="comment"># docker-compose에서 정의된 Nginx 서비스 이름</span></span><br><span class="line">HEALTH_CHECK_ENDPOINT=<span class="string">&quot;http://localhost:8080&quot;</span> <span class="comment"># 헬스 체크 엔드포인트</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 현재 실행 중인 환경 확인 (무조건 한 개의 서비스는 실행 중이여야 함)</span></span><br><span class="line"><span class="keyword">if</span> docker-compose -f <span class="variable">$COMPOSE_FILE_PATH</span> ps | grep dang-blue; <span class="keyword">then</span></span><br><span class="line">    CURRENT_ENV=dang-blue</span><br><span class="line">    NEW_ENV=dang-green</span><br><span class="line">    CURRENT_CONF=blue.conf</span><br><span class="line">    NEW_CONF=green.conf.tmp</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    CURRENT_ENV=dang-green</span><br><span class="line">    NEW_ENV=dang-blue</span><br><span class="line">    CURRENT_CONF=green.conf</span><br><span class="line">    NEW_CONF=blue.conf.tmp</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 새로운 환경 이미지 풀링</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Pulling the new environment image: <span class="variable">$NEW_ENV</span>&quot;</span></span><br><span class="line">docker-compose -f <span class="variable">$COMPOSE_FILE_PATH</span> pull <span class="variable">$NEW_ENV</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 새로운 환경 이미지 빌드 (캐시 무시)</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Building the new environment image: <span class="variable">$NEW_ENV</span> with no cache&quot;</span></span><br><span class="line">docker-compose -f <span class="variable">$COMPOSE_FILE_PATH</span> build --no-cache <span class="variable">$NEW_ENV</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 새로운 환경 시작</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Starting new environment: <span class="variable">$NEW_ENV</span>&quot;</span></span><br><span class="line">docker-compose -f <span class="variable">$COMPOSE_FILE_PATH</span> up -d --no-deps <span class="variable">$NEW_ENV</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 새로운 환경 시작 대기</span></span><br><span class="line">sleep <span class="variable">$SLEEP_TIME</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 헬스 체크 대기</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Waiting for the new environment to be healthy...&quot;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> &#123;1..30&#125;; <span class="keyword">do</span></span><br><span class="line">    HTTP_STATUS=$(docker-compose -f <span class="variable">$COMPOSE_FILE_PATH</span> <span class="built_in">exec</span> -T <span class="variable">$NEW_ENV</span> curl -s -o /dev/null -w <span class="string">&quot;%&#123;http_code&#125;&quot;</span> <span class="variable">$HEALTH_CHECK_ENDPOINT</span>)</span><br><span class="line">    <span class="keyword">if</span> [ <span class="string">&quot;<span class="variable">$HTTP_STATUS</span>&quot;</span> -eq 200 ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;New environment is healthy!&quot;</span></span><br><span class="line">        <span class="built_in">break</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;Waiting for new environment to be healthy...&quot;</span></span><br><span class="line">        sleep <span class="variable">$SLEEP_TIME</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ <span class="string">&quot;<span class="variable">$HTTP_STATUS</span>&quot;</span> -ne 200 ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;New environment did not become healthy in time.&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Nginx 설정 업데이트</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Updating Nginx configuration...&quot;</span></span><br><span class="line">mv <span class="variable">$NGINX_CONF_DIR</span>/<span class="variable">$CURRENT_CONF</span> <span class="variable">$NGINX_CONF_DIR</span>/<span class="variable">$CURRENT_CONF</span>.tmp</span><br><span class="line">mv <span class="variable">$NGINX_CONF_DIR</span>/<span class="variable">$NEW_CONF</span> <span class="variable">$NGINX_CONF_DIR</span>/<span class="variable">$&#123;NEW_CONF%.tmp&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Nginx 재로드</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Reloading Nginx...&quot;</span></span><br><span class="line">docker-compose -f <span class="variable">$COMPOSE_FILE_PATH</span> <span class="built_in">exec</span> <span class="variable">$NGINX_SERVICE_NAME</span> nginx -s reload</span><br><span class="line"></span><br><span class="line"><span class="comment"># 이전 환경 중지 및 제거</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Stopping and removing the old environment: <span class="variable">$CURRENT_ENV</span>&quot;</span></span><br><span class="line">docker-compose -f <span class="variable">$COMPOSE_FILE_PATH</span> stop <span class="variable">$CURRENT_ENV</span></span><br><span class="line">docker-compose -f <span class="variable">$COMPOSE_FILE_PATH</span> rm -f <span class="variable">$CURRENT_ENV</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Deployment complete.&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>주석을 달았지만 간단하게 설명하면 다음과 같습니다.</p>
+<ol>
+<li>현재 실행 중인 환경이 blue인지 green인지 확인합니다.</li>
+<li>새로운 환경 이미지를 풀링하고 빌드합니다.</li>
+<li>새로운 환경을 시작합니다.</li>
+<li>docker-compose up이 정상 실행될때까지 잠시 대기합니다.</li>
+<li>명시한 헬스 체크 엔드포인트가 정상 응답할 때까지 대기합니다.</li>
+<li>.tmp로 끝나는 파일을 .conf로 변경하고 .conf로 끝나는 파일을 .conf.tmp로 변경합니다.</li>
+<li>Nginx를 리로드합니다.</li>
+<li>이전 환경을 중지하고 제거합니다.</li>
+</ol>
+<h2 id="작동-확인"><a href="#작동-확인" class="headerlink" title="작동 확인"></a>작동 확인</h2><p>blue, green 중 실행중인 컨테이너와 .conf 파일이 일치하는지 확인합니다. 그리고 스크립트를 실행합니다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ./deploy.sh</span><br></pre></td></tr></table></figure>
+
+<p>현재 서비스는 서버 ip를 보여주는 간단한 서비스입니다. curl을 계속 실행하면서 중단 없이 서버 ip가 바뀌는지 확인합니다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> <span class="literal">true</span>; <span class="keyword">do</span> curl https://your-domain.com; <span class="built_in">echo</span> <span class="string">&quot;&quot;</span>;sleep 1; <span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>172.10.0.2에서 오류 없이 172.10.0.5로 변경되는 것을 확인할 수 있습니다.<br> <img src="/assets/img/bluegreen/live.gif" alt="무중단 배포"></p>
+<h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><p>간단하게 무중단 배포를 구현하는 방법에 대해 알아보았습니다. CI과정은 현재 글에서 설명하지는 않았지만 <a href="https://marinesnow34.github.io/2024/06/12/ghcr/">레지스트리</a>를 사용해서 최신 이미지를 올리고 위 스크립트를 사용하면 CI/CD를 쉽게 구축할 수 있습니다.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/07/31/dockerfile/" rel="prev" title="dockerfile 도커 파일 작성법">
+      <i class="fa fa-chevron-left"></i> dockerfile 도커 파일 작성법
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/08/15/pro-258709/" rel="next" title="[프로그래머스] 주사위 고르기 JAVA">
+      [프로그래머스] 주사위 고르기 JAVA <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="giscus" id="giscus"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%84%9C%EB%A1%A0"><span class="nav-number">1.</span> <span class="nav-text">서론</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%AC%B4%EC%A4%91%EB%8B%A8-%EB%B0%B0%ED%8F%AC%EB%9E%80"><span class="nav-number">2.</span> <span class="nav-text">무중단 배포란?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%AC%B4%EC%A4%91%EB%8B%A8-%EB%B0%B0%ED%8F%AC-%EB%B0%A9%EC%8B%9D"><span class="nav-number">3.</span> <span class="nav-text">무중단 배포 방식</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%AC%B4%EC%A4%91%EB%8B%A8-%EB%B0%B0%ED%8F%AC-%EC%95%84%EC%9D%B4%EB%94%94%EC%96%B4"><span class="nav-number">4.</span> <span class="nav-text">무중단 배포 아이디어</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%AC%B4%EC%A4%91%EB%8B%A8-%EB%B0%B0%ED%8F%AC-%EA%B5%AC%ED%98%84"><span class="nav-number">5.</span> <span class="nav-text">무중단 배포 구현</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%9E%91%EB%8F%99-%ED%99%95%EC%9D%B8"><span class="nav-number">6.</span> <span class="nav-text">작동 확인</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B2%B0%EB%A1%A0"><span class="nav-number">7.</span> <span class="nav-text">결론</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Joowon Lim</p>
+  <div class="site-description" itemprop="description">공부 기록용 블로그</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/marinesnow34" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;marinesnow34" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:joowon.dev@marinesnow34.com" title="E-Mail → mailto:joowon.dev@marinesnow34.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Joowon Lim</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="marinesnow34/marinesnow34.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzMjUzNjQ4NDc="
+        data-category="Comments"
+        data-category-id="DIC_kwDOE2Ssb84CcJ-b"
+        data-mapping="og:title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+</body>
+</html>

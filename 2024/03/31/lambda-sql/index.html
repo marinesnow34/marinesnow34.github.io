@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="이 글을 읽고 나면 AWS Lambda에 라이브러리를 사용하는 방법을 알 수 있습니다. AWS Lambda로 배치 작업을 어떻게 사용하는지 알 수 있습니다. PySQL과 pandas를 사용해서 SQL을 csv로 저장하는 방법을 알 수 있습니다.  배경제가 진행하는 프로젝트에는 여러 가게들이 입점해 있습니다. 이 가게들의 매출 데이터를 정리해서 결제 금액을">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWS Lambda로 SQL 배치 작업 하기(Feat. 매출 정리)">
+<meta property="og:url" content="https://marinesnow34.github.io/2024/03/31/lambda-sql/index.html">
+<meta property="og:site_name" content="marinesnow34">
+<meta property="og:description" content="이 글을 읽고 나면 AWS Lambda에 라이브러리를 사용하는 방법을 알 수 있습니다. AWS Lambda로 배치 작업을 어떻게 사용하는지 알 수 있습니다. PySQL과 pandas를 사용해서 SQL을 csv로 저장하는 방법을 알 수 있습니다.  배경제가 진행하는 프로젝트에는 여러 가게들이 입점해 있습니다. 이 가게들의 매출 데이터를 정리해서 결제 금액을">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/function.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/resource.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/folder.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/big.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/s3.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/layer.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/add_a_layer.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/add-layer.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/run.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/env.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/test_error.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/time.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/limit.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/deploy.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/test_success.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/drive.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/trigger.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/trigger_setting.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/trigger_get.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/event_bridge.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/target.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/input_event.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/monitor.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/log.png">
+<meta property="article:published_time" content="2024-03-31T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-18T08:44:56.806Z">
+<meta property="article:author" content="Joowon Lim">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/lambda_sql/function.png">
+
+<link rel="canonical" href="https://marinesnow34.github.io/2024/03/31/lambda-sql/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>AWS Lambda로 SQL 배치 작업 하기(Feat. 매출 정리) | marinesnow34</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-ZE41Y65DKL');
+      }
+    </script>
+
+
+
+
+
+
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "izvke9bs7i");
+</script>
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <meta name="naver-site-verification" content="7a60549b2cc3ba1fdee5febc98244b8fd772746c" />
+  <script data-ad-client="ca-pub-9904296847545064" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<link rel="alternate" href="/rss2.xml" title="marinesnow34" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">marinesnow34</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/03/31/lambda-sql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AWS Lambda로 SQL 배치 작업 하기(Feat. 매출 정리)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2024-03-31 00:00:00" itemprop="dateCreated datePublished" datetime="2024-03-31T00:00:00+00:00">2024-03-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C/" itemprop="url" rel="index"><span itemprop="name">클라우드</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="이-글을-읽고-나면"><a href="#이-글을-읽고-나면" class="headerlink" title="이 글을 읽고 나면"></a>이 글을 읽고 나면</h1><ul>
+<li>AWS Lambda에 라이브러리를 사용하는 방법을 알 수 있습니다.</li>
+<li>AWS Lambda로 배치 작업을 어떻게 사용하는지 알 수 있습니다.</li>
+<li>PySQL과 pandas를 사용해서 SQL을 csv로 저장하는 방법을 알 수 있습니다.</li>
+</ul>
+<h1 id="배경"><a href="#배경" class="headerlink" title="배경"></a>배경</h1><p>제가 진행하는 프로젝트에는 여러 가게들이 입점해 있습니다. 이 가게들의 매출 데이터를 정리해서 결제 금액을 정산해야 합니다. 이를 위해서 매주 월요일마다 지난 일주일 동안의 매출 데이터를 정리해서 csv 파일로 사장님에게 보내야 합니다. 매주 해야하는 작업이라 AWS Lambda를 사용해서 자동화하려고 합니다.</p>
+<h1 id="요구사항"><a href="#요구사항" class="headerlink" title="요구사항"></a>요구사항</h1><ul>
+<li>매주 월요일마다 지난 일주일 동안의 매출 데이터를 정리해서 csv 파일로 저장합니다.</li>
+<li>csv 파일은 PM의 확인 가능하게 google drive에 저장합니다.</li>
+<li>매출 데이터는 RDS에 저장되어 있습니다.</li>
+</ul>
+<h1 id="Lambda에-라이브러리-추가하기"><a href="#Lambda에-라이브러리-추가하기" class="headerlink" title="Lambda에 라이브러리 추가하기"></a>Lambda에 라이브러리 추가하기</h1><p>AWS Lambda는 외장 라이브러리를 사용할 수 없습니다. 따라서 레이어를 사용해서 라이브러리를 추가해야 합니다. 레이어를 사용하면 라이브러리를 Lambda에 추가할 수 있습니다.</p>
+<ol>
+<li><p>lambda 함수 생성<br><img src="/assets/img/lambda_sql/function.png" alt="함수 생성"><br>이름을 설정하고 함수를 생성합니다.</p>
+</li>
+<li><p>계층 생성<br><img src="/assets/img/lambda_sql/resource.png" alt="계층 생성"><br>좌측 메뉴에서 <code>추가 리소스 &gt; 계층</code>을 선택합니다.</p>
+</li>
+<li><p>로컬 폴더 생성<br><img src="/assets/img/lambda_sql/folder.png" alt="로컬 폴더 생성"><br>라이브러리를 다운로드할 로컬 폴더(python)를 생성합니다.</p>
+</li>
+<li><p>라이브러리 다운로드</p>
+<p> 필요한 라이브러리를 다운로드합니다.</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pip3 install pymysql -t .</span><br><span class="line">pip3 install google-api-python-client -t .</span><br><span class="line">pip3 install oauth2client -t .</span><br><span class="line">pip3 install httplib2 -t .</span><br><span class="line">rm -r  *.dist-info __pycache__</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>S3에 업로드<br><img src="/assets/img/lambda_sql/big.png" alt="파일 초과"><br>파일 크기가 50MB를 초과하면 S3를 통해 업로드를 합니다.<br><img src="/assets/img/lambda_sql/s3.png" alt="S3 업로드"></p>
+</li>
+<li><p>계층 생성<br><img src="/assets/img/lambda_sql/layer.png" alt="계층 생성"></p>
+</li>
+<li><p>함수에 계층 추가<br><img src="/assets/img/lambda_sql/add_a_layer.png" alt="계층 추가"><br>생성한 함수에 돌아와서 <code>Add a layer</code>를 클릭합니다.<br><img src="/assets/img/lambda_sql/add-layer.png" alt="계층 추가"></p>
+</li>
+</ol>
+<h1 id="Lambda-함수-작성"><a href="#Lambda-함수-작성" class="headerlink" title="Lambda 함수 작성"></a>Lambda 함수 작성</h1><h3 id="함수-작성"><a href="#함수-작성" class="headerlink" title="함수 작성"></a>함수 작성</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> pymysql</span><br><span class="line"><span class="keyword">import</span> shutil</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime, timedelta, timezone</span><br><span class="line"><span class="keyword">from</span> httplib2 <span class="keyword">import</span> Http</span><br><span class="line"><span class="keyword">from</span> googleapiclient.discovery <span class="keyword">import</span> build</span><br><span class="line"><span class="keyword">from</span> googleapiclient.http <span class="keyword">import</span> MediaFileUpload</span><br><span class="line"><span class="keyword">from</span> oauth2client.service_account <span class="keyword">import</span> ServiceAccountCredentials</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> csv</span><br><span class="line"><span class="comment"># Google API 요청 시 필요한 권한 유형</span></span><br><span class="line">SCOPES = [<span class="string">&#x27;https://www.googleapis.com/auth/drive&#x27;</span>]</span><br><span class="line"></span><br><span class="line">KST = timezone(timedelta(hours=<span class="number">9</span>))</span><br><span class="line">now_in_kst = datetime.now(KST)</span><br><span class="line"></span><br><span class="line">weekend_in_kst = now_in_kst - timedelta(days=<span class="number">1</span>)</span><br><span class="line">weekstart_in_kst = now_in_kst - timedelta(days=<span class="number">7</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># SQL 쿼리</span></span><br><span class="line"><span class="comment"># 쿼리 결과를 /tmp 폴더에 csv 파일로 저장</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sql</span>(<span class="params">event</span>):</span></span><br><span class="line">    <span class="comment">#sql 연결</span></span><br><span class="line">    conn = pymysql.connect(</span><br><span class="line">        host=event[<span class="string">&quot;hostname&quot;</span>]</span><br><span class="line">        ,port=event[<span class="string">&quot;port&quot;</span>]</span><br><span class="line">        ,user=event[<span class="string">&quot;username&quot;</span>]</span><br><span class="line">        ,password=event[<span class="string">&quot;password&quot;</span>]</span><br><span class="line">        ,database=event[<span class="string">&quot;database&quot;</span>]</span><br><span class="line">    )</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 가게 정보 -&gt; 추후에 자동화 변경</span></span><br><span class="line">    store = &#123;<span class="string">&quot;2&quot;</span>: <span class="string">&quot;dream&quot;</span>, <span class="string">&quot;4&quot;</span>: <span class="string">&quot;bana&quot;</span>, <span class="string">&quot;5&quot;</span>:<span class="string">&quot;orda&quot;</span>&#125;</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">for</span> key, value <span class="keyword">in</span> store.items():</span><br><span class="line">        <span class="comment"># 커서 생성</span></span><br><span class="line">            <span class="keyword">with</span> conn.cursor() <span class="keyword">as</span> cursor:</span><br><span class="line">                <span class="comment"># SQL 쿼리 실행</span></span><br><span class="line">                sql_query = <span class="string">f&quot;SQL 쿼리&quot;</span></span><br><span class="line">                cursor.execute(sql_query)</span><br><span class="line">                </span><br><span class="line">                <span class="comment"># 결과를 CSV 파일로 저장</span></span><br><span class="line">                csv_file_path = <span class="string">f&quot;/tmp/<span class="subst">&#123;value&#125;</span>.csv&quot;</span></span><br><span class="line">                <span class="keyword">with</span> <span class="built_in">open</span>(csv_file_path, mode=<span class="string">&#x27;w&#x27;</span>, newline=<span class="string">&#x27;&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">                    writer = csv.writer(f)</span><br><span class="line">                    <span class="comment"># 컬럼 이름 (헤더) 쓰기</span></span><br><span class="line">                    writer.writerow([i[<span class="number">0</span>] <span class="keyword">for</span> i <span class="keyword">in</span> cursor.description])</span><br><span class="line">                    <span class="comment"># 데이터 쓰기</span></span><br><span class="line">                    <span class="keyword">for</span> row <span class="keyword">in</span> cursor.fetchall():</span><br><span class="line">                        writer.writerow(row)</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        <span class="comment"># 데이터베이스 연결 종료</span></span><br><span class="line">        conn.close()</span><br><span class="line"></span><br><span class="line"><span class="comment"># drive에 폴더를 생성하고 csv 파일을 업로드</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">run</span>(<span class="params">event</span>):</span></span><br><span class="line">    sql(event)</span><br><span class="line">    credentials = ServiceAccountCredentials.from_json_keyfile_name(<span class="string">&#x27;token.json&#x27;</span>, SCOPES)</span><br><span class="line">    http_auth = credentials.authorize(Http())</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Drive API 서비스 객체 생성</span></span><br><span class="line">    service = build(<span class="string">&#x27;drive&#x27;</span>, <span class="string">&#x27;v3&#x27;</span>, http=http_auth)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Google Drive에 새 폴더 생성 (상위 폴더 내부에)</span></span><br><span class="line">    new_folder_metadata = &#123;</span><br><span class="line">        <span class="string">&#x27;name&#x27;</span>: datetime.today().strftime(<span class="string">&quot;%y_%m_%d&quot;</span>),</span><br><span class="line">        <span class="string">&#x27;mimeType&#x27;</span>: <span class="string">&#x27;application/vnd.google-apps.folder&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;parents&#x27;</span>: [event[<span class="string">&quot;parent_folder_id&quot;</span>]]</span><br><span class="line">    &#125;</span><br><span class="line">    new_folder = service.files().create(body=new_folder_metadata, fields=<span class="string">&#x27;id&#x27;</span>).execute()</span><br><span class="line">    new_folder_id = new_folder.get(<span class="string">&#x27;id&#x27;</span>)</span><br><span class="line">    print(<span class="string">f&#x27;Created new folder ID: <span class="subst">&#123;new_folder_id&#125;</span>&#x27;</span>)</span><br><span class="line">    </span><br><span class="line">    local_folder_path = <span class="string">&#x27;/tmp&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 로컬 폴더의 파일들을 업로드</span></span><br><span class="line">    <span class="keyword">for</span> file_name <span class="keyword">in</span> os.listdir(local_folder_path):</span><br><span class="line">        file_path = os.path.join(local_folder_path, file_name)</span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(file_path):</span><br><span class="line">            file_metadata = &#123;<span class="string">&#x27;name&#x27;</span>: file_name, <span class="string">&#x27;parents&#x27;</span>: [new_folder_id]&#125;</span><br><span class="line">            media = MediaFileUpload(file_path, mimetype=<span class="string">&#x27;text/csv&#x27;</span>)</span><br><span class="line">            file_info = service.files().create(body=file_metadata, media_body=media, fields=<span class="string">&#x27;id,webViewLink&#x27;</span>).execute()</span><br><span class="line"></span><br><span class="line">            print(<span class="string">f&quot;Uploaded <span class="subst">&#123;file_name&#125;</span>:&quot;</span>)</span><br><span class="line">            print(<span class="string">&quot;File ID:&quot;</span>, file_info[<span class="string">&#x27;id&#x27;</span>])</span><br><span class="line">            print(<span class="string">&quot;Web View Link:&quot;</span>, file_info[<span class="string">&#x27;webViewLink&#x27;</span>])</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">lambda_handler</span>(<span class="params">event, context</span>):</span></span><br><span class="line">    run(event)</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&#x27;statusCode&#x27;</span>: <span class="number">200</span>,</span><br><span class="line">        <span class="string">&#x27;body&#x27;</span>: json.dumps(<span class="string">&#x27;실행 성공!!&#x27;</span>)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>위의 코드를 보면 event[“dict”]같이 딕셔너리 타입으로 값을 받아서 사용하는 것을 볼 수 있습니다. 이는 Lambda 함수를 실행할 때 입력값으로 넣어주는 것입니다.</p>
+<ul>
+<li><code>Configure event</code><br><img src="/assets/img/lambda_sql/run.png" alt="이벤트"></li>
+<li>아래처럼 이벤트를 생성해서 실행할 때 입력값으로 넣어줍니다.<br><img src="/assets/img/lambda_sql/env.png" alt="이벤트 생성">  <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;hostname&quot;</span>: <span class="string">&quot;RDS 호스트명&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;port&quot;</span>: <span class="number">3306</span>,</span><br><span class="line">    <span class="attr">&quot;username&quot;</span>: <span class="string">&quot;유저명&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;password&quot;</span>: <span class="string">&quot;비밀번호&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;database&quot;</span>: <span class="string">&quot;데이터베이스명&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;parent_folder_id&quot;</span>: <span class="string">&quot;상위 폴더 ID&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="테스트-실패"><a href="#테스트-실패" class="headerlink" title="테스트 실패"></a>테스트 실패</h3><ul>
+<li>오류<br><img src="/assets/img/lambda_sql/test_error.png" alt="테스트 실패"><br>테스트를 실행하면 시간 초과가 발생합니다.</li>
+<li><code>구성 &gt; 일반 구성 &gt; 편집</code><br><img src="/assets/img/lambda_sql/time.png" alt="제한 시간"></li>
+<li><code>제한 시간</code>을 늘려줍니다. (3초 -&gt; 20초)<br><img src="/assets/img/lambda_sql/limit.png" alt="제한 시간"></li>
+</ul>
+<h3 id="테스트-성공"><a href="#테스트-성공" class="headerlink" title="테스트 성공"></a>테스트 성공</h3><ul>
+<li><code>deploy</code>가 켜져 있으면 코드가 배포(저장)되지 않았습니다. <code>deploy</code>를 누르고 다시 테스트를 실행합니다.<br><img src="/assets/img/lambda_sql/deploy.png" alt="deploy"></li>
+<li>실행 성공 (7.6초)<br><img src="/assets/img/lambda_sql/test_success.png" alt="성공"></li>
+<li>드라이브 확인<br><img src="/assets/img/lambda_sql/drive.png" alt="드라이브"></li>
+</ul>
+<h1 id="배치-작업-설정"><a href="#배치-작업-설정" class="headerlink" title="배치 작업 설정"></a>배치 작업 설정</h1><ul>
+<li><code>함수 개요 &gt; 트리거 추가</code>를 클릭합니다.<br><img src="/assets/img/lambda_sql/trigger.png" alt="트리거 추가"></li>
+<li><code>EventBridge</code>를 사용하면 주기적으로 실행할 수 있습니다.<br><img src="/assets/img/lambda_sql/trigger_setting.png" alt="트리거 추가"><br>cron 표현식을 사용해서 주기를 설정합니다. <code>UTC</code>기준으로 설정하므로 주의합니다.</li>
+<li>이벤트를 설정 하기 위해서 이벤트 브릿지 상세에 들어갑니다.<br><img src="/assets/img/lambda_sql/trigger_get.png" alt="트리거 확인"></li>
+<li>이벤트 브릿지 <code>편집</code><br><img src="/assets/img/lambda_sql/event_bridge.png" alt="브릿지 편집"></li>
+<li><code>대상 선택 &gt; 추가 설정</code><br><img src="/assets/img/lambda_sql/target.png" alt="대상 선택"></li>
+<li>입력값을 설정하고 <code>규칙 업데이트</code>를 클릭합니다.<br><img src="/assets/img/lambda_sql/input_event.png" alt="입력값"></li>
+</ul>
+<h1 id="모니터링"><a href="#모니터링" class="headerlink" title="모니터링"></a>모니터링</h1><ul>
+<li><code>람다</code>로 돌아와서 <code>모니터링 &gt; 로그</code>를 클릭하면 그래프로 확인할 수 있습니다.<br><img src="/assets/img/lambda_sql/monitor.png" alt="모니터"></li>
+<li><code>CloudWatch &gt; 로그 스트림</code>로 들어가서 상세 로그를 확인할 수 있습니다.<br><img src="/assets/img/lambda_sql/log.png" alt="로그"></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/07/dx-pre/" rel="prev" title="삼성전자 DX부분 동계 대학생 S/W 알고리즘 역량 강화 특강 사전 문제 후기">
+      <i class="fa fa-chevron-left"></i> 삼성전자 DX부분 동계 대학생 S/W 알고리즘 역량 강화 특강 사전 문제 후기
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/04/02/sequence1/" rel="next" title="주문 번호 생성하기 1(feat. MySQL 재현)">
+      주문 번호 생성하기 1(feat. MySQL 재현) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="giscus" id="giscus"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%EC%9D%B4-%EA%B8%80%EC%9D%84-%EC%9D%BD%EA%B3%A0-%EB%82%98%EB%A9%B4"><span class="nav-number">1.</span> <span class="nav-text">이 글을 읽고 나면</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EB%B0%B0%EA%B2%BD"><span class="nav-number">2.</span> <span class="nav-text">배경</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD"><span class="nav-number">3.</span> <span class="nav-text">요구사항</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Lambda%EC%97%90-%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC-%EC%B6%94%EA%B0%80%ED%95%98%EA%B8%B0"><span class="nav-number">4.</span> <span class="nav-text">Lambda에 라이브러리 추가하기</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Lambda-%ED%95%A8%EC%88%98-%EC%9E%91%EC%84%B1"><span class="nav-number">5.</span> <span class="nav-text">Lambda 함수 작성</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%ED%95%A8%EC%88%98-%EC%9E%91%EC%84%B1"><span class="nav-number">5.0.1.</span> <span class="nav-text">함수 작성</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%8B%A4%ED%8C%A8"><span class="nav-number">5.0.2.</span> <span class="nav-text">테스트 실패</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%84%B1%EA%B3%B5"><span class="nav-number">5.0.3.</span> <span class="nav-text">테스트 성공</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EB%B0%B0%EC%B9%98-%EC%9E%91%EC%97%85-%EC%84%A4%EC%A0%95"><span class="nav-number">6.</span> <span class="nav-text">배치 작업 설정</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EB%AA%A8%EB%8B%88%ED%84%B0%EB%A7%81"><span class="nav-number">7.</span> <span class="nav-text">모니터링</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Joowon Lim</p>
+  <div class="site-description" itemprop="description">공부 기록용 블로그</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/marinesnow34" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;marinesnow34" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:joowon.dev@marinesnow34.com" title="E-Mail → mailto:joowon.dev@marinesnow34.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Joowon Lim</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="marinesnow34/marinesnow34.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzMjUzNjQ4NDc="
+        data-category="Comments"
+        data-category-id="DIC_kwDOE2Ssb84CcJ-b"
+        data-mapping="og:title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="저번 글에서 클라우드플레어 워커를 wrangler로 배포하는 방법을 알아보았습니다. 이번에는 워커에 cron 스케줄러를 사용하는 방법에 대해 알아보겠습니다. 프로젝트 생성먼저 워커 프로젝트를 생성합니다. 저번 글에서 생성한 프로젝트를 사용해도 되고 새로운 프로젝트를 생성해도 됩니다. 1npm create cloudflare@latest">
+<meta property="og:type" content="article">
+<meta property="og:title" content="클라우드플레어 워커(cloudflare workers) cron 스케줄러 사용하기">
+<meta property="og:url" content="https://marinesnow34.github.io/2024/04/30/worker3/index.html">
+<meta property="og:site_name" content="marinesnow34">
+<meta property="og:description" content="저번 글에서 클라우드플레어 워커를 wrangler로 배포하는 방법을 알아보았습니다. 이번에는 워커에 cron 스케줄러를 사용하는 방법에 대해 알아보겠습니다. 프로젝트 생성먼저 워커 프로젝트를 생성합니다. 저번 글에서 생성한 프로젝트를 사용해도 되고 새로운 프로젝트를 생성해도 됩니다. 1npm create cloudflare@latest">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/worker3/cron.png">
+<meta property="article:published_time" content="2024-04-30T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-18T08:44:56.807Z">
+<meta property="article:author" content="Joowon Lim">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/worker3/cron.png">
+
+<link rel="canonical" href="https://marinesnow34.github.io/2024/04/30/worker3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>클라우드플레어 워커(cloudflare workers) cron 스케줄러 사용하기 | marinesnow34</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-ZE41Y65DKL');
+      }
+    </script>
+
+
+
+
+
+
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "izvke9bs7i");
+</script>
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <meta name="naver-site-verification" content="7a60549b2cc3ba1fdee5febc98244b8fd772746c" />
+  <script data-ad-client="ca-pub-9904296847545064" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<link rel="alternate" href="/rss2.xml" title="marinesnow34" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">marinesnow34</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2024/04/30/worker3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          클라우드플레어 워커(cloudflare workers) cron 스케줄러 사용하기
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2024-04-30 00:00:00" itemprop="dateCreated datePublished" datetime="2024-04-30T00:00:00+00:00">2024-04-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C/" itemprop="url" rel="index"><span itemprop="name">클라우드</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a href="https://marinesnow34.github.io/2024/04/27/worker2/">저번 글</a>에서 클라우드플레어 워커를 <code>wrangler</code>로 배포하는 방법을 알아보았습니다. 이번에는 워커에 cron 스케줄러를 사용하는 방법에 대해 알아보겠습니다.</p>
+<h2 id="프로젝트-생성"><a href="#프로젝트-생성" class="headerlink" title="프로젝트 생성"></a>프로젝트 생성</h2><p>먼저 워커 프로젝트를 생성합니다. 저번 글에서 생성한 프로젝트를 사용해도 되고 새로운 프로젝트를 생성해도 됩니다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm create cloudflare@latest</span><br></pre></td></tr></table></figure>
+
+<h2 id="cron-스케줄러-추가"><a href="#cron-스케줄러-추가" class="headerlink" title="cron 스케줄러 추가"></a>cron 스케줄러 추가</h2><p>워커에 cron 스케줄러를 추가하려면 <code>wrangler.toml</code> 파일에 <code>triggers</code> 섹션을 추가하면 됩니다. <code>crons</code>에 <a target="_blank" rel="noopener" href="https://ko.wikipedia.org/wiki/Cron">cron 표현식</a>을 배열로 추가하면 됩니다. </p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name</span> = <span class="string">&quot;cron-test&quot;</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"></span><br><span class="line"><span class="section">[triggers]</span></span><br><span class="line"><span class="attr">crons</span> = [<span class="string">&quot;0 * * * *&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<h2 id="워커-코드-수정"><a href="#워커-코드-수정" class="headerlink" title="워커 코드 수정"></a>워커 코드 수정</h2><p>워커 코드에서 cron 스케줄러를 사용하려면 <code>scheduled</code> 함수를 사용하면 됩니다.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="keyword">async</span> <span class="function"><span class="title">scheduled</span>(<span class="params">event, env, ctx</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&quot;cron processed&quot;</span>);</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>cron 스케줄러를 테스트하려면 아래 명령어를 실행하면 됩니다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx wrangler dev --test-scheduled</span><br></pre></td></tr></table></figure>
+<p>테스트 환경에서는 <code>자동</code>으로 <code>cron</code>이 실행되지 않습니다. cron을 테스트하려면 아래 명령어를 실행하면 됩니다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl <span class="string">&quot;http://localhost:8787/__scheduled?cron=0+*+*+*+*&quot;</span></span><br></pre></td></tr></table></figure>
+<p>잘 실행이 됩니다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cron processed</span><br><span class="line">[wrangler:inf] GET /__scheduled 200 OK (12ms)</span><br></pre></td></tr></table></figure>
+
+<h2 id="멀티-cron-스케줄러-추가"><a href="#멀티-cron-스케줄러-추가" class="headerlink" title="멀티 cron 스케줄러 추가"></a>멀티 cron 스케줄러 추가</h2><p>여러 cron 스케줄러를 추가하려면 <code>crons</code>에 <code>cron 표현식</code>을 <code>배열</code>로 추가하면 됩니다. </p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name</span> = <span class="string">&quot;cron-test&quot;</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"></span><br><span class="line"><span class="section">[triggers]</span></span><br><span class="line"><span class="attr">crons</span> = [<span class="string">&quot;0 * * * *&quot;</span>, <span class="string">&quot;0 0 * * *&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>하지만 이렇게 배포하면 처음에 작성한 코드가 <code>&quot;0 * * * *&quot;</code>과 <code>&quot;0 0 * * *&quot;</code>이 실행될 때 모두 실행됩니다. 각 <code>cron 스케줄러</code>에 따라 <code>다른 로직</code>을 실행하려면 <code>event.cron</code>을 사용하면 됩니다.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">	<span class="keyword">async</span> <span class="function"><span class="title">scheduled</span>(<span class="params">event, env, ctx</span>)</span> &#123;</span><br><span class="line">	  <span class="keyword">switch</span> (event.cron) &#123;</span><br><span class="line">		<span class="keyword">case</span> <span class="string">&#x27;0 * * * *&#x27;</span>:</span><br><span class="line">		  <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;event.cron&#125;</span> cron processed`</span>);</span><br><span class="line">		  <span class="keyword">break</span>;</span><br><span class="line">		<span class="keyword">case</span> <span class="string">&#x27;0 0 * * *&#x27;</span>:</span><br><span class="line">		  <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;event.cron&#125;</span> cron processed`</span>);</span><br><span class="line">		  <span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;,</span><br><span class="line">  &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>명령어</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl <span class="string">&quot;http://localhost:8787/__scheduled?cron=0+*+*+*+*&quot;</span></span><br><span class="line">curl <span class="string">&quot;http://localhost:8787/__scheduled?cron=0+0+*+*+*&quot;</span></span><br></pre></td></tr></table></figure>
+<p>결과</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0 * * * * cron processed</span><br><span class="line">[wrangler:inf] GET /__scheduled 200 OK (2ms)</span><br><span class="line">0 0 * * * cron processed</span><br><span class="line">[wrangler:inf] GET /__scheduled 200 OK (2ms)</span><br></pre></td></tr></table></figure>
+
+<h2 id="배포"><a href="#배포" class="headerlink" title="배포"></a>배포</h2><p>배포하려면 아래 명령어를 실행하면 됩니다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx wrangler deploy</span><br></pre></td></tr></table></figure>
+
+<p><code>Workers</code> 메뉴에서 <code>cron-test</code> 워커를 선택하고 <code>Setting &gt; Triggers</code> 메뉴에서 cron 스케줄러를 확인할 수 있습니다.<br><img src="/assets/img/worker3/cron.png" alt="cron"></p>
+<h2 id="모든-cron-삭제"><a href="#모든-cron-삭제" class="headerlink" title="모든 cron 삭제"></a>모든 cron 삭제</h2><p><a target="_blank" rel="noopener" href="https://developers.cloudflare.com/workers/configuration/cron-triggers/#remove-a-cron-trigger">공식 문서</a>에서는 cron 스케줄러를 삭제하려면 <code>wrangler.toml</code> 파일에서 <code>crons</code>를 빈 배열로 수정하면 된다고 합니다. 하지만 제가 테스트해본 결과 정상적으로 삭제되지 않았습니다. 모든 cron을 삭제하려면 대시보드에서 <code>직접 삭제</code>해야 합니다. (수정은 바로 반영됩니다.)</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[triggers]</span></span><br><span class="line"><span class="comment"># crons = [] -&gt; 삭제 안됨, 적용 후 대시보드에서 직접 삭제해야 함</span></span><br><span class="line"><span class="attr">crons</span> = [<span class="string">&quot;* * * * *&quot;</span>] <span class="comment"># 업데이트는 적용 됨</span></span><br></pre></td></tr></table></figure>
+<p><code>deploy</code> 후 대시보드 반영 까지 <code>최대 30분</code>이 소요될 수 있습니다.</p>
+<h2 id="Green-Compute"><a href="#Green-Compute" class="headerlink" title="Green Compute"></a>Green Compute</h2><p>여담으로 <code>Workers</code>를 100% 재생에너지로 구동하는 <code>Green Compute</code>를 사용할 수 있습니다. 단점으로는 100% 재생에너지로 구동되는 데이터센터가 한정되어 있어서 레이턴시가 발생할 수 있습니다.</p>
+<h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><p>이번 글에서는 클라우드플레어 <code>워커</code>에 <code>cron 스케줄러</code>를 사용하는 방법에 대해 알아보았습니다. 다음 글에서는 <code>워커</code>에 <code>KV</code>나 <code>R1</code>을 활용해서 복잡한 기능을 구현해 보겠습니다.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/04/27/worker2/" rel="prev" title="클라우드플레어 워커(cloudflare workers) wrangler 사용기">
+      <i class="fa fa-chevron-left"></i> 클라우드플레어 워커(cloudflare workers) wrangler 사용기
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/05/27/festival/" rel="next" title="축제 주점 결제 서비스 배포 회고">
+      축제 주점 결제 서비스 배포 회고 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="giscus" id="giscus"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%83%9D%EC%84%B1"><span class="nav-number">1.</span> <span class="nav-text">프로젝트 생성</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cron-%EC%8A%A4%EC%BC%80%EC%A4%84%EB%9F%AC-%EC%B6%94%EA%B0%80"><span class="nav-number">2.</span> <span class="nav-text">cron 스케줄러 추가</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%9B%8C%EC%BB%A4-%EC%BD%94%EB%93%9C-%EC%88%98%EC%A0%95"><span class="nav-number">3.</span> <span class="nav-text">워커 코드 수정</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%A9%80%ED%8B%B0-cron-%EC%8A%A4%EC%BC%80%EC%A4%84%EB%9F%AC-%EC%B6%94%EA%B0%80"><span class="nav-number">4.</span> <span class="nav-text">멀티 cron 스케줄러 추가</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%B0%B0%ED%8F%AC"><span class="nav-number">5.</span> <span class="nav-text">배포</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EB%AA%A8%EB%93%A0-cron-%EC%82%AD%EC%A0%9C"><span class="nav-number">6.</span> <span class="nav-text">모든 cron 삭제</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Green-Compute"><span class="nav-number">7.</span> <span class="nav-text">Green Compute</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B2%B0%EB%A1%A0"><span class="nav-number">8.</span> <span class="nav-text">결론</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Joowon Lim</p>
+  <div class="site-description" itemprop="description">공부 기록용 블로그</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/marinesnow34" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;marinesnow34" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:joowon.dev@marinesnow34.com" title="E-Mail → mailto:joowon.dev@marinesnow34.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Joowon Lim</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="marinesnow34/marinesnow34.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzMjUzNjQ4NDc="
+        data-category="Comments"
+        data-category-id="DIC_kwDOE2Ssb84CcJ-b"
+        data-mapping="og:title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+</body>
+</html>

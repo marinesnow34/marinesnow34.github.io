@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Git 시작하기 전에프로그래밍에 관심이 있는 사람이라면 Git에 대해 많이 들어 봤을 것이다. 하지만 Git과 GitHub는 엄밀히 다르다. git은 버전 관리 시스템이다. 로컬에서 파일 관리를 도와주는 git과 협업에서 파일 관리를 도와주는 github와 구분을 주의해야 한다. Git Repository(저장소) 만들기Git Repostiory를 만들 때">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git으로 협업하기1">
+<meta property="og:url" content="https://marinesnow34.github.io/2023/01/19/git1/index.html">
+<meta property="og:site_name" content="marinesnow34">
+<meta property="og:description" content="Git 시작하기 전에프로그래밍에 관심이 있는 사람이라면 Git에 대해 많이 들어 봤을 것이다. 하지만 Git과 GitHub는 엄밀히 다르다. git은 버전 관리 시스템이다. 로컬에서 파일 관리를 도와주는 git과 협업에서 파일 관리를 도와주는 github와 구분을 주의해야 한다. Git Repository(저장소) 만들기Git Repostiory를 만들 때">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.00.29.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.04.01.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.05.07.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/lifecycle.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.47.01.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.47.13.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_23.01.30.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_23.28.38.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_23.31.18.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_23.33.02.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2023-01-02_at_13.50.26.png">
+<meta property="article:published_time" content="2023-01-19T10:23:47.000Z">
+<meta property="article:modified_time" content="2025-11-18T08:44:56.806Z">
+<meta property="article:author" content="Joowon Lim">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/git1/Screenshot_2022-12-30_at_22.00.29.png">
+
+<link rel="canonical" href="https://marinesnow34.github.io/2023/01/19/git1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>git으로 협업하기1 | marinesnow34</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-ZE41Y65DKL');
+      }
+    </script>
+
+
+
+
+
+
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "izvke9bs7i");
+</script>
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <meta name="naver-site-verification" content="7a60549b2cc3ba1fdee5febc98244b8fd772746c" />
+  <script data-ad-client="ca-pub-9904296847545064" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<link rel="alternate" href="/rss2.xml" title="marinesnow34" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">marinesnow34</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2023/01/19/git1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          git으로 협업하기1
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2023-01-19 10:23:47" itemprop="dateCreated datePublished" datetime="2023-01-19T10:23:47+00:00">2023-01-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Git/" itemprop="url" rel="index"><span itemprop="name">Git</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Git-시작하기-전에"><a href="#Git-시작하기-전에" class="headerlink" title="Git 시작하기 전에"></a>Git 시작하기 전에</h2><p>프로그래밍에 관심이 있는 사람이라면 Git에 대해 많이 들어 봤을 것이다. 하지만 Git과 GitHub는 엄밀히 다르다. git은 버전 관리 시스템이다. 로컬에서 파일 관리를 도와주는 git과 협업에서 파일 관리를 도와주는 github와 구분을 주의해야 한다.</p>
+<h2 id="Git-Repository-저장소-만들기"><a href="#Git-Repository-저장소-만들기" class="headerlink" title="Git Repository(저장소) 만들기"></a>Git Repository(저장소) 만들기</h2><p>Git Repostiory를 만들 때는 두가지 방법이 있다. 첫 번째는 로컬에서 저장소를 만드는 것이고, 두 번째는 Git Hub에서 Repository를 만든 다음에 로컬로 가져오는 방법이다.</p>
+<h3 id="로컬에서-저장소-만들기"><a href="#로컬에서-저장소-만들기" class="headerlink" title="로컬에서 저장소 만들기"></a>로컬에서 저장소 만들기</h3><p>로컬에 임의의 파일을 만든다. <code>git init</code> 명령어를 사용하면 저장소가 만들어 진다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.00.29.png" alt="Screenshot 2022-12-30 at 22.00.29.png"></p>
+<p><code>.git</code> 이라는 하위 폴더가 생성된다. <code>.git</code> 에는 저장소에 필요한 파일이 들어가 있다.</p>
+<h3 id="기존-저장소를-Clone-하기"><a href="#기존-저장소를-Clone-하기" class="headerlink" title="기존 저장소를 Clone 하기"></a>기존 저장소를 Clone 하기</h3><p>깃헙에서 clone할 저장소에 가면 다음과 같이 보인다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.04.01.png" alt="Screenshot 2022-12-30 at 22.04.01.png"></p>
+<p>초록색으로 <code>&lt;&gt;code</code> 부분을 누르면 저장소의 주소가 나온다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.05.07.png" alt="Screenshot 2022-12-30 at 22.05.07.png"></p>
+<p><code>git clone &lt;url&gt;</code> 명령으로 저장소를 clone한다. 그러면 저장소의 데이터를 모두 가져와 가장 최신버전으로 checkout 해 놓는다.</p>
+<p><code>git clone &lt;url&gt; &lt;dir_name&gt;</code> 를 하면 다른 디렉토리 이름으로 clone 할 수 있다.</p>
+<h3 id="파일-관리-하기"><a href="#파일-관리-하기" class="headerlink" title="파일 관리 하기"></a>파일 관리 하기</h3><p>Git에는 파일을 감지하는 시스템이 있다. 이 시스템은 파일을 관리 대상이 아닌(Untracked)상태와 관리 대상(Tracked)상태로 구분한다.</p>
+<p><img src="/assets/img/git1/lifecycle.png" alt="lifecycle.png" title="파일 라이프사이클 (git 공식 홈페이지)"></p>
+<p><code>git status</code> 명령어를 통해서 파일의 감지 상태를 확인할 수 있다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.47.01.png" alt="Screenshot 2022-12-30 at 22.47.01.png"></p>
+<ul>
+<li>초기 상태</li>
+</ul>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_22.47.13.png" alt="Screenshot 2022-12-30 at 22.47.13.png"></p>
+<ul>
+<li>새로 만든 파일은 Untracked임을 확인할 수 있다.</li>
+</ul>
+<h3 id="Stage"><a href="#Stage" class="headerlink" title="Stage"></a>Stage</h3><p>stage 영역은 commit 하여 저장소에 기록하기 위한 중간 상태이다.</p>
+<h3 id="Add"><a href="#Add" class="headerlink" title="Add"></a>Add</h3><p><code>git add &lt;file_name&gt;</code> 를 통해서 파일을 추적 할 수 있다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_23.01.30.png" alt="Screenshot 2022-12-30 at 23.01.30.png"></p>
+<p> 만일 stage에 있는 파일을 수정하게 된다면 modified 상태가 된다. 이 상태로 <code>commit</code> 하게 된다면 staged된 상태만 저장소에 기록된다.</p>
+<p><code>git add .</code> 을 통해서 모든 파일을 stage에 올릴 수 있다.</p>
+<h3 id="Unstage"><a href="#Unstage" class="headerlink" title="Unstage"></a>Unstage</h3><p>stage영역에 들어간 것을 <code>git reset</code> 을 하면 취소할 수 있다. </p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_23.28.38.png" alt="Screenshot 2022-12-30 at 23.28.38.png"></p>
+<p>특정 파일만 취소 하려면 <code>git reset &lt;file_name&gt;</code> 을 하면 된다.</p>
+<h3 id="Commit"><a href="#Commit" class="headerlink" title="Commit"></a>Commit</h3><p><code>git commit</code> 을 통해서 commit을 할 수 있다.</p>
+<p>commit message를 남기지 않았다면 commit message를 남기라고 한다.</p>
+<p>주석을 지우고 저장(<code>:wq</code>)하면 주석 지운 부분이 message가 되고 원하는 문장을 작성해도 무방하다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_23.31.18.png" alt="Screenshot 2022-12-30 at 23.31.18.png"></p>
+<p>그냥 저장하면 commit할 수 없다.</p>
+<p><img src="/assets/img/git1/Screenshot_2022-12-30_at_23.33.02.png" alt="Screenshot 2022-12-30 at 23.33.02.png"></p>
+<p>commit 할 때 원하는 message를 남기고 싶다면 <code>git commit -m &quot;message&quot;</code> 를 통해서 원하는 메시지를 남길 수 있다.</p>
+<h3 id="Log"><a href="#Log" class="headerlink" title="Log"></a>Log</h3><p><code>git log</code> 를 통해서 commit 기록을 볼 수 있다.</p>
+<p><img src="/assets/img/git1/Screenshot_2023-01-02_at_13.50.26.png" alt="Screenshot 2023-01-02 at 13.50.26.png"></p>
+<hr>
+<p>여기 까지가 git 사용법의 기초이다. 다음에는 git의 코어 기능인 branch에 대해 알아보자.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/10/15/2022-10-16-db-summery2/" rel="prev" title="데이터베이스 개요(2)">
+      <i class="fa fa-chevron-left"></i> 데이터베이스 개요(2)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/01/23/jpa-syntax-error/" rel="next" title="JPA SQLSyntaxErrorException 오류 해결">
+      JPA SQLSyntaxErrorException 오류 해결 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="giscus" id="giscus"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Git-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-%EC%A0%84%EC%97%90"><span class="nav-number">1.</span> <span class="nav-text">Git 시작하기 전에</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Git-Repository-%EC%A0%80%EC%9E%A5%EC%86%8C-%EB%A7%8C%EB%93%A4%EA%B8%B0"><span class="nav-number">2.</span> <span class="nav-text">Git Repository(저장소) 만들기</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EB%A1%9C%EC%BB%AC%EC%97%90%EC%84%9C-%EC%A0%80%EC%9E%A5%EC%86%8C-%EB%A7%8C%EB%93%A4%EA%B8%B0"><span class="nav-number">2.1.</span> <span class="nav-text">로컬에서 저장소 만들기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%EA%B8%B0%EC%A1%B4-%EC%A0%80%EC%9E%A5%EC%86%8C%EB%A5%BC-Clone-%ED%95%98%EA%B8%B0"><span class="nav-number">2.2.</span> <span class="nav-text">기존 저장소를 Clone 하기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%ED%8C%8C%EC%9D%BC-%EA%B4%80%EB%A6%AC-%ED%95%98%EA%B8%B0"><span class="nav-number">2.3.</span> <span class="nav-text">파일 관리 하기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stage"><span class="nav-number">2.4.</span> <span class="nav-text">Stage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Add"><span class="nav-number">2.5.</span> <span class="nav-text">Add</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unstage"><span class="nav-number">2.6.</span> <span class="nav-text">Unstage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Commit"><span class="nav-number">2.7.</span> <span class="nav-text">Commit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Log"><span class="nav-number">2.8.</span> <span class="nav-text">Log</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Joowon Lim</p>
+  <div class="site-description" itemprop="description">공부 기록용 블로그</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/marinesnow34" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;marinesnow34" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:joowon.dev@marinesnow34.com" title="E-Mail → mailto:joowon.dev@marinesnow34.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Joowon Lim</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="marinesnow34/marinesnow34.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzMjUzNjQ4NDc="
+        data-category="Comments"
+        data-category-id="DIC_kwDOE2Ssb84CcJ-b"
+        data-mapping="og:title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+</body>
+</html>

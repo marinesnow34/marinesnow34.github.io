@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"marinesnow34.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"hide","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"giscus","storage":true,"lazyload":false,"nav":null,"activeClass":"giscus"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="서론공식 문서를 보던 중에 insert 할 때 발생하는 신기한(?) 현상을 발견했습니다. 직접 실행해 보니 제가 예상했던 것과 다른 결과가 나와서 이번 기회에 알아보았습니다. 퀴즈다음과 같은 상황에서 최종 결과는 무엇일까요?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL insert 충돌 시 어떤일이 일어날까?">
+<meta property="og:url" content="https://marinesnow34.github.io/2025/02/09/mysql-insert/index.html">
+<meta property="og:site_name" content="marinesnow34">
+<meta property="og:description" content="서론공식 문서를 보던 중에 insert 할 때 발생하는 신기한(?) 현상을 발견했습니다. 직접 실행해 보니 제가 예상했던 것과 다른 결과가 나와서 이번 기회에 알아보았습니다. 퀴즈다음과 같은 상황에서 최종 결과는 무엇일까요?">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/mysql_insert/1.png">
+<meta property="og:image" content="https://marinesnow34.github.io/assets/img/mysql_insert/2.png">
+<meta property="article:published_time" content="2025-02-09T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-18T08:44:56.806Z">
+<meta property="article:author" content="Joowon Lim">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://marinesnow34.github.io/assets/img/mysql_insert/1.png">
+
+<link rel="canonical" href="https://marinesnow34.github.io/2025/02/09/mysql-insert/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'ko'
+  };
+</script>
+
+  <title>MySQL insert 충돌 시 어떤일이 일어날까? | marinesnow34</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZE41Y65DKL"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-ZE41Y65DKL');
+      }
+    </script>
+
+
+
+
+
+
+<script>
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "izvke9bs7i");
+</script>
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+  <meta name="naver-site-verification" content="7a60549b2cc3ba1fdee5febc98244b8fd772746c" />
+  <script data-ad-client="ca-pub-9904296847545064" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<link rel="alternate" href="/rss2.xml" title="marinesnow34" type="application/rss+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">marinesnow34</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>아카이브</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://marinesnow34.github.io/2025/02/09/mysql-insert/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Joowon Lim">
+      <meta itemprop="description" content="공부 기록용 블로그">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="marinesnow34">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL insert 충돌 시 어떤일이 일어날까?
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">작성일</span>
+
+              <time title="Post created: 2025-02-09 00:00:00" itemprop="dateCreated datePublished" datetime="2025-02-09T00:00:00+00:00">2025-02-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4/" itemprop="url" rel="index"><span itemprop="name">데이터베이스</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="서론"><a href="#서론" class="headerlink" title="서론"></a>서론</h2><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html">공식 문서</a>를 보던 중에 insert 할 때 발생하는 신기한(?) 현상을 발견했습니다. 직접 실행해 보니 제가 예상했던 것과 다른 결과가 나와서 이번 기회에 알아보았습니다.</p>
+<h2 id="퀴즈"><a href="#퀴즈" class="headerlink" title="퀴즈"></a>퀴즈</h2><p>다음과 같은 상황에서 최종 결과는 무엇일까요?</p>
+<p>하나의 테이블에 각각의 세션에서 동일한 키를 가지고 insert를 시도하는 상황입니다.</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> t1 (i <span class="type">INT</span>, <span class="keyword">PRIMARY</span> <span class="keyword">KEY</span> (i)) ENGINE <span class="operator">=</span> InnoDB;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t1 <span class="keyword">VALUES</span>(<span class="number">100</span>); <span class="comment">-- 편의상 100이라는 row를 넣었습니다.</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 세션1</span></span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t1 <span class="keyword">VALUES</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 세션2</span></span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t1 <span class="keyword">VALUES</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 세션3</span></span><br><span class="line"><span class="keyword">START</span> TRANSACTION;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> t1 <span class="keyword">VALUES</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 세션1</span></span><br><span class="line"><span class="keyword">ROLLBACK</span>;</span><br></pre></td></tr></table></figure>
+
+<p>위 코드를 보면 세션 1, 2, 3이 동일한 key를 가지고 t1에 insert를 시도합니다. 그 후 lock을 점유하고 있는 세션1을 rollback을 합니다. </p>
+<p>이때 세션2, 3은 어떻게 되고 어떤 lock을 가지게 될까요?</p>
+<hr>
+<p>직관적으로 생각해 보면 한 세션은 <code>row, X</code> lock을 잡고, 다른 세션은 락을 대기하고 있을 것 같습니다. </p>
+<p>하지만 정답은 최종적으로 <strong>세션2, 3중 하나만 성공하고 row, GAP 락</strong>이 걸립니다. 왜 그럴까요?</p>
+<h2 id="해설"><a href="#해설" class="headerlink" title="해설"></a>해설</h2><p>실제 결과와 함께 설명하겠습니다.</p>
+<ol>
+<li>세션1이 <code>INSERT INTO t1 VALUES(1);</code>을 실행하면 <code>X</code> lock이 걸립니다.</li>
+<li>세션2가 <code>INSERT INTO t1 VALUES(1);</code>을 실행하면 <code>duplicate-key error</code> 때문에, <code>S</code> lock을 얻고 대기합니다.</li>
+<li>세션3도 세션2와 같은 상황입니다. <code>S</code> lock을 얻고 대기합니다.<br><img src="/assets/img/mysql_insert/1.png" alt="1.png"></li>
+<li>세션1이 <code>ROLLBACK;</code>을 실행하면 lock이 해제됩니다. </li>
+<li>세션 2,3 이 가진 <code>S, row</code> lock은 row가 삭제되면서 <code>GAP</code> lock으로 변경됩니다.</li>
+<li>세션2와 세션3은 <code>X</code> lock을 얻으려고 시도합니다. 하지만 서로가 가진 <code>S</code> lock 때문에 <code>X</code> lock을 얻을 수 없습니다. 따라서 데드락이 발생합니다.</li>
+<li>InnoDB는 데드락을 감지하고, 데드락이 발생한 세션을 롤백합니다. 따라서 세션3이 롤백됩니다.</li>
+<li>세션2는 <code>INSERT INTO t1 VALUES(1);</code>을 재시도 하면서 <code>GAP</code> lock을 얻습니다.</li>
+<li>최종적으로 남은 lock은 해당 <code>row</code>의 lock과 다음 <code>GAP</code>의 lock입니다.<br><img src="/assets/img/mysql_insert/2.png" alt="2.png"></li>
+</ol>
+<p>참고로 세션 1이 insert한 후에 세션 2,3이 insert를 시도할 때 S lock을 획득하는 이유는 공식 문서에 다음과 같이 설명되어 있습니다.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.4/en/innodb-locks-set.html">If a duplicate-key error occurs, a shared lock on the duplicate index record is set.</a></p>
+</blockquote>
+<p>세션 1이 insert를 했기 때문에 세션 2,3에서 중복키 오류가 발생하고, 이때 S lock을 획득합니다.</p>
+<hr>
+<p>단순 조회에는 영향이 없습니다. 하지만 <strong>(-∞, 100)범위에 S 혹은 X lock을 획득</strong>하려고 시도하는 경우에는 대기하게 됩니다.</p>
+<p>만약에 유사하게 테이블의 마지막 값보다 큰 값(예를 들어 101)을 insert하는 상황에서 충돌이 나고 rollback 된다면 마지막 값(100) 보다 큰 모든 값에 대해서 lock이 걸립니다.</p>
+<h2 id="결론"><a href="#결론" class="headerlink" title="결론"></a>결론</h2><p>만약 실제 서비스에서 특정 row에만 영향이 간다고 생각했는데 의도하지 않은 GAP락이 걸리면 전체 서비스에 치명적일 수 있습니다.</p>
+<p>흔히 발생하는 케이스는 아니지만 절대 발생하지 않는 것은 아니기에 알고 있으면 미리 방지할 수 있습니다.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/02/03/oracle-cloud-ampere/" rel="prev" title="Oracle Cloud 인스턴스 자동 생성 매크로 만들기">
+      <i class="fa fa-chevron-left"></i> Oracle Cloud 인스턴스 자동 생성 매크로 만들기
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/03/27/heap-dump/" rel="next" title="자바 힙 덤프 분석 (실습 예제 있음!!)">
+      자바 힙 덤프 분석 (실습 예제 있음!!) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="giscus" id="giscus"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%84%9C%EB%A1%A0"><span class="nav-number">1.</span> <span class="nav-text">서론</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%ED%80%B4%EC%A6%88"><span class="nav-number">2.</span> <span class="nav-text">퀴즈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%ED%95%B4%EC%84%A4"><span class="nav-number">3.</span> <span class="nav-text">해설</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EA%B2%B0%EB%A1%A0"><span class="nav-number">4.</span> <span class="nav-text">결론</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Joowon Lim</p>
+  <div class="site-description" itemprop="description">공부 기록용 블로그</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">카테고리</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/marinesnow34" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;marinesnow34" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:joowon.dev@marinesnow34.com" title="E-Mail → mailto:joowon.dev@marinesnow34.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Joowon Lim</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="marinesnow34/marinesnow34.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzMjUzNjQ4NDc="
+        data-category="Comments"
+        data-category-id="DIC_kwDOE2Ssb84CcJ-b"
+        data-mapping="og:title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light_high_contrast"
+        data-lang="ko"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+</body>
+</html>
